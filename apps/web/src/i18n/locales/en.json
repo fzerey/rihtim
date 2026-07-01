@@ -1,0 +1,338 @@
+{
+  "common": {
+    "loading": "Loading…",
+    "cancel": "Cancel",
+    "close": "Close",
+    "remove": "Remove",
+    "delete": "Delete",
+    "create": "Create",
+    "refresh": "Refresh",
+    "save": "Save",
+    "add": "Add",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "unknown": "Unknown",
+    "unlimited": "unlimited",
+    "filter": "Filter…",
+    "clear": "Clear",
+    "autoscroll": "Auto-scroll",
+    "selectFile": "Select a file",
+    "pagination": {
+      "prev": "Prev",
+      "next": "Next",
+      "rowsPerPage": "Rows per page",
+      "pageOf": "Page {page} / {total}",
+      "range": "{from}-{to} of {total}"
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "containers": "Containers",
+    "images": "Images",
+    "volumes": "Volumes",
+    "networks": "Networks",
+    "settings": "Settings"
+  },
+  "topbar": {
+    "noContext": "No context",
+    "manageContexts": "Manage contexts →",
+    "docker": "Docker",
+    "theme": {
+      "label": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Live status of the Docker engine.",
+    "cards": {
+      "containers": "Containers",
+      "containersHint": "{running} running / {stopped} stopped",
+      "images": "Images",
+      "cpu": "CPU",
+      "memory": "Memory",
+      "os": "OS",
+      "kernel": "Kernel"
+    },
+    "engine": "Engine",
+    "serverVersion": "Server Version",
+    "name": "Name",
+    "dockerRoot": "Docker Root",
+    "events": {
+      "title": "Recent events",
+      "subtitle": "Docker engine activity in the last {minutes} minutes",
+      "empty": "No recent events",
+      "error": "Failed to load events"
+    },
+    "storage": {
+      "title": "Storage usage",
+      "subtitle": "{total} used • {reclaimable} reclaimable",
+      "error": "Failed to load storage usage",
+      "images": "Images",
+      "containers": "Containers",
+      "volumes": "Volumes",
+      "buildCache": "Build cache",
+      "count": "{active} active / {total} total",
+      "reclaimable": "{value} reclaimable"
+    }
+  },
+  "containers": {
+    "title": "Containers",
+    "total": "{count} total",
+    "prune": "Prune stopped",
+    "columns": {
+      "name": "Name",
+      "image": "Image",
+      "state": "State",
+      "ports": "Ports",
+      "created": "Created",
+      "lastRun": "Last run",
+      "actions": "Actions"
+    },
+    "pending": {
+      "start": "Starting…",
+      "stop": "Stopping…",
+      "restart": "Restarting…",
+      "pause": "Pausing…",
+      "unpause": "Resuming…",
+      "kill": "Killing…"
+    },
+    "state": {
+      "created": "Created",
+      "running": "Running",
+      "paused": "Paused",
+      "restarting": "Restarting",
+      "removing": "Removing",
+      "exited": "Exited",
+      "dead": "Dead"
+    },
+    "ago": "{value} ago",
+    "actions": {
+      "start": "Start",
+      "stop": "Stop",
+      "restart": "Restart",
+      "pause": "Pause",
+      "unpause": "Unpause",
+      "kill": "Kill",
+      "logs": "Logs",
+      "remove": "Remove"
+    },
+    "detail": {
+      "tabs": {
+        "overview": "Overview",
+        "logs": "Logs",
+        "stats": "Stats",
+        "exec": "Terminal",
+        "files": "Files",
+        "inspect": "Inspect"
+      },
+      "exec": {
+        "notRunning": "Container must be running to open a terminal.",
+        "shell": "Shell",
+        "autoShell": "auto (bash / sh)",
+        "connecting": "connecting…",
+        "connected": "connected",
+        "disconnected": "disconnected",
+        "reconnect": "Reconnect"
+      },
+      "sections": {
+        "state": "State",
+        "imageCmd": "Image & Command",
+        "resources": "Resources & Restart",
+        "ports": "Port Bindings",
+        "env": "Environment Variables ({count})",
+        "mounts": "Mounts ({count})",
+        "networks": "Networks ({count})",
+        "labels": "Labels ({count})"
+      },
+      "fields": {
+        "status": "Status",
+        "started": "Started",
+        "finished": "Finished",
+        "exitCode": "Exit Code",
+        "restartCount": "Restart Count",
+        "image": "Image",
+        "imageId": "Image ID",
+        "entrypoint": "Entrypoint",
+        "cmd": "Cmd",
+        "workingDir": "WorkingDir",
+        "user": "User",
+        "restartPolicy": "RestartPolicy",
+        "memory": "Memory",
+        "cpuShares": "CPU Shares",
+        "nanoCpus": "NanoCPUs",
+        "privileged": "Privileged"
+      },
+      "noPortBindings": "None",
+      "noEnv": "None",
+      "noMounts": "None",
+      "noLabels": "None",
+      "inspect": {
+        "section": "Section",
+        "all": "All",
+        "copy": "Copy",
+        "copied": "Copied",
+        "filterPlaceholder": "Filter keys...",
+        "empty": "No matching keys",
+        "expandAll": "Expand all",
+        "collapseAll": "Collapse all",
+        "sections": {
+          "general": "General",
+          "state": "State",
+          "network": "Network",
+          "ports": "Ports",
+          "environment": "Environment",
+          "labels": "Labels",
+          "mounts": "Mounts",
+          "resources": "Resources",
+          "restart": "Restart policy",
+          "logConfig": "Log config",
+          "health": "Health",
+          "command": "Command",
+          "security": "Security",
+          "raw": "Raw JSON"
+        }
+      }
+    },
+    "files": {
+      "empty": "Select a file",
+      "rootDir": "Root",
+      "upDir": "Parent directory"
+    },
+    "stats": {
+      "cpu": "CPU",
+      "memory": "Memory",
+      "netRx": "Network RX",
+      "netTx": "Network TX"
+    },
+    "group": {
+      "standalone": "Standalone containers",
+      "summary": "{running}/{total} running",
+      "startAll": "Start all",
+      "stopAll": "Stop all",
+      "restartAll": "Restart all",
+      "removeAll": "Remove all",
+      "projectLabel": "Compose project"
+    }
+  },
+  "images": {
+    "title": "Images",
+    "pullSection": "Pull image",
+    "pullPlaceholder": "e.g. nginx:alpine",
+    "pull": "Pull",
+    "columns": {
+      "tag": "Tag",
+      "id": "ID",
+      "size": "Size",
+      "inUse": "In use",
+      "created": "Created",
+      "pulled": "Pulled",
+      "actions": "Actions"
+    },
+    "inUse": {
+      "unused": "Unused",
+      "running": "{running}/{total} running",
+      "stopped": "{total} stopped"
+    },
+    "run": "Run container",
+    "runModal": {
+      "title": "Run a new container",
+      "name": "Name",
+      "namePlaceholder": "optional container name",
+      "ports": "Port mappings",
+      "portsPlaceholder": "one per line, e.g. 8080:80",
+      "env": "Environment variables",
+      "envPlaceholder": "KEY=VALUE per line",
+      "command": "Command override",
+      "commandPlaceholder": "optional, replaces image CMD",
+      "autoStart": "Start container after create",
+      "run": "Run"
+    },
+    "hub": {
+      "section": "Search Docker Hub",
+      "placeholder": "e.g. postgres, redis, node...",
+      "search": "Search",
+      "empty": "No results",
+      "idle": "Type a name to search Docker Hub",
+      "typeMore": "Type at least 2 characters…",
+      "loading": "Searching...",
+      "official": "Official",
+      "stars": "stars",
+      "tag": "Tag",
+      "tagSearchPlaceholder": "Search tag…",
+      "useCustom": "Use custom: {value}",
+      "pull": "Pull",
+      "pulled": "Pulled",
+      "alreadyPulled": "This tag is already pulled",
+      "loadingTags": "Loading tags…",
+      "tagsEmpty": "No tags found",
+      "openInHub": "Open on Docker Hub"
+    }
+  },
+  "volumes": {
+    "title": "Volumes",
+    "newPlaceholder": "new volume name",
+    "columns": {
+      "name": "Name",
+      "driver": "Driver",
+      "mount": "Mount",
+      "actions": "Actions"
+    }
+  },
+  "networks": {
+    "title": "Networks",
+    "newPlaceholder": "new network name",
+    "columns": {
+      "name": "Name",
+      "driver": "Driver",
+      "scope": "Scope",
+      "subnet": "Subnet",
+      "actions": "Actions"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage Docker connection contexts. WSL is supported.",
+    "active": "active",
+    "test": "Test",
+    "makeActive": "Make active",
+    "newContext": "New context",
+    "fields": {
+      "name": "Name",
+      "kind": "Type",
+      "socketPath": "Socket / Pipe path",
+      "host": "Host",
+      "port": "Port",
+      "sshHost": "SSH host (user@host)",
+      "wslDistro": "WSL distribution name"
+    },
+    "placeholders": {
+      "name": "e.g. wsl-ubuntu",
+      "socketNpipe": "//./pipe/docker_engine",
+      "socketUnix": "/var/run/docker.sock",
+      "sshHost": "root@10.0.0.5",
+      "wslDistro": "Ubuntu"
+    },
+    "kinds": {
+      "npipe": "Windows Named Pipe",
+      "socket": "Unix Socket",
+      "tcp": "TCP (Remote Docker)",
+      "ssh": "SSH",
+      "wsl": "WSL Distribution"
+    },
+    "wslHint": {
+      "title": "Requirements for WSL connection",
+      "line1": "wsl.exe must be available on Windows.",
+      "line2": "Docker daemon must be running inside the selected distribution with /var/run/docker.sock present.",
+      "line3": "socat must be installed: sudo apt-get install -y socat",
+      "line4": "Rihtim bridges via wsl -d <distro> -u root socat over stdio. No extra ports or TCP required."
+    },
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
+  },
+  "errors": {
+    "dockerUnreachable": "Cannot reach the active Docker context. Make sure the engine is running or pick another context in Settings."
+  }
+}

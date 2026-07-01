@@ -1,0 +1,338 @@
+{
+  "common": {
+    "loading": "Yükleniyor…",
+    "cancel": "İptal",
+    "close": "Kapat",
+    "remove": "Sil",
+    "delete": "Sil",
+    "create": "Oluştur",
+    "refresh": "Yenile",
+    "save": "Kaydet",
+    "add": "Ekle",
+    "none": "Yok",
+    "yes": "Evet",
+    "no": "Hayır",
+    "unknown": "Bilinmiyor",
+    "unlimited": "sınırsız",
+    "filter": "Filtrele…",
+    "clear": "Temizle",
+    "autoscroll": "Otomatik kaydır",
+    "selectFile": "Bir dosya seçin",
+    "pagination": {
+      "prev": "Önceki",
+      "next": "Sonraki",
+      "rowsPerPage": "Sayfa başına",
+      "pageOf": "Sayfa {page} / {total}",
+      "range": "{from}-{to} / {total}"
+    }
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "containers": "Konteynerler",
+    "images": "İmajlar",
+    "volumes": "Volume'ler",
+    "networks": "Ağlar",
+    "settings": "Ayarlar"
+  },
+  "topbar": {
+    "noContext": "Bağlam yok",
+    "manageContexts": "Bağlamları yönet →",
+    "docker": "Docker",
+    "theme": {
+      "label": "Tema",
+      "light": "Açık",
+      "dark": "Koyu",
+      "system": "Sistem"
+    }
+  },
+  "dashboard": {
+    "title": "Panel",
+    "subtitle": "Docker motorunun anlık durumu.",
+    "cards": {
+      "containers": "Konteynerler",
+      "containersHint": "{running} çalışıyor / {stopped} durdu",
+      "images": "İmajlar",
+      "cpu": "CPU",
+      "memory": "Bellek",
+      "os": "OS",
+      "kernel": "Kernel"
+    },
+    "engine": "Motor",
+    "serverVersion": "Sunucu Sürümü",
+    "name": "Adı",
+    "dockerRoot": "Docker Root",
+    "events": {
+      "title": "Son olaylar",
+      "subtitle": "Son {minutes} dakikadaki Docker engine aktivitesi",
+      "empty": "Yakın zamanda olay yok",
+      "error": "Olaylar yüklenemedi"
+    },
+    "storage": {
+      "title": "Disk kullanımı",
+      "subtitle": "{total} kullanım • {reclaimable} geri kazanılabilir",
+      "error": "Disk kullanımı yüklenemedi",
+      "images": "İmajlar",
+      "containers": "Konteynerler",
+      "volumes": "Volume'ler",
+      "buildCache": "Build önbelleği",
+      "count": "{active} aktif / {total} toplam",
+      "reclaimable": "{value} geri kazanılabilir"
+    }
+  },
+  "containers": {
+    "title": "Konteynerler",
+    "total": "{count} toplam",
+    "prune": "Durmuş olanları temizle",
+    "columns": {
+      "name": "Ad",
+      "image": "İmaj",
+      "state": "Durum",
+      "ports": "Portlar",
+      "created": "Oluşturuldu",
+      "lastRun": "Son çalışma",
+      "actions": "İşlem"
+    },
+    "pending": {
+      "start": "Başlatılıyor…",
+      "stop": "Durduruluyor…",
+      "restart": "Yeniden başlatılıyor…",
+      "pause": "Duraklatılıyor…",
+      "unpause": "Devam ediliyor…",
+      "kill": "Sonlandırılıyor…"
+    },
+    "state": {
+      "created": "Oluşturuldu",
+      "running": "Çalışıyor",
+      "paused": "Duraklatıldı",
+      "restarting": "Yeniden başlatılıyor",
+      "removing": "Siliniyor",
+      "exited": "Durdu",
+      "dead": "Ölü"
+    },
+    "ago": "{value} önce",
+    "actions": {
+      "start": "Başlat",
+      "stop": "Durdur",
+      "restart": "Yeniden başlat",
+      "pause": "Duraklat",
+      "unpause": "Devam et",
+      "kill": "Sonlandır",
+      "logs": "Loglar",
+      "remove": "Sil"
+    },
+    "detail": {
+      "tabs": {
+        "overview": "Genel",
+        "logs": "Loglar",
+        "stats": "İstatistikler",
+        "exec": "Terminal",
+        "files": "Dosyalar",
+        "inspect": "Inspect"
+      },
+      "exec": {
+        "notRunning": "Terminal açmak için container çalışıyor olmalı.",
+        "shell": "Shell",
+        "autoShell": "otomatik (bash / sh)",
+        "connecting": "bağlanıyor…",
+        "connected": "bağlı",
+        "disconnected": "bağlantı koptu",
+        "reconnect": "Yeniden bağlan"
+      },
+      "sections": {
+        "state": "Durum",
+        "imageCmd": "İmaj & Komut",
+        "resources": "Kaynak & Yeniden Başlat",
+        "ports": "Port Bağlamaları",
+        "env": "Ortam Değişkenleri ({count})",
+        "mounts": "Mount'lar ({count})",
+        "networks": "Ağlar ({count})",
+        "labels": "Etiketler ({count})"
+      },
+      "fields": {
+        "status": "Durum",
+        "started": "Başlangıç",
+        "finished": "Bitiş",
+        "exitCode": "Çıkış Kodu",
+        "restartCount": "Yeniden başlatma",
+        "image": "İmaj",
+        "imageId": "Image ID",
+        "entrypoint": "Entrypoint",
+        "cmd": "Cmd",
+        "workingDir": "Çalışma Dizini",
+        "user": "Kullanıcı",
+        "restartPolicy": "Yeniden başlatma politikası",
+        "memory": "Bellek",
+        "cpuShares": "CPU Payı",
+        "nanoCpus": "NanoCPUs",
+        "privileged": "Privileged"
+      },
+      "noPortBindings": "Yok",
+      "noEnv": "Yok",
+      "noMounts": "Yok",
+      "noLabels": "Yok",
+      "inspect": {
+        "section": "Bölüm",
+        "all": "Tümü",
+        "copy": "Kopyala",
+        "copied": "Kopyalandı",
+        "filterPlaceholder": "Anahtar ara...",
+        "empty": "Eşleşen anahtar yok",
+        "expandAll": "Tümünü aç",
+        "collapseAll": "Tümünü kapat",
+        "sections": {
+          "general": "Genel",
+          "state": "Durum",
+          "network": "Ağ",
+          "ports": "Portlar",
+          "environment": "Ortam değişkenleri",
+          "labels": "Etiketler",
+          "mounts": "Mount'lar",
+          "resources": "Kaynaklar",
+          "restart": "Yeniden başlatma politikası",
+          "logConfig": "Log yapılandırması",
+          "health": "Sağlık",
+          "command": "Komut",
+          "security": "Güvenlik",
+          "raw": "Ham JSON"
+        }
+      }
+    },
+    "files": {
+      "empty": "Bir dosya seçin",
+      "rootDir": "Kök",
+      "upDir": "Üst dizin"
+    },
+    "stats": {
+      "cpu": "CPU",
+      "memory": "Bellek",
+      "netRx": "Ağ RX",
+      "netTx": "Ağ TX"
+    },
+    "group": {
+      "standalone": "Bağımsız konteynerler",
+      "summary": "{running}/{total} çalışıyor",
+      "startAll": "Tümünü başlat",
+      "stopAll": "Tümünü durdur",
+      "restartAll": "Tümünü yeniden başlat",
+      "removeAll": "Tümünü sil",
+      "projectLabel": "Compose projesi"
+    }
+  },
+  "images": {
+    "title": "İmajlar",
+    "pullSection": "İmaj Çek",
+    "pullPlaceholder": "ör: nginx:alpine",
+    "pull": "Çek",
+    "columns": {
+      "tag": "Etiket",
+      "id": "ID",
+      "size": "Boyut",
+      "inUse": "Kullanımda",
+      "created": "Oluşturuldu",
+      "pulled": "Çekildi",
+      "actions": "İşlem"
+    },
+    "inUse": {
+      "unused": "Kullanılmıyor",
+      "running": "{running}/{total} çalışıyor",
+      "stopped": "{total} durdu"
+    },
+    "run": "Konteyner çalıştır",
+    "runModal": {
+      "title": "Yeni konteyner çalıştır",
+      "name": "Ad",
+      "namePlaceholder": "isteğe bağlı konteyner adı",
+      "ports": "Port eşleşmeleri",
+      "portsPlaceholder": "her satırda bir, ör: 8080:80",
+      "env": "Ortam değişkenleri",
+      "envPlaceholder": "her satırda KEY=DEĞER",
+      "command": "Komut üzerine yaz",
+      "commandPlaceholder": "isteğe bağlı, image CMD'sini değiştirir",
+      "autoStart": "Oluştuktan sonra başlat",
+      "run": "Çalıştır"
+    },
+    "hub": {
+      "section": "Docker Hub'da ara",
+      "placeholder": "ör: postgres, redis, node...",
+      "search": "Ara",
+      "empty": "Sonuç yok",
+      "idle": "Docker Hub'da aramak için bir ad yazın",
+      "typeMore": "En az 2 karakter yazın…",
+      "loading": "Aranıyor...",
+      "official": "Resmi",
+      "stars": "yıldız",
+      "tag": "Etiket",
+      "tagSearchPlaceholder": "Etiket ara…",
+      "useCustom": "Özel etiketi kullan: {value}",
+      "pull": "Çek",
+      "pulled": "Çekildi",
+      "alreadyPulled": "Bu etiket zaten çekilmiş",
+      "loadingTags": "Etiketler yükleniyor…",
+      "tagsEmpty": "Etiket bulunamadı",
+      "openInHub": "Docker Hub'da aç"
+    }
+  },
+  "volumes": {
+    "title": "Volume'ler",
+    "newPlaceholder": "yeni volume adı",
+    "columns": {
+      "name": "Ad",
+      "driver": "Sürücü",
+      "mount": "Mount",
+      "actions": "İşlem"
+    }
+  },
+  "networks": {
+    "title": "Ağlar",
+    "newPlaceholder": "yeni ağ adı",
+    "columns": {
+      "name": "Ad",
+      "driver": "Sürücü",
+      "scope": "Kapsam",
+      "subnet": "Subnet",
+      "actions": "İşlem"
+    }
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "subtitle": "Docker bağlantı bağlamlarını yönetin. WSL desteklenir.",
+    "active": "aktif",
+    "test": "Test et",
+    "makeActive": "Aktif yap",
+    "newContext": "Yeni bağlam",
+    "fields": {
+      "name": "Ad",
+      "kind": "Tür",
+      "socketPath": "Soket / Pipe yolu",
+      "host": "Host",
+      "port": "Port",
+      "sshHost": "SSH host (user@host)",
+      "wslDistro": "WSL Dağıtım adı"
+    },
+    "placeholders": {
+      "name": "ör: wsl-ubuntu",
+      "socketNpipe": "//./pipe/docker_engine",
+      "socketUnix": "/var/run/docker.sock",
+      "sshHost": "root@10.0.0.5",
+      "wslDistro": "Ubuntu"
+    },
+    "kinds": {
+      "npipe": "Windows Named Pipe",
+      "socket": "Unix Socket",
+      "tcp": "TCP (Uzak Docker)",
+      "ssh": "SSH",
+      "wsl": "WSL Dağıtımı"
+    },
+    "wslHint": {
+      "title": "WSL bağlantısı için gereksinimler",
+      "line1": "Windows üzerinde wsl.exe çalışır olmalı.",
+      "line2": "Seçtiğiniz WSL dağıtımında Docker daemon çalışıyor ve /var/run/docker.sock mevcut olmalı.",
+      "line3": "socat kurulu olmalı: sudo apt-get install -y socat",
+      "line4": "Rihtim, wsl -d <dağıtım> -u root socat ile stdio üzerinden köprü kurar. Ekstra port veya TCP açmanıza gerek yoktur."
+    },
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
+  },
+  "errors": {
+    "dockerUnreachable": "Aktif Docker bağlamına ulaşılamıyor. Motorun çalıştığını doğrulayın ya da Ayarlar'dan başka bir bağlam seçin."
+  }
+}

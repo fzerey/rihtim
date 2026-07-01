@@ -1,0 +1,241 @@
+{
+  "common": {
+    "loading": "Cargando…",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "remove": "Quitar",
+    "delete": "Eliminar",
+    "create": "Crear",
+    "refresh": "Actualizar",
+    "save": "Guardar",
+    "add": "Añadir",
+    "none": "Ninguno",
+    "yes": "Sí",
+    "no": "No",
+    "unknown": "Desconocido",
+    "unlimited": "ilimitado",
+    "filter": "Filtrar…",
+    "clear": "Limpiar",
+    "autoscroll": "Auto-desplazar",
+    "selectFile": "Selecciona un archivo",
+    "pagination": {
+      "prev": "Anterior",
+      "next": "Siguiente",
+      "rowsPerPage": "Filas por página",
+      "pageOf": "Página {page} / {total}",
+      "range": "{from}-{to} de {total}"
+    }
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "containers": "Contenedores",
+    "images": "Imágenes",
+    "volumes": "Volúmenes",
+    "networks": "Redes",
+    "settings": "Ajustes"
+  },
+  "topbar": {
+    "noContext": "Sin contexto",
+    "manageContexts": "Gestionar contextos →",
+    "docker": "Docker",
+    "theme": {
+      "label": "Tema",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    }
+  },
+  "dashboard": {
+    "title": "Panel",
+    "subtitle": "Estado en vivo del motor Docker.",
+    "cards": {
+      "containers": "Contenedores",
+      "containersHint": "{running} en ejecución / {stopped} detenidos",
+      "images": "Imágenes",
+      "cpu": "CPU",
+      "memory": "Memoria",
+      "os": "SO",
+      "kernel": "Kernel"
+    },
+    "engine": "Motor",
+    "serverVersion": "Versión del servidor",
+    "name": "Nombre",
+    "dockerRoot": "Raíz de Docker",
+    "events": {
+      "title": "Eventos recientes",
+      "subtitle": "Actividad del motor Docker en los últimos {minutes} minutos",
+      "empty": "Sin eventos recientes",
+      "error": "Error al cargar eventos"
+    },
+    "storage": {
+      "title": "Uso de almacenamiento",
+      "subtitle": "{total} usado • {reclaimable} recuperable",
+      "error": "Error al cargar uso de almacenamiento",
+      "images": "Imágenes",
+      "containers": "Contenedores",
+      "volumes": "Volúmenes",
+      "buildCache": "Caché de compilación",
+      "count": "{active} activos / {total} total",
+      "reclaimable": "{value} recuperable"
+    }
+  },
+  "containers": {
+    "title": "Contenedores",
+    "total": "{count} en total",
+    "prune": "Limpiar detenidos",
+    "columns": {
+      "name": "Nombre",
+      "image": "Imagen",
+      "state": "Estado",
+      "ports": "Puertos",
+      "created": "Creado",
+      "lastRun": "Última ejecución",
+      "actions": "Acciones"
+    },
+    "pending": {
+      "start": "Iniciando…",
+      "stop": "Deteniendo…",
+      "restart": "Reiniciando…",
+      "pause": "Pausando…",
+      "unpause": "Reanudando…",
+      "kill": "Terminando…"
+    },
+    "state": {
+      "created": "Creado",
+      "running": "En ejecución",
+      "paused": "En pausa",
+      "restarting": "Reiniciando",
+      "removing": "Eliminando",
+      "exited": "Detenido",
+      "dead": "Muerto"
+    },
+    "ago": "hace {value}",
+    "actions": {
+      "start": "Iniciar",
+      "stop": "Detener",
+      "restart": "Reiniciar",
+      "pause": "Pausar",
+      "unpause": "Reanudar",
+      "kill": "Matar",
+      "logs": "Logs",
+      "remove": "Eliminar"
+    },
+    "detail": {
+      "tabs": {
+        "overview": "Resumen",
+        "logs": "Logs",
+        "stats": "Estadísticas",
+        "exec": "Terminal",
+        "files": "Archivos",
+        "inspect": "Inspect"
+      },
+      "exec": {
+        "notRunning": "El contenedor debe estar en ejecución para abrir un terminal.",
+        "shell": "Shell",
+        "autoShell": "auto (bash / sh)",
+        "connecting": "conectando…",
+        "connected": "conectado",
+        "disconnected": "desconectado",
+        "reconnect": "Reconectar"
+      },
+      "inspect": {
+        "sections": {
+          "general": "General",
+          "state": "Estado",
+          "network": "Red",
+          "ports": "Puertos",
+          "environment": "Entorno",
+          "labels": "Etiquetas",
+          "mounts": "Mounts",
+          "resources": "Recursos",
+          "restart": "Política de reinicio",
+          "logConfig": "Configuración de logs",
+          "health": "Salud",
+          "command": "Comando",
+          "security": "Seguridad",
+          "raw": "JSON crudo"
+        }
+      }
+    },
+    "stats": {
+      "cpu": "CPU",
+      "memory": "Memoria",
+      "netRx": "Red RX",
+      "netTx": "Red TX"
+    },
+    "group": {
+      "standalone": "Contenedores independientes",
+      "summary": "{running}/{total} en ejecución",
+      "startAll": "Iniciar todo",
+      "stopAll": "Detener todo",
+      "restartAll": "Reiniciar todo",
+      "removeAll": "Eliminar todo",
+      "projectLabel": "Proyecto Compose"
+    }
+  },
+  "images": {
+    "title": "Imágenes",
+    "pullSection": "Descargar imagen",
+    "pullPlaceholder": "ej. nginx:alpine",
+    "pull": "Descargar",
+    "columns": { "inUse": "En uso", "pulled": "Descargada" },
+    "inUse": {
+      "unused": "Sin uso",
+      "running": "{running}/{total} en ejecución",
+      "stopped": "{total} detenidos"
+    },
+    "run": "Ejecutar contenedor",
+    "runModal": {
+      "title": "Ejecutar un nuevo contenedor",
+      "name": "Nombre",
+      "namePlaceholder": "nombre opcional del contenedor",
+      "ports": "Mapeo de puertos",
+      "portsPlaceholder": "uno por línea, ej. 8080:80",
+      "env": "Variables de entorno",
+      "envPlaceholder": "KEY=VALOR por línea",
+      "command": "Sobrescribir comando",
+      "commandPlaceholder": "opcional, sustituye la CMD de la imagen",
+      "autoStart": "Iniciar tras crear",
+      "run": "Ejecutar"
+    },
+    "hub": {
+      "section": "Buscar en Docker Hub",
+      "placeholder": "ej. postgres, redis, node...",
+      "search": "Buscar",
+      "empty": "Sin resultados",
+      "idle": "Escribe un nombre para buscar en Docker Hub",
+      "typeMore": "Escribe al menos 2 caracteres…",
+      "loading": "Buscando...",
+      "official": "Oficial",
+      "stars": "estrellas",
+      "tag": "Tag",
+      "tagSearchPlaceholder": "Buscar tag…",
+      "useCustom": "Usar: {value}",
+      "pull": "Descargar",
+      "pulled": "Descargado",
+      "alreadyPulled": "Este tag ya está descargado",
+      "loadingTags": "Cargando tags…",
+      "tagsEmpty": "Sin tags",
+      "openInHub": "Abrir en Docker Hub"
+    }
+  },
+  "volumes": {
+    "title": "Volúmenes",
+    "newPlaceholder": "nombre del nuevo volumen"
+  },
+  "networks": {
+    "title": "Redes",
+    "newPlaceholder": "nombre de la nueva red"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "subtitle": "Gestiona contextos de conexión Docker. WSL soportado.",
+    "active": "activo",
+    "test": "Probar",
+    "makeActive": "Activar",
+    "newContext": "Nuevo contexto"
+  },
+  "errors": {
+    "dockerUnreachable": "No se puede alcanzar el contexto Docker activo. Verifica que el motor esté en ejecución o elige otro contexto en Ajustes."
+  }
+}

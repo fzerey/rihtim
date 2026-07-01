@@ -1,0 +1,239 @@
+{
+  "common": {
+    "loading": "Wird geladen…",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "remove": "Entfernen",
+    "delete": "Löschen",
+    "create": "Erstellen",
+    "refresh": "Aktualisieren",
+    "save": "Speichern",
+    "add": "Hinzufügen",
+    "none": "Keine",
+    "yes": "Ja",
+    "no": "Nein",
+    "unknown": "Unbekannt",
+    "unlimited": "unbegrenzt",
+    "filter": "Filtern…",
+    "clear": "Löschen",
+    "autoscroll": "Auto-Scrollen",
+    "selectFile": "Datei auswählen",
+    "pagination": {
+      "prev": "Zurück",
+      "next": "Weiter",
+      "rowsPerPage": "Zeilen pro Seite",
+      "pageOf": "Seite {page} / {total}",
+      "range": "{from}-{to} von {total}"
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "containers": "Container",
+    "images": "Images",
+    "volumes": "Volumes",
+    "networks": "Netzwerke",
+    "settings": "Einstellungen"
+  },
+  "topbar": {
+    "noContext": "Kein Kontext",
+    "manageContexts": "Kontexte verwalten →",
+    "docker": "Docker",
+    "theme": {
+      "label": "Design",
+      "light": "Hell",
+      "dark": "Dunkel",
+      "system": "System"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Aktueller Status der Docker-Engine.",
+    "cards": {
+      "containers": "Container",
+      "containersHint": "{running} aktiv / {stopped} gestoppt",
+      "images": "Images",
+      "cpu": "CPU",
+      "memory": "Speicher",
+      "os": "Betriebssystem",
+      "kernel": "Kernel"
+    },
+    "engine": "Engine",
+    "serverVersion": "Serverversion",
+    "name": "Name",
+    "dockerRoot": "Docker-Root",
+    "events": {
+      "title": "Letzte Ereignisse",
+      "subtitle": "Docker-Engine-Aktivität der letzten {minutes} Minuten",
+      "empty": "Keine Ereignisse",
+      "error": "Ereignisse konnten nicht geladen werden"    },
+    "storage": {
+      "title": "Speichernutzung",
+      "subtitle": "{total} belegt • {reclaimable} freigebbar",
+      "error": "Speichernutzung konnte nicht geladen werden",
+      "images": "Images",
+      "containers": "Container",
+      "volumes": "Volumes",
+      "buildCache": "Build-Cache",
+      "count": "{active} aktiv / {total} gesamt",
+      "reclaimable": "{value} freigebbar"    }
+  },
+  "containers": {
+    "title": "Container",
+    "total": "{count} insgesamt",
+    "prune": "Gestoppte bereinigen",
+    "columns": {
+      "name": "Name",
+      "image": "Image",
+      "state": "Status",
+      "ports": "Ports",
+      "created": "Erstellt",
+      "lastRun": "Zuletzt gelaufen",
+      "actions": "Aktionen"
+    },
+    "pending": {
+      "start": "Startet…",
+      "stop": "Stoppt…",
+      "restart": "Neustart…",
+      "pause": "Pausiert…",
+      "unpause": "Fortsetzen…",
+      "kill": "Beenden…"
+    },
+    "state": {
+      "created": "Erstellt",
+      "running": "Läuft",
+      "paused": "Pausiert",
+      "restarting": "Neustart",
+      "removing": "Wird entfernt",
+      "exited": "Beendet",
+      "dead": "Tot"
+    },
+    "ago": "vor {value}",
+    "actions": {
+      "start": "Starten",
+      "stop": "Stoppen",
+      "restart": "Neustart",
+      "pause": "Pausieren",
+      "unpause": "Fortsetzen",
+      "kill": "Beenden",
+      "logs": "Logs",
+      "remove": "Entfernen"
+    },
+    "detail": {
+      "tabs": {
+        "overview": "Übersicht",
+        "logs": "Logs",
+        "stats": "Statistiken",
+        "exec": "Terminal",
+        "files": "Dateien",
+        "inspect": "Inspect"
+      },
+      "exec": {
+        "notRunning": "Container muss laufen, um ein Terminal zu öffnen.",
+        "shell": "Shell",
+        "autoShell": "automatisch (bash / sh)",
+        "connecting": "verbindet…",
+        "connected": "verbunden",
+        "disconnected": "getrennt",
+        "reconnect": "Neu verbinden"
+      },
+      "inspect": {
+        "sections": {
+          "general": "Allgemein",
+          "state": "Status",
+          "network": "Netzwerk",
+          "ports": "Ports",
+          "environment": "Umgebung",
+          "labels": "Labels",
+          "mounts": "Mounts",
+          "resources": "Ressourcen",
+          "restart": "Neustart-Richtlinie",
+          "logConfig": "Log-Konfiguration",
+          "health": "Gesundheit",
+          "command": "Befehl",
+          "security": "Sicherheit",
+          "raw": "Rohes JSON"
+        }
+      }
+    },
+    "stats": {
+      "cpu": "CPU",
+      "memory": "Speicher",
+      "netRx": "Netzwerk RX",
+      "netTx": "Netzwerk TX"
+    },
+    "group": {
+      "standalone": "Eigenständige Container",
+      "summary": "{running}/{total} aktiv",
+      "startAll": "Alle starten",
+      "stopAll": "Alle stoppen",
+      "restartAll": "Alle neustarten",
+      "removeAll": "Alle entfernen",
+      "projectLabel": "Compose-Projekt"
+    }
+  },
+  "images": {
+    "title": "Images",
+    "pullSection": "Image ziehen",
+    "pullPlaceholder": "z. B. nginx:alpine",
+    "pull": "Ziehen",
+    "columns": { "inUse": "In Nutzung", "pulled": "Gezogen" },
+    "inUse": {
+      "unused": "Nicht in Nutzung",
+      "running": "{running}/{total} aktiv",
+      "stopped": "{total} gestoppt"
+    },
+    "run": "Container starten",
+    "runModal": {
+      "title": "Neuen Container starten",
+      "name": "Name",
+      "namePlaceholder": "optionaler Container-Name",
+      "ports": "Port-Zuordnungen",
+      "portsPlaceholder": "eine pro Zeile, z. B. 8080:80",
+      "env": "Umgebungsvariablen",
+      "envPlaceholder": "KEY=WERT pro Zeile",
+      "command": "Befehl überschreiben",
+      "commandPlaceholder": "optional, ersetzt Image-CMD",
+      "autoStart": "Nach Erstellen starten",
+      "run": "Starten"
+    },
+    "hub": {
+      "section": "Docker Hub durchsuchen",
+      "placeholder": "z. B. postgres, redis, node...",
+      "search": "Suchen",
+      "empty": "Keine Ergebnisse",
+      "idle": "Namen eingeben, um Docker Hub zu durchsuchen",
+      "typeMore": "Mindestens 2 Zeichen eingeben…",
+      "loading": "Suche läuft...",
+      "official": "Offiziell",
+      "stars": "Sterne",
+      "tag": "Tag",
+      "tagSearchPlaceholder": "Tag suchen…",
+      "useCustom": "Eigenen Wert nutzen: {value}",
+      "pull": "Ziehen",
+      "pulled": "Gezogen",
+      "alreadyPulled": "Dieses Tag ist bereits gezogen",
+      "loadingTags": "Tags werden geladen…",
+      "tagsEmpty": "Keine Tags gefunden",
+      "openInHub": "Auf Docker Hub öffnen"
+    }
+  },
+  "volumes": {
+    "title": "Volumes",
+    "newPlaceholder": "neuer Volumename"
+  },
+  "networks": {
+    "title": "Netzwerke",
+    "newPlaceholder": "neuer Netzwerkname"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Docker-Verbindungskontexte verwalten. WSL wird unterstützt.",
+    "active": "aktiv",
+    "test": "Testen",
+    "makeActive": "Aktiv setzen",
+    "newContext": "Neuer Kontext"
+  },
+  "errors": {
+    "dockerUnreachable": "Der aktive Docker-Kontext ist nicht erreichbar. Stellen Sie sicher, dass die Engine läuft, oder wählen Sie in den Einstellungen einen anderen Kontext."
+  }
+}

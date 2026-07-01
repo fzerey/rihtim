@@ -1,0 +1,68 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./src/**/*.{ts,tsx}"],
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        slate: {
+          50: "rgb(var(--slate-50) / <alpha-value>)",
+          100: "rgb(var(--slate-100) / <alpha-value>)",
+          200: "rgb(var(--slate-200) / <alpha-value>)",
+          300: "rgb(var(--slate-300) / <alpha-value>)",
+          400: "rgb(var(--slate-400) / <alpha-value>)",
+          500: "rgb(var(--slate-500) / <alpha-value>)",
+          600: "rgb(var(--slate-600) / <alpha-value>)",
+          700: "rgb(var(--slate-700) / <alpha-value>)",
+          800: "rgb(var(--slate-800) / <alpha-value>)",
+          900: "rgb(var(--slate-900) / <alpha-value>)",
+          950: "rgb(var(--slate-950) / <alpha-value>)",
+        },
+        brand: {
+          50: "rgb(var(--brand-50) / <alpha-value>)",
+          100: "rgb(var(--brand-100) / <alpha-value>)",
+          200: "rgb(var(--brand-200) / <alpha-value>)",
+          300: "rgb(var(--brand-300) / <alpha-value>)",
+          400: "rgb(var(--brand-400) / <alpha-value>)",
+          500: "rgb(var(--brand-500) / <alpha-value>)",
+          600: "rgb(var(--brand-600) / <alpha-value>)",
+          700: "rgb(var(--brand-700) / <alpha-value>)",
+          800: "rgb(var(--brand-800) / <alpha-value>)",
+          900: "rgb(var(--brand-900) / <alpha-value>)",
+        },
+        emerald: {
+          200: "rgb(var(--emerald-200) / <alpha-value>)",
+          300: "rgb(var(--emerald-300) / <alpha-value>)",
+          400: "rgb(var(--emerald-400) / <alpha-value>)",
+          500: "rgb(var(--emerald-500) / <alpha-value>)",
+          600: "rgb(var(--emerald-600) / <alpha-value>)",
+          700: "rgb(var(--emerald-700) / <alpha-value>)",
+        },
+        rose: {
+          200: "rgb(var(--rose-200) / <alpha-value>)",
+          300: "rgb(var(--rose-300) / <alpha-value>)",
+          400: "rgb(var(--rose-400) / <alpha-value>)",
+          500: "rgb(var(--rose-500) / <alpha-value>)",
+          600: "rgb(var(--rose-600) / <alpha-value>)",
+          700: "rgb(var(--rose-700) / <alpha-value>)",
+          950: "rgb(var(--rose-950) / <alpha-value>)",
+        },
+        amber: {
+          200: "rgb(var(--amber-200) / <alpha-value>)",
+          300: "rgb(var(--amber-300) / <alpha-value>)",
+          400: "rgb(var(--amber-400) / <alpha-value>)",
+          500: "rgb(var(--amber-500) / <alpha-value>)",
+          600: "rgb(var(--amber-600) / <alpha-value>)",
+          700: "rgb(var(--amber-700) / <alpha-value>)",
+          800: "rgb(var(--amber-800) / <alpha-value>)",
+          900: "rgb(var(--amber-900) / <alpha-value>)",
+        },
+      },
+      fontFamily: {
+        sans: ["ui-sans-serif", "system-ui", "Inter", "Segoe UI", "sans-serif"],
+        mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+      },
+    },
+  },
+  plugins: [],
+};

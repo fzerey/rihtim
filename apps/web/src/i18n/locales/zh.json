@@ -1,0 +1,241 @@
+{
+  "common": {
+    "loading": "加载中…",
+    "cancel": "取消",
+    "close": "关闭",
+    "remove": "移除",
+    "delete": "删除",
+    "create": "创建",
+    "refresh": "刷新",
+    "save": "保存",
+    "add": "添加",
+    "none": "无",
+    "yes": "是",
+    "no": "否",
+    "unknown": "未知",
+    "unlimited": "无限制",
+    "filter": "过滤…",
+    "clear": "清除",
+    "autoscroll": "自动滚动",
+    "selectFile": "选择文件",
+    "pagination": {
+      "prev": "上一页",
+      "next": "下一页",
+      "rowsPerPage": "每页行数",
+      "pageOf": "第 {page} / {total} 页",
+      "range": "{from}-{to} / 共 {total}"
+    }
+  },
+  "nav": {
+    "dashboard": "仪表盘",
+    "containers": "容器",
+    "images": "镜像",
+    "volumes": "卷",
+    "networks": "网络",
+    "settings": "设置"
+  },
+  "topbar": {
+    "noContext": "无上下文",
+    "manageContexts": "管理上下文 →",
+    "docker": "Docker",
+    "theme": {
+      "label": "主题",
+      "light": "浅色",
+      "dark": "深色",
+      "system": "跟随系统"
+    }
+  },
+  "dashboard": {
+    "title": "仪表盘",
+    "subtitle": "Docker 引擎实时状态。",
+    "cards": {
+      "containers": "容器",
+      "containersHint": "{running} 运行 / {stopped} 已停止",
+      "images": "镜像",
+      "cpu": "CPU",
+      "memory": "内存",
+      "os": "系统",
+      "kernel": "内核"
+    },
+    "engine": "引擎",
+    "serverVersion": "服务器版本",
+    "name": "名称",
+    "dockerRoot": "Docker 根目录",
+    "events": {
+      "title": "最近事件",
+      "subtitle": "Docker 引擎最近 {minutes} 分钟的活动",
+      "empty": "没有最近事件",
+      "error": "加载事件失败"
+    },
+    "storage": {
+      "title": "存储使用",
+      "subtitle": "已使用 {total} • 可回收 {reclaimable}",
+      "error": "加载存储使用失败",
+      "images": "镜像",
+      "containers": "容器",
+      "volumes": "卷",
+      "buildCache": "构建缓存",
+      "count": "{active} 活跃 / 共 {total}",
+      "reclaimable": "可回收 {value}"
+    }
+  },
+  "containers": {
+    "title": "容器",
+    "total": "共 {count} 个",
+    "prune": "清理已停止",
+    "columns": {
+      "name": "名称",
+      "image": "镜像",
+      "state": "状态",
+      "ports": "端口",
+      "created": "创建时间",
+      "lastRun": "最后运行",
+      "actions": "操作"
+    },
+    "pending": {
+      "start": "启动中…",
+      "stop": "停止中…",
+      "restart": "重启中…",
+      "pause": "暂停中…",
+      "unpause": "恢复中…",
+      "kill": "终止中…"
+    },
+    "state": {
+      "created": "已创建",
+      "running": "运行中",
+      "paused": "已暂停",
+      "restarting": "重启中",
+      "removing": "删除中",
+      "exited": "已退出",
+      "dead": "已死亡"
+    },
+    "ago": "{value}前",
+    "actions": {
+      "start": "启动",
+      "stop": "停止",
+      "restart": "重启",
+      "pause": "暂停",
+      "unpause": "恢复",
+      "kill": "强制终止",
+      "logs": "日志",
+      "remove": "删除"
+    },
+    "detail": {
+      "tabs": {
+        "overview": "概览",
+        "logs": "日志",
+        "stats": "统计",
+        "exec": "终端",
+        "files": "文件",
+        "inspect": "Inspect"
+      },
+      "exec": {
+        "notRunning": "容器必须运行才能打开终端。",
+        "shell": "Shell",
+        "autoShell": "自动 (bash / sh)",
+        "connecting": "连接中…",
+        "connected": "已连接",
+        "disconnected": "已断开",
+        "reconnect": "重新连接"
+      },
+      "inspect": {
+        "sections": {
+          "general": "概要",
+          "state": "状态",
+          "network": "网络",
+          "ports": "端口",
+          "environment": "环境变量",
+          "labels": "标签",
+          "mounts": "挂载",
+          "resources": "资源",
+          "restart": "重启策略",
+          "logConfig": "日志配置",
+          "health": "健康",
+          "command": "命令",
+          "security": "安全",
+          "raw": "原始 JSON"
+        }
+      }
+    },
+    "stats": {
+      "cpu": "CPU",
+      "memory": "内存",
+      "netRx": "网络下行",
+      "netTx": "网络上行"
+    },
+    "group": {
+      "standalone": "独立容器",
+      "summary": "{running}/{total} 运行中",
+      "startAll": "全部启动",
+      "stopAll": "全部停止",
+      "restartAll": "全部重启",
+      "removeAll": "全部删除",
+      "projectLabel": "Compose 项目"
+    }
+  },
+  "images": {
+    "title": "镜像",
+    "pullSection": "拉取镜像",
+    "pullPlaceholder": "例如 nginx:alpine",
+    "pull": "拉取",
+    "columns": { "inUse": "使用中", "pulled": "拉取时间" },
+    "inUse": {
+      "unused": "未使用",
+      "running": "{running}/{total} 运行中",
+      "stopped": "{total} 已停止"
+    },
+    "run": "运行容器",
+    "runModal": {
+      "title": "运行新容器",
+      "name": "名称",
+      "namePlaceholder": "可选容器名称",
+      "ports": "端口映射",
+      "portsPlaceholder": "每行一个，例如 8080:80",
+      "env": "环境变量",
+      "envPlaceholder": "每行 KEY=VALUE",
+      "command": "覆盖命令",
+      "commandPlaceholder": "可选，替换镜像的 CMD",
+      "autoStart": "创建后启动",
+      "run": "运行"
+    },
+    "hub": {
+      "section": "在 Docker Hub 中搜索",
+      "placeholder": "例如 postgres, redis, node...",
+      "search": "搜索",
+      "empty": "无结果",
+      "idle": "输入名称以在 Docker Hub 搜索",
+      "typeMore": "至少输入 2 个字符…",
+      "loading": "搜索中...",
+      "official": "官方",
+      "stars": "星",
+      "tag": "标签",
+      "tagSearchPlaceholder": "搜索标签…",
+      "useCustom": "使用：{value}",
+      "pull": "拉取",
+      "pulled": "已拉取",
+      "alreadyPulled": "此标签已经拉取",
+      "loadingTags": "加载标签中…",
+      "tagsEmpty": "无标签",
+      "openInHub": "在 Docker Hub 打开"
+    }
+  },
+  "volumes": {
+    "title": "卷",
+    "newPlaceholder": "新卷名称"
+  },
+  "networks": {
+    "title": "网络",
+    "newPlaceholder": "新网络名称"
+  },
+  "settings": {
+    "title": "设置",
+    "subtitle": "管理 Docker 连接上下文，支持 WSL。",
+    "active": "当前",
+    "test": "测试",
+    "makeActive": "设为当前",
+    "newContext": "新建上下文"
+  },
+  "errors": {
+    "dockerUnreachable": "无法访问当前 Docker 上下文。请确保引擎正在运行，或在设置中选择其他上下文。"
+  }
+}

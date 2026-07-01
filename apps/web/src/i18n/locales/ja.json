@@ -1,0 +1,228 @@
+{
+  "common": {
+    "loading": "読み込み中…",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "remove": "削除",
+    "delete": "削除",
+    "create": "作成",
+    "refresh": "更新",
+    "save": "保存",
+    "add": "追加",
+    "none": "なし",
+    "yes": "はい",
+    "no": "いいえ",
+    "unknown": "不明",
+    "unlimited": "無制限",
+    "filter": "フィルター…",
+    "clear": "クリア",
+    "autoscroll": "自動スクロール",
+    "selectFile": "ファイルを選択",
+    "pagination": {
+      "prev": "前へ",
+      "next": "次へ",
+      "rowsPerPage": "1 ページの行数",
+      "pageOf": "ページ {page} / {total}",
+      "range": "{from}-{to} / 合計 {total}"
+    }
+  },
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "containers": "コンテナ",
+    "images": "イメージ",
+    "volumes": "ボリューム",
+    "networks": "ネットワーク",
+    "settings": "設定"
+  },
+  "topbar": {
+    "noContext": "コンテキストなし",
+    "manageContexts": "コンテキストを管理 →",
+    "docker": "Docker",
+    "theme": {
+      "label": "テーマ",
+      "light": "ライト",
+      "dark": "ダーク",
+      "system": "システム"
+    }
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "subtitle": "Docker エンジンのリアルタイム状態。",
+    "cards": {
+      "containers": "コンテナ",
+      "containersHint": "{running} 実行中 / {stopped} 停止",
+      "images": "イメージ",
+      "cpu": "CPU",
+      "memory": "メモリ",
+      "os": "OS",
+      "kernel": "カーネル"
+    },
+    "engine": "エンジン",
+    "serverVersion": "サーバーバージョン",
+    "name": "名前",
+    "dockerRoot": "Docker ルート",
+    "events": {
+      "title": "最近のイベント",
+      "subtitle": "過去 {minutes} 分間の Docker エンジンアクティビティ",
+      "empty": "最近のイベントはありません",
+      "error": "イベントの読み込みに失敗しました"
+    },
+    "storage": {
+      "title": "ストレージ使用量",
+      "subtitle": "{total} 使用中 • {reclaimable} 回収可能",
+      "error": "使用量の読み込みに失敗しました",
+      "images": "イメージ",
+      "containers": "コンテナ",
+      "volumes": "ボリューム",
+      "buildCache": "ビルドキャッシュ",
+      "count": "{active} アクティブ / 合計 {total}",
+      "reclaimable": "{value} 回収可能"
+    }
+  },
+  "containers": {
+    "title": "コンテナ",
+    "total": "合計 {count}",
+    "prune": "停止を整理",
+    "columns": {
+      "name": "名前",
+      "image": "イメージ",
+      "state": "状態",
+      "ports": "ポート",
+      "created": "作成",
+      "lastRun": "最終実行",
+      "actions": "アクション"
+    },
+    "pending": {
+      "start": "開始中…",
+      "stop": "停止中…",
+      "restart": "再起動中…",
+      "pause": "一時停止中…",
+      "unpause": "再開中…",
+      "kill": "強制終了中…"
+    },
+    "state": {
+      "created": "作成済み",
+      "running": "実行中",
+      "paused": "一時停止",
+      "restarting": "再起動中",
+      "removing": "削除中",
+      "exited": "終了",
+      "dead": "停止"
+    },
+    "ago": "{value}前",
+    "actions": {
+      "start": "開始",
+      "stop": "停止",
+      "restart": "再起動",
+      "pause": "一時停止",
+      "unpause": "再開",
+      "kill": "強制終了",
+      "logs": "ログ",
+      "remove": "削除"
+    },
+    "detail": {
+      "tabs": {
+        "overview": "概要",
+        "logs": "ログ",
+        "stats": "統計",
+        "exec": "ターミナル",
+        "files": "ファイル",
+        "inspect": "Inspect"
+      },
+      "exec": {
+        "notRunning": "ターミナルを開くにはコンテナが実行中である必要があります。",
+        "shell": "シェル",
+        "autoShell": "自動 (bash / sh)",
+        "connecting": "接続中…",
+        "connected": "接続済み",
+        "disconnected": "切断されました",
+        "reconnect": "再接続"
+      },
+      "inspect": {
+        "sections": {
+          "general": "一般",
+          "state": "状態",
+          "network": "ネットワーク",
+          "ports": "ポート",
+          "environment": "環境変数",
+          "labels": "ラベル",
+          "mounts": "マウント",
+          "resources": "リソース",
+          "restart": "再起動ポリシー",
+          "logConfig": "ログ設定",
+          "health": "ヘルス",
+          "command": "コマンド",
+          "security": "セキュリティ",
+          "raw": "ロー JSON"
+        }
+      }
+    },
+    "stats": {
+      "cpu": "CPU",
+      "memory": "メモリ",
+      "netRx": "ネットワーク RX",
+      "netTx": "ネットワーク TX"
+    },
+    "group": {
+      "standalone": "スタンドアロンコンテナ",
+      "summary": "{running}/{total} 実行中",
+      "startAll": "すべて開始",
+      "stopAll": "すべて停止",
+      "restartAll": "すべて再起動",
+      "removeAll": "すべて削除",
+      "projectLabel": "Compose プロジェクト"
+    }
+  },
+  "images": {
+    "title": "イメージ",
+    "pullSection": "イメージをプル",
+    "pullPlaceholder": "例: nginx:alpine",
+    "pull": "プル",
+    "columns": { "inUse": "使用中", "pulled": "プル日時" },
+    "inUse": {
+      "unused": "未使用",
+      "running": "{running}/{total} 実行中",
+      "stopped": "{total} 停止"
+    },
+    "run": "コンテナを実行",
+    "hub": {
+      "section": "Docker Hub を検索",
+      "placeholder": "例: postgres, redis, node...",
+      "search": "検索",
+      "empty": "結果なし",
+      "idle": "Docker Hub を検索する名前を入力",
+      "typeMore": "2 文字以上入力してください…",
+      "loading": "検索中...",
+      "official": "公式",
+      "stars": "スター",
+      "tag": "タグ",
+      "tagSearchPlaceholder": "タグを検索…",
+      "useCustom": "使用: {value}",
+      "pull": "プル",
+      "pulled": "プル済み",
+      "alreadyPulled": "このタグはすでにプル済みです",
+      "loadingTags": "タグを読み込み中…",
+      "tagsEmpty": "タグなし",
+      "openInHub": "Docker Hub で開く"
+    }
+  },
+  "volumes": {
+    "title": "ボリューム",
+    "newPlaceholder": "新しいボリューム名"
+  },
+  "networks": {
+    "title": "ネットワーク",
+    "newPlaceholder": "新しいネットワーク名"
+  },
+  "settings": {
+    "title": "設定",
+    "subtitle": "Docker 接続コンテキストを管理。WSL 対応。",
+    "active": "アクティブ",
+    "test": "テスト",
+    "makeActive": "アクティブにする",
+    "newContext": "新しいコンテキスト"
+  },
+  "errors": {
+    "dockerUnreachable": "アクティブな Docker コンテキストに接続できません。エンジンが実行中か確認するか、設定で別のコンテキストを選択してください。"
+  }
+}

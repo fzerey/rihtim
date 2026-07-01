@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  /* Light theme: blue-tinted slate scale. Page uses a soft blue gradient, panels resolve
+     to white, borders/hovers use a cool blue-gray, and text scales invert so dark utilities
+     read as strong navy. Colored scales flip so text-emerald-300 / text-brand-300 read as
+     saturated dark tones instead of pastel-on-pastel. */
+  --slate-50: 8 20 42;
+  --slate-100: 15 30 60;
+  --slate-200: 25 45 85;
+  --slate-300: 45 70 115;
+  --slate-400: 70 100 145;
+  --slate-500: 100 125 165;
+  --slate-600: 130 155 190;
+  --slate-700: 168 190 220;
+  --slate-800: 198 215 238;
+  --slate-900: 255 255 255;
+  --slate-950: 240 246 254;
+
+  --brand-50: 23 63 136;
+  --brand-100: 21 74 174;
+  --brand-200: 18 91 216;
+  --brand-300: 37 99 235;
+  --brand-400: 59 130 246;
+  --brand-500: 96 165 250;
+  --brand-600: 147 197 253;
+  --brand-700: 191 219 254;
+  --brand-800: 219 234 254;
+  --brand-900: 239 246 255;
+
+  --emerald-200: 6 95 70;
+  --emerald-300: 4 120 87;
+  --emerald-400: 5 150 105;
+  --emerald-500: 16 185 129;
+  --emerald-600: 52 211 153;
+  --emerald-700: 110 231 183;
+
+  --rose-200: 159 18 57;
+  --rose-300: 190 18 60;
+  --rose-400: 225 29 72;
+  --rose-500: 244 63 94;
+  --rose-600: 251 113 133;
+  --rose-700: 253 164 175;
+  --rose-950: 253 242 244;
+
+  --amber-200: 146 64 14;
+  --amber-300: 180 83 9;
+  --amber-400: 217 119 6;
+  --amber-500: 245 158 11;
+  --amber-600: 251 191 36;
+  --amber-700: 252 211 77;
+  --amber-800: 254 230 138;
+  --amber-900: 254 243 199;
+
+  --page-fg: #0b1a33;
+}
+
+.dark {
+  color-scheme: dark;
+  --slate-50: 248 250 252;
+  --slate-100: 241 245 249;
+  --slate-200: 226 232 240;
+  --slate-300: 203 213 225;
+  --slate-400: 148 163 184;
+  --slate-500: 100 116 139;
+  --slate-600: 71 85 105;
+  --slate-700: 51 65 85;
+  --slate-800: 30 41 59;
+  --slate-900: 15 23 42;
+  --slate-950: 2 6 23;
+
+  --brand-50: 238 247 255;
+  --brand-100: 216 236 255;
+  --brand-200: 185 222 255;
+  --brand-300: 137 202 255;
+  --brand-400: 82 174 255;
+  --brand-500: 43 143 255;
+  --brand-600: 20 113 240;
+  --brand-700: 18 91 216;
+  --brand-800: 21 74 174;
+  --brand-900: 23 63 136;
+
+  --emerald-200: 167 243 208;
+  --emerald-300: 110 231 183;
+  --emerald-400: 52 211 153;
+  --emerald-500: 16 185 129;
+  --emerald-600: 5 150 105;
+  --emerald-700: 4 120 87;
+
+  --rose-200: 254 205 211;
+  --rose-300: 253 164 175;
+  --rose-400: 251 113 133;
+  --rose-500: 244 63 94;
+  --rose-600: 225 29 72;
+  --rose-700: 190 18 60;
+  --rose-950: 76 5 25;
+
+  --amber-200: 253 230 138;
+  --amber-300: 252 211 77;
+  --amber-400: 251 191 36;
+  --amber-500: 245 158 11;
+  --amber-600: 217 119 6;
+  --amber-700: 180 83 9;
+  --amber-800: 146 64 14;
+  --amber-900: 120 53 15;
+
+  --page-fg: #e5e7eb;
+}
+
+html,
+body {
+  height: 100%;
+  color: var(--page-fg);
+}
+
+body {
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(59, 130, 246, 0.18), transparent 60%),
+    radial-gradient(ellipse 900px 500px at 90% 100%, rgba(96, 165, 250, 0.16), transparent 60%),
+    linear-gradient(180deg, #e6efff 0%, #cfdcf3 100%);
+  background-attachment: fixed;
+}
+
+.dark body {
+  background: #0b1220;
+}
+
+* {
+  box-sizing: border-box;
+}

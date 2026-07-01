@@ -1,0 +1,22 @@
+{
+  "name": "rihtim",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Rihtim - Open-source Docker Desktop alternative (web UI) with WSL support",
+  "packageManager": "pnpm@9.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "start": "pnpm -r --parallel run start",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "tsx": "^4.19.0"
+  }
+}

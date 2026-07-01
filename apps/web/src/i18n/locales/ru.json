@@ -1,0 +1,239 @@
+{
+  "common": {
+    "loading": "Загрузка…",
+    "cancel": "Отмена",
+    "close": "Закрыть",
+    "remove": "Удалить",
+    "delete": "Удалить",
+    "create": "Создать",
+    "refresh": "Обновить",
+    "save": "Сохранить",
+    "add": "Добавить",
+    "none": "Нет",
+    "yes": "Да",
+    "no": "Нет",
+    "unknown": "Неизвестно",
+    "unlimited": "без лимита",
+    "filter": "Фильтр…",
+    "clear": "Очистить",
+    "autoscroll": "Автопрокрутка",
+    "selectFile": "Выберите файл",
+    "pagination": {
+      "prev": "Назад",
+      "next": "Вперёд",
+      "rowsPerPage": "Строк на странице",
+      "pageOf": "Стр. {page} / {total}",
+      "range": "{from}-{to} из {total}"
+    }
+  },
+  "nav": {
+    "dashboard": "Панель",
+    "containers": "Контейнеры",
+    "images": "Образы",
+    "volumes": "Тома",
+    "networks": "Сети",
+    "settings": "Настройки"
+  },
+  "topbar": {
+    "noContext": "Нет контекста",
+    "manageContexts": "Управление контекстами →",
+    "docker": "Docker",
+    "theme": {
+      "label": "Тема",
+      "light": "Светлая",
+      "dark": "Тёмная",
+      "system": "Системная"
+    }
+  },
+  "dashboard": {
+    "title": "Панель",
+    "subtitle": "Текущее состояние движка Docker.",
+    "cards": {
+      "containers": "Контейнеры",
+      "containersHint": "{running} активно / {stopped} остановлено",
+      "images": "Образы",
+      "cpu": "CPU",
+      "memory": "Память",
+      "os": "ОС",
+      "kernel": "Ядро"
+    },
+    "engine": "Движок",
+    "serverVersion": "Версия сервера",
+    "name": "Имя",
+    "dockerRoot": "Корень Docker",
+    "events": {
+      "title": "Недавние события",
+      "subtitle": "Активность Docker Engine за последние {minutes} мин",
+      "empty": "Нет недавних событий",
+      "error": "Не удалось загрузить события"    },
+    "storage": {
+      "title": "Использование хранилища",
+      "subtitle": "{total} использовано • {reclaimable} можно освободить",
+      "error": "Не удалось загрузить использование",
+      "images": "Образы",
+      "containers": "Контейнеры",
+      "volumes": "Тома",
+      "buildCache": "Кэш сборки",
+      "count": "{active} активно из {total}",
+      "reclaimable": "{value} можно освободить"    }
+  },
+  "containers": {
+    "title": "Контейнеры",
+    "total": "всего {count}",
+    "prune": "Удалить остановленные",
+    "columns": {
+      "name": "Имя",
+      "image": "Образ",
+      "state": "Состояние",
+      "ports": "Порты",
+      "created": "Создан",
+      "lastRun": "Последний запуск",
+      "actions": "Действия"
+    },
+    "pending": {
+      "start": "Запуск…",
+      "stop": "Остановка…",
+      "restart": "Перезапуск…",
+      "pause": "Пауза…",
+      "unpause": "Возобновление…",
+      "kill": "Завершение…"
+    },
+    "state": {
+      "created": "Создан",
+      "running": "Работает",
+      "paused": "Приостановлен",
+      "restarting": "Перезапуск",
+      "removing": "Удаление",
+      "exited": "Завершён",
+      "dead": "Недоступен"
+    },
+    "ago": "{value} назад",
+    "actions": {
+      "start": "Запустить",
+      "stop": "Остановить",
+      "restart": "Перезапустить",
+      "pause": "Пауза",
+      "unpause": "Продолжить",
+      "kill": "Завершить",
+      "logs": "Логи",
+      "remove": "Удалить"
+    },
+    "detail": {
+      "tabs": {
+        "overview": "Обзор",
+        "logs": "Логи",
+        "stats": "Статистика",
+        "exec": "Терминал",
+        "files": "Файлы",
+        "inspect": "Inspect"
+      },
+      "exec": {
+        "notRunning": "Контейнер должен быть запущен, чтобы открыть терминал.",
+        "shell": "Shell",
+        "autoShell": "автоматически (bash / sh)",
+        "connecting": "подключение…",
+        "connected": "подключено",
+        "disconnected": "отключено",
+        "reconnect": "Переподключиться"
+      },
+      "inspect": {
+        "sections": {
+          "general": "Общее",
+          "state": "Состояние",
+          "network": "Сеть",
+          "ports": "Порты",
+          "environment": "Переменные окружения",
+          "labels": "Метки",
+          "mounts": "Монтирования",
+          "resources": "Ресурсы",
+          "restart": "Политика перезапуска",
+          "logConfig": "Конфиг логов",
+          "health": "Здоровье",
+          "command": "Команда",
+          "security": "Безопасность",
+          "raw": "Сырой JSON"
+        }
+      }
+    },
+    "stats": {
+      "cpu": "CPU",
+      "memory": "Память",
+      "netRx": "Сеть RX",
+      "netTx": "Сеть TX"
+    },
+    "group": {
+      "standalone": "Отдельные контейнеры",
+      "summary": "{running}/{total} активно",
+      "startAll": "Запустить все",
+      "stopAll": "Остановить все",
+      "restartAll": "Перезапустить все",
+      "removeAll": "Удалить все",
+      "projectLabel": "Проект Compose"
+    }
+  },
+  "images": {
+    "title": "Образы",
+    "pullSection": "Скачать образ",
+    "pullPlaceholder": "напр. nginx:alpine",
+    "pull": "Скачать",
+    "columns": { "inUse": "Используется", "pulled": "Скачан" },
+    "inUse": {
+      "unused": "Не используется",
+      "running": "{running}/{total} активно",
+      "stopped": "{total} остановлено"
+    },
+    "run": "Запустить контейнер",
+    "runModal": {
+      "title": "Запустить новый контейнер",
+      "name": "Имя",
+      "namePlaceholder": "необязательное имя контейнера",
+      "ports": "Проброс портов",
+      "portsPlaceholder": "по одному в строке, напр. 8080:80",
+      "env": "Переменные окружения",
+      "envPlaceholder": "KEY=ЗНАЧЕНИЕ по строкам",
+      "command": "Переопределить команду",
+      "commandPlaceholder": "необязательно, заменяет CMD образа",
+      "autoStart": "Запустить после создания",
+      "run": "Запустить"
+    },
+    "hub": {
+      "section": "Поиск на Docker Hub",
+      "placeholder": "напр. postgres, redis, node...",
+      "search": "Найти",
+      "empty": "Нет результатов",
+      "idle": "Введите имя для поиска на Docker Hub",
+      "typeMore": "Введите минимум 2 символа…",
+      "loading": "Поиск...",
+      "official": "Официальный",
+      "stars": "звёзд",
+      "tag": "Тег",
+      "tagSearchPlaceholder": "Поиск тега…",
+      "useCustom": "Использовать: {value}",
+      "pull": "Скачать",
+      "pulled": "Скачано",
+      "alreadyPulled": "Этот тег уже скачан",
+      "loadingTags": "Загрузка тегов…",
+      "tagsEmpty": "Нет тегов",
+      "openInHub": "Открыть на Docker Hub"
+    }
+  },
+  "volumes": {
+    "title": "Тома",
+    "newPlaceholder": "имя нового тома"
+  },
+  "networks": {
+    "title": "Сети",
+    "newPlaceholder": "имя новой сети"
+  },
+  "settings": {
+    "title": "Настройки",
+    "subtitle": "Управляйте контекстами подключения Docker. WSL поддерживается.",
+    "active": "активен",
+    "test": "Проверить",
+    "makeActive": "Сделать активным",
+    "newContext": "Новый контекст"
+  },
+  "errors": {
+    "dockerUnreachable": "Не удалось подключиться к активному контексту Docker. Убедитесь, что движок запущен, или выберите другой в Настройках."
+  }
+}
