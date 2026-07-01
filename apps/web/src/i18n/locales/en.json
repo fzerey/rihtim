@@ -115,7 +115,7 @@
       "stop": "Stop",
       "restart": "Restart",
       "pause": "Pause",
-      "unpause": "Unpause",
+      "unpause": "Resume",
       "kill": "Kill",
       "logs": "Logs",
       "remove": "Remove"
