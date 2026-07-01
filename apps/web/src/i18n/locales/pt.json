@@ -30,6 +30,7 @@
     "dashboard": "Painel",
     "containers": "Contêineres",
     "images": "Imagens",
+    "builds": "Builds",
     "volumes": "Volumes",
     "networks": "Redes",
     "settings": "Configurações"
@@ -224,6 +225,47 @@
   "networks": {
     "title": "Redes",
     "newPlaceholder": "nome da nova rede"
+  },
+  "builds": {
+    "title": "Builds",
+    "newBuild": "Novo build",
+    "prune": "Limpar não usados",
+    "pruneAll": "Limpar tudo",
+    "pruneAllConfirm": "Todo o cache de build será removido, incluindo entradas em uso. Continuar?",
+    "empty": "Sem entradas de cache.",
+    "summary": {
+      "entries": "Entradas",
+      "total": "Tamanho total",
+      "reclaimable": "Recuperável"
+    },
+    "columns": {
+      "id": "ID",
+      "type": "Tipo",
+      "description": "Descrição",
+      "size": "Tamanho",
+      "usage": "Uso",
+      "lastUsed": "Último uso",
+      "status": "Estado"
+    },
+    "status": {
+      "inUse": "Em uso",
+      "idle": "Inativo"
+    },
+    "modal": {
+      "title": "Novo build",
+      "contextPath": "Caminho do contexto",
+      "contextPathPlaceholder": "/caminho/do/projeto",
+      "contextPathHint": "Caminho absoluto do contexto de build (visto pelo servidor da API).",
+      "dockerfile": "Dockerfile",
+      "tag": "Tag da imagem",
+      "buildArgs": "Build args (KEY=VALUE por linha)",
+      "noCache": "Sem cache",
+      "pull": "Sempre puxar imagem base",
+      "output": "Saída",
+      "building": "Compilando…",
+      "done": "Concluído",
+      "build": "Compilar"
+    }
   },
   "settings": {
     "title": "Configurações",

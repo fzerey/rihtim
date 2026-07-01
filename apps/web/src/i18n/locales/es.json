@@ -30,6 +30,7 @@
     "dashboard": "Panel",
     "containers": "Contenedores",
     "images": "Imágenes",
+    "builds": "Compilaciones",
     "volumes": "Volúmenes",
     "networks": "Redes",
     "settings": "Ajustes"
@@ -226,6 +227,47 @@
   "networks": {
     "title": "Redes",
     "newPlaceholder": "nombre de la nueva red"
+  },
+  "builds": {
+    "title": "Compilaciones",
+    "newBuild": "Nueva compilación",
+    "prune": "Limpiar no usados",
+    "pruneAll": "Limpiar todo",
+    "pruneAllConfirm": "Se eliminará toda la caché de compilación, incluida la que está en uso. ¿Continuar?",
+    "empty": "Sin entradas de caché.",
+    "summary": {
+      "entries": "Entradas",
+      "total": "Tamaño total",
+      "reclaimable": "Recuperable"
+    },
+    "columns": {
+      "id": "ID",
+      "type": "Tipo",
+      "description": "Descripción",
+      "size": "Tamaño",
+      "usage": "Uso",
+      "lastUsed": "Último uso",
+      "status": "Estado"
+    },
+    "status": {
+      "inUse": "En uso",
+      "idle": "Inactivo"
+    },
+    "modal": {
+      "title": "Nueva compilación",
+      "contextPath": "Ruta del contexto",
+      "contextPathPlaceholder": "/ruta/al/proyecto",
+      "contextPathHint": "Ruta absoluta al contexto de compilación (vista por el servidor de la API).",
+      "dockerfile": "Dockerfile",
+      "tag": "Etiqueta de imagen",
+      "buildArgs": "Args (KEY=VALUE por línea)",
+      "noCache": "Sin caché",
+      "pull": "Descargar siempre la imagen base",
+      "output": "Salida",
+      "building": "Compilando…",
+      "done": "Hecho",
+      "build": "Compilar"
+    }
   },
   "settings": {
     "title": "Ajustes",

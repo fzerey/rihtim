@@ -9,6 +9,7 @@ import {
   volumeRoutes,
   networkRoutes,
   systemRoutes,
+  buildRoutes,
 } from "./routes/docker.js";
 import { wsRoutes } from "./routes/ws.js";
 import { closeAllBridges } from "./contexts/wsl-bridge.js";
@@ -56,6 +57,7 @@ await app.register(imageRoutes, { prefix: "/api" });
 await app.register(volumeRoutes, { prefix: "/api" });
 await app.register(networkRoutes, { prefix: "/api" });
 await app.register(systemRoutes, { prefix: "/api" });
+await app.register(buildRoutes, { prefix: "/api" });
 await app.register(wsRoutes);
 
 const stop = async () => {

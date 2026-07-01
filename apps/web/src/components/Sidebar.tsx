@@ -8,6 +8,7 @@ import {
   Database,
   Network,
   Settings,
+  Hammer,
 } from "lucide-react";
 import clsx from "clsx";
 import { useT } from "@/i18n/provider";
@@ -17,6 +18,7 @@ const items = [
   { href: "/", key: "nav.dashboard", icon: LayoutDashboard },
   { href: "/containers", key: "nav.containers", icon: Boxes },
   { href: "/images", key: "nav.images", icon: ImageIcon },
+  { href: "/builds", key: "nav.builds", icon: Hammer },
   { href: "/volumes", key: "nav.volumes", icon: Database },
   { href: "/networks", key: "nav.networks", icon: Network },
   { href: "/settings", key: "nav.settings", icon: Settings },

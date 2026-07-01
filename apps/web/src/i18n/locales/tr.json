@@ -30,6 +30,7 @@
     "dashboard": "Panel",
     "containers": "Konteynerler",
     "images": "İmajlar",
+    "builds": "Yapılar",
     "volumes": "Volume'ler",
     "networks": "Ağlar",
     "settings": "Ayarlar"
@@ -291,6 +292,47 @@
       "scope": "Kapsam",
       "subnet": "Subnet",
       "actions": "İşlem"
+    }
+  },
+  "builds": {
+    "title": "Yapılar",
+    "newBuild": "Yeni build",
+    "prune": "Kullanılmayanları temizle",
+    "pruneAll": "Tümünü temizle",
+    "pruneAllConfirm": "Kullanımdakiler dahil tüm build önbelleği silinecek. Devam?",
+    "empty": "Build önbelleği boş.",
+    "summary": {
+      "entries": "Kayıt sayısı",
+      "total": "Toplam boyut",
+      "reclaimable": "Geri kazanılabilir"
+    },
+    "columns": {
+      "id": "ID",
+      "type": "Tür",
+      "description": "Açıklama",
+      "size": "Boyut",
+      "usage": "Kullanım",
+      "lastUsed": "Son kullanım",
+      "status": "Durum"
+    },
+    "status": {
+      "inUse": "Kullanımda",
+      "idle": "Boşta"
+    },
+    "modal": {
+      "title": "Yeni build",
+      "contextPath": "Context yolu",
+      "contextPathPlaceholder": "/yol/proje",
+      "contextPathHint": "Build context'in mutlak yolu (API sunucusundan görüldüğü şekilde).",
+      "dockerfile": "Dockerfile",
+      "tag": "İmaj etiketi",
+      "buildArgs": "Build args (satır başına KEY=VALUE)",
+      "noCache": "Önbelleksiz",
+      "pull": "Base imajı her zaman çek",
+      "output": "Çıktı",
+      "building": "Derleniyor…",
+      "done": "Tamamlandı",
+      "build": "Derle"
     }
   },
   "settings": {

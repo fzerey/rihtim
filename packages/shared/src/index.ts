@@ -141,6 +141,19 @@ export interface SystemStorage {
   totalReclaimable: number;
 }
 
+export interface BuildCacheEntry {
+  id: string;
+  parents: string[];
+  type: string;
+  description: string;
+  inUse: boolean;
+  shared: boolean;
+  size: number;
+  createdAt: number;
+  lastUsedAt?: number;
+  usageCount: number;
+}
+
 export interface ContainerStatsSample {
   id: string;
   cpuPercent: number;

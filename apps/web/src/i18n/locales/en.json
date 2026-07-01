@@ -30,6 +30,7 @@
     "dashboard": "Dashboard",
     "containers": "Containers",
     "images": "Images",
+    "builds": "Builds",
     "volumes": "Volumes",
     "networks": "Networks",
     "settings": "Settings"
@@ -291,6 +292,47 @@
       "scope": "Scope",
       "subnet": "Subnet",
       "actions": "Actions"
+    }
+  },
+  "builds": {
+    "title": "Builds",
+    "newBuild": "New build",
+    "prune": "Prune unused",
+    "pruneAll": "Prune all",
+    "pruneAllConfirm": "This will delete all build cache, including in-use entries. Continue?",
+    "empty": "No build cache entries.",
+    "summary": {
+      "entries": "Entries",
+      "total": "Total size",
+      "reclaimable": "Reclaimable"
+    },
+    "columns": {
+      "id": "ID",
+      "type": "Type",
+      "description": "Description",
+      "size": "Size",
+      "usage": "Usage",
+      "lastUsed": "Last used",
+      "status": "Status"
+    },
+    "status": {
+      "inUse": "In use",
+      "idle": "Idle"
+    },
+    "modal": {
+      "title": "New build",
+      "contextPath": "Context path",
+      "contextPathPlaceholder": "/path/to/project",
+      "contextPathHint": "Absolute path to the build context (as seen by the API server).",
+      "dockerfile": "Dockerfile",
+      "tag": "Image tag",
+      "buildArgs": "Build args (KEY=VALUE per line)",
+      "noCache": "No cache",
+      "pull": "Always pull base image",
+      "output": "Output",
+      "building": "Building…",
+      "done": "Done",
+      "build": "Build"
     }
   },
   "settings": {

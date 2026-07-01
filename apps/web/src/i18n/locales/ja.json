@@ -30,6 +30,7 @@
     "dashboard": "ダッシュボード",
     "containers": "コンテナ",
     "images": "イメージ",
+    "builds": "ビルド",
     "volumes": "ボリューム",
     "networks": "ネットワーク",
     "settings": "設定"
@@ -213,6 +214,47 @@
   "networks": {
     "title": "ネットワーク",
     "newPlaceholder": "新しいネットワーク名"
+  },
+  "builds": {
+    "title": "ビルド",
+    "newBuild": "新規ビルド",
+    "prune": "未使用を削除",
+    "pruneAll": "すべて削除",
+    "pruneAllConfirm": "使用中も含めビルドキャッシュを全て削除します。続行しますか？",
+    "empty": "ビルドキャッシュはありません。",
+    "summary": {
+      "entries": "エントリ",
+      "total": "合計サイズ",
+      "reclaimable": "回収可能"
+    },
+    "columns": {
+      "id": "ID",
+      "type": "タイプ",
+      "description": "説明",
+      "size": "サイズ",
+      "usage": "使用回数",
+      "lastUsed": "最終使用",
+      "status": "状態"
+    },
+    "status": {
+      "inUse": "使用中",
+      "idle": "アイドル"
+    },
+    "modal": {
+      "title": "新規ビルド",
+      "contextPath": "コンテキストパス",
+      "contextPathPlaceholder": "/path/to/project",
+      "contextPathHint": "ビルドコンテキストの絶対パス（APIサーバー視点）。",
+      "dockerfile": "Dockerfile",
+      "tag": "イメージタグ",
+      "buildArgs": "ビルド引数（1行に KEY=VALUE）",
+      "noCache": "キャッシュ無効",
+      "pull": "常にベースイメージを取得",
+      "output": "出力",
+      "building": "ビルド中…",
+      "done": "完了",
+      "build": "ビルド"
+    }
   },
   "settings": {
     "title": "設定",

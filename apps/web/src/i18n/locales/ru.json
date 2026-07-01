@@ -30,6 +30,7 @@
     "dashboard": "Панель",
     "containers": "Контейнеры",
     "images": "Образы",
+    "builds": "Сборки",
     "volumes": "Тома",
     "networks": "Сети",
     "settings": "Настройки"
@@ -224,6 +225,47 @@
   "networks": {
     "title": "Сети",
     "newPlaceholder": "имя новой сети"
+  },
+  "builds": {
+    "title": "Сборки",
+    "newBuild": "Новая сборка",
+    "prune": "Очистить неиспользуемое",
+    "pruneAll": "Очистить всё",
+    "pruneAllConfirm": "Будет удалён весь кеш сборки, включая используемый. Продолжить?",
+    "empty": "Записей кеша нет.",
+    "summary": {
+      "entries": "Записей",
+      "total": "Общий размер",
+      "reclaimable": "Освобождаемо"
+    },
+    "columns": {
+      "id": "ID",
+      "type": "Тип",
+      "description": "Описание",
+      "size": "Размер",
+      "usage": "Использования",
+      "lastUsed": "Последнее использование",
+      "status": "Статус"
+    },
+    "status": {
+      "inUse": "Используется",
+      "idle": "Простаивает"
+    },
+    "modal": {
+      "title": "Новая сборка",
+      "contextPath": "Путь контекста",
+      "contextPathPlaceholder": "/путь/к/проекту",
+      "contextPathHint": "Абсолютный путь к контексту сборки (виден серверу API).",
+      "dockerfile": "Dockerfile",
+      "tag": "Тег образа",
+      "buildArgs": "Build args (KEY=VALUE в строке)",
+      "noCache": "Без кеша",
+      "pull": "Всегда обновлять базовый образ",
+      "output": "Вывод",
+      "building": "Сборка…",
+      "done": "Готово",
+      "build": "Собрать"
+    }
   },
   "settings": {
     "title": "Настройки",

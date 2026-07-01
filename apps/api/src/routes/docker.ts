@@ -1,5 +1,7 @@
 import type { FastifyPluginAsync } from "fastify";
 import { PassThrough } from "node:stream";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import * as tar from "tar-stream";
 import { currentDocker } from "../contexts/docker-client.js";
 import { demuxDockerLog } from "../util/demux.js";
@@ -8,6 +10,7 @@ import type {
   ImageSummary,
   VolumeSummary,
   NetworkSummary,
+  BuildCacheEntry,
 } from "@rihtim/shared";
 
 function basename(p: string): string {
@@ -727,4 +730,135 @@ export const systemRoutes: FastifyPluginAsync = async (app) => {
       return normalized;
     },
   );
+};
+
+const IGNORED_DIRS = new Set([
+  "node_modules",
+  ".git",
+  ".next",
+  ".turbo",
+  "dist",
+  "build",
+  "out",
+  "coverage",
+  ".venv",
+  "__pycache__",
+]);
+
+async function collectContextFiles(root: string): Promise<string[]> {
+  const files: string[] = [];
+  async function walk(dir: string, rel: string) {
+    let entries;
+    try {
+      entries = await fs.readdir(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const entry of entries) {
+      if (IGNORED_DIRS.has(entry.name)) continue;
+      const relPath = rel ? `${rel}/${entry.name}` : entry.name;
+      const abs = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        await walk(abs, relPath);
+      } else if (entry.isFile()) {
+        files.push(relPath);
+      }
+    }
+  }
+  await walk(root, "");
+  return files;
+}
+
+export const buildRoutes: FastifyPluginAsync = async (app) => {
+  app.get("/build/cache", async () => {
+    const docker = await currentDocker();
+    const df: any = await docker.df();
+    const bc: any[] = df.BuildCache ?? [];
+    const mapped: BuildCacheEntry[] = bc.map((b) => {
+      const created = b.CreatedAt ? Date.parse(b.CreatedAt) : NaN;
+      const lastUsed = b.LastUsedAt ? Date.parse(b.LastUsedAt) : NaN;
+      return {
+        id: b.ID ?? "",
+        parents: Array.isArray(b.Parents) ? b.Parents : b.Parent ? [b.Parent] : [],
+        type: b.Type ?? "",
+        description: b.Description ?? "",
+        inUse: !!b.InUse,
+        shared: !!b.Shared,
+        size: b.Size ?? 0,
+        createdAt: Number.isFinite(created) ? Math.floor(created / 1000) : 0,
+        lastUsedAt: Number.isFinite(lastUsed) ? Math.floor(lastUsed / 1000) : undefined,
+        usageCount: b.UsageCount ?? 0,
+      };
+    });
+    return mapped;
+  });
+
+  app.post<{ Querystring: { all?: string } }>("/build/prune", async (req, reply) => {
+    const docker = await currentDocker();
+    const all = req.query.all === "true";
+    const result: any = await new Promise((resolve, reject) => {
+      (docker as any).modem.dial(
+        {
+          path: `/build/prune?all=${all ? "1" : "0"}&keep-storage=0`,
+          method: "POST",
+          statusCodes: { 200: true, 500: "server error" },
+        },
+        (err: any, data: any) => (err ? reject(err) : resolve(data)),
+      );
+    });
+    return reply.send({
+      spaceReclaimed: result?.SpaceReclaimed ?? 0,
+      cachesDeleted: result?.CachesDeleted ?? [],
+    });
+  });
+
+  app.post<{
+    Body: {
+      contextPath: string;
+      dockerfile?: string;
+      tag: string;
+      noCache?: boolean;
+      pull?: boolean;
+      buildArgs?: Record<string, string>;
+    };
+  }>("/build", async (req, reply) => {
+    const { contextPath, dockerfile, tag, noCache, pull, buildArgs } = req.body ?? ({} as any);
+    if (!contextPath || !tag) {
+      return reply.code(400).send({ error: "contextPath and tag are required" });
+    }
+    let stat;
+    try {
+      stat = await fs.stat(contextPath);
+    } catch (err: any) {
+      return reply.code(400).send({ error: "context_not_found", message: err.message });
+    }
+    if (!stat.isDirectory()) {
+      return reply.code(400).send({ error: "context_not_directory" });
+    }
+    const dfName = dockerfile && dockerfile.length > 0 ? dockerfile : "Dockerfile";
+    try {
+      await fs.access(path.join(contextPath, dfName));
+    } catch {
+      return reply.code(400).send({ error: "dockerfile_not_found", message: dfName });
+    }
+
+    const files = await collectContextFiles(contextPath);
+    if (!files.includes(dfName)) files.push(dfName);
+
+    const docker = await currentDocker();
+    const options: any = {
+      t: tag,
+      dockerfile: dfName,
+      nocache: !!noCache,
+      pull: pull ? "true" : undefined,
+      buildargs: buildArgs && Object.keys(buildArgs).length > 0 ? buildArgs : undefined,
+    };
+    const stream = await docker.buildImage(
+      { context: contextPath, src: files },
+      options,
+    );
+    reply.raw.setHeader("Content-Type", "application/x-ndjson");
+    (stream as any).pipe(reply.raw);
+    return reply;
+  });
 };

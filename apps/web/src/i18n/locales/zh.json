@@ -30,6 +30,7 @@
     "dashboard": "仪表盘",
     "containers": "容器",
     "images": "镜像",
+    "builds": "构建",
     "volumes": "卷",
     "networks": "网络",
     "settings": "设置"
@@ -226,6 +227,47 @@
   "networks": {
     "title": "网络",
     "newPlaceholder": "新网络名称"
+  },
+  "builds": {
+    "title": "构建",
+    "newBuild": "新构建",
+    "prune": "清理未使用",
+    "pruneAll": "清理全部",
+    "pruneAllConfirm": "将清除所有构建缓存，包括正在使用的条目。继续吗？",
+    "empty": "没有构建缓存。",
+    "summary": {
+      "entries": "条目",
+      "total": "总大小",
+      "reclaimable": "可回收"
+    },
+    "columns": {
+      "id": "ID",
+      "type": "类型",
+      "description": "描述",
+      "size": "大小",
+      "usage": "使用次数",
+      "lastUsed": "最近使用",
+      "status": "状态"
+    },
+    "status": {
+      "inUse": "使用中",
+      "idle": "空闲"
+    },
+    "modal": {
+      "title": "新构建",
+      "contextPath": "上下文路径",
+      "contextPathPlaceholder": "/项目/路径",
+      "contextPathHint": "构建上下文的绝对路径（API 服务器视角）。",
+      "dockerfile": "Dockerfile",
+      "tag": "镜像标签",
+      "buildArgs": "Build 参数（每行 KEY=VALUE）",
+      "noCache": "无缓存",
+      "pull": "始终拉取基础镜像",
+      "output": "输出",
+      "building": "构建中…",
+      "done": "完成",
+      "build": "构建"
+    }
   },
   "settings": {
     "title": "设置",
