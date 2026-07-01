@@ -290,7 +290,14 @@ export default function ContainersPage() {
                           </td>
                           <td className="px-4 py-2">
                             <div className="flex gap-1 justify-end">
-                              {c.state !== "running" ? (
+                              {c.state === "paused" ? (
+                                <IconBtn
+                                  onClick={() => action.mutate({ id: c.id, verb: "unpause" })}
+                                  title={t("containers.actions.unpause")}
+                                >
+                                  <Play className="w-4 h-4" />
+                                </IconBtn>
+                              ) : c.state !== "running" ? (
                                 <IconBtn
                                   onClick={() => action.mutate({ id: c.id, verb: "start" })}
                                   title={t("containers.actions.start")}

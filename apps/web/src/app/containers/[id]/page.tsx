@@ -83,7 +83,13 @@ export default function ContainerDetailPage() {
           </div>
         </div>
         <div className="flex gap-1">
-          {state.Status !== "running" ? (
+          {state.Status === "paused" ? (
+            <ActionBtn
+              onClick={() => action.mutate("unpause")}
+              icon={Play}
+              label={t("containers.actions.unpause")}
+            />
+          ) : state.Status !== "running" ? (
             <ActionBtn
               onClick={() => action.mutate("start")}
               icon={Play}
