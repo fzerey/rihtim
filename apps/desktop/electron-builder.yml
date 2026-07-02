@@ -1,0 +1,47 @@
+appId: com.rihtim.desktop
+productName: Rihtim
+copyright: Copyright © 2026 Rihtim
+
+directories:
+  output: release
+
+# Only the compiled Electron shell lives inside the asar archive.
+files:
+  - dist/**/*
+  - package.json
+
+# The bundled API and Next.js servers are shipped unpacked so their Node
+# processes (and native modules) can be spawned at runtime.
+extraResources:
+  - from: resources/server
+    to: server
+  - from: resources/web
+    to: web
+
+asar: true
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+
+mac:
+  category: public.app-category.developer-tools
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+
+linux:
+  category: Development
+  maintainer: Rihtim
+  target:
+    - AppImage
+    - deb

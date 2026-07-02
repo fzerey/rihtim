@@ -13,7 +13,9 @@
     "build": "pnpm -r run build",
     "start": "pnpm -r --parallel run start",
     "lint": "pnpm -r run lint",
-    "typecheck": "pnpm -r run typecheck"
+    "typecheck": "pnpm -r run typecheck",
+    "desktop:dev": "pnpm --filter @rihtim/desktop electron:dev",
+    "desktop:package": "node scripts/build-desktop.mjs"
   },
   "devDependencies": {
     "typescript": "^5.5.4",

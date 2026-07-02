@@ -1,0 +1,19 @@
+{
+  "name": "@rihtim/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Rihtim desktop shell (Electron) — bundles the web UI and API for Windows, macOS and Linux",
+  "main": "dist/main.js",
+  "scripts": {
+    "build:main": "tsc -p tsconfig.json",
+    "electron:dev": "pnpm build:main && electron .",
+    "package": "node ../../scripts/build-desktop.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "electron": "^31.3.0",
+    "electron-builder": "^24.13.3",
+    "typescript": "^5.5.4"
+  }
+}

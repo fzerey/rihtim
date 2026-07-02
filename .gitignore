@@ -6,6 +6,10 @@ out/
 coverage/
 .turbo/
 *.tsbuildinfo
+
+# Desktop (Electron) build artifacts
+apps/desktop/resources/
+apps/desktop/release/
 .env
 .env.local
 .env.*.local
