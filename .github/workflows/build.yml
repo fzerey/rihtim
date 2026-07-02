@@ -48,16 +48,66 @@ jobs:
       - name: Build project
         run: pnpm build
 
-      - name: Create standalone bundle
+      - name: Install ncc
+        run: npm install -g @vercel/ncc
+
+      - name: Create executables (Windows)
+        if: matrix.os == 'windows'
+        shell: pwsh
+        run: |
+          mkdir -p dist/windows/rihtim
+          
+          # Compile API to single file
+          ncc build apps/api/dist/server.js -o dist/windows/rihtim/api-dist -m
+          
+          # Compile Web to single file
+          ncc build apps/web/.next/standalone/server.js -o dist/windows/rihtim/web-dist -m
+          
+          # Create API wrapper
+          $apiWrapper = @"
+          const path = require('path');
+          process.env.NODE_ENV = 'production';
+          require('./api-dist/index.js');
+          "@
+          
+          Set-Content -Path "dist/windows/rihtim/api-wrapper.js" -Value $apiWrapper
+          
+          # Create Web wrapper  
+          $webWrapper = @"
+          const path = require('path');
+          process.env.NODE_ENV = 'production';
+          process.env.PORT = '3030';
+          require('./web-dist/index.js');
+          "@
+          
+          Set-Content -Path "dist/windows/rihtim/web-wrapper.js" -Value $webWrapper
+
+      - name: Create executables (Linux/macOS)
+        if: matrix.os != 'windows'
         shell: bash
         run: |
           mkdir -p dist/${{ matrix.os }}/rihtim
-          cp -r apps/api/dist dist/${{ matrix.os }}/rihtim/api
-          cp apps/api/package.json dist/${{ matrix.os }}/rihtim/api/
-          cp -r apps/web/.next/standalone/* dist/${{ matrix.os }}/rihtim/web/ 2>/dev/null || true
-          cp -r apps/web/public dist/${{ matrix.os }}/rihtim/web/ 2>/dev/null || true
-          mkdir -p dist/${{ matrix.os }}/rihtim/node_modules
-          cp -r node_modules/* dist/${{ matrix.os }}/rihtim/node_modules/ 2>/dev/null || true
+          
+          # Compile API to single file
+          ncc build apps/api/dist/server.js -o dist/${{ matrix.os }}/rihtim/api-dist -m
+          
+          # Compile Web to single file
+          ncc build apps/web/.next/standalone/server.js -o dist/${{ matrix.os }}/rihtim/web-dist -m
+          
+          # Create API wrapper
+          cat > dist/${{ matrix.os }}/rihtim/api-wrapper.js << 'EOF'
+          const path = require('path');
+          process.env.NODE_ENV = 'production';
+          require('./api-dist/index.js');
+          EOF
+          
+          # Create Web wrapper
+          cat > dist/${{ matrix.os }}/rihtim/web-wrapper.js << 'EOF'
+          const path = require('path');
+          process.env.NODE_ENV = 'production';
+          process.env.PORT = '3030';
+          require('./web-dist/index.js');
+          EOF
 
       - name: Create Windows start script
         if: matrix.os == 'windows'
@@ -65,24 +115,17 @@ jobs:
         run: |
           $batContent = @"
           @echo off
-          setlocal enabledelayedexpansion
-          
           cd /d "%~dp0"
           
           echo Starting Rihtim...
           echo.
           
-          REM Start API in background
-          start /min "Rihtim API" node api\dist\server.js
-          
-          REM Wait a moment for API to start
+          start /min "Rihtim API" node api-wrapper.js
           timeout /t 2 /nobreak
-          
-          REM Start Web UI
-          start "Rihtim Web" cmd /k "cd web && node server.js"
+          start "Rihtim Web" cmd /k "node web-wrapper.js"
           
           echo.
-          echo API running on: http://127.0.0.1:5170
+          echo API: http://127.0.0.1:5170
           echo Web UI: http://localhost:3030
           "@
           
@@ -94,29 +137,19 @@ jobs:
         run: |
           cat > dist/${{ matrix.os }}/rihtim/start.sh << 'SCRIPT'
           #!/bin/bash
-          set -e
-          
           cd "$(dirname "$0")"
           
           echo "Starting Rihtim..."
-          echo ""
-          
-          # Start API in background
-          node api/dist/server.js &
+          node api-wrapper.js &
           API_PID=$!
-          
-          # Wait for API to be ready
           sleep 2
           
-          # Start Web UI (foreground)
           echo ""
-          echo "API running on: http://127.0.0.1:5170"
+          echo "API: http://127.0.0.1:5170"
           echo "Web UI: http://localhost:3030"
           echo ""
           
-          cd web && node server.js
-          
-          # Clean up on exit
+          node web-wrapper.js
           trap "kill $API_PID" EXIT
           SCRIPT
           
@@ -133,9 +166,7 @@ jobs:
           ## Quick Start
           
           ### Windows
-          Double-click `start.bat` to launch:
-          - API Server (background)
-          - Web UI (http://localhost:3030)
+          Double-click `start.bat`
           
           ### Linux / macOS
           ```bash
@@ -143,88 +174,30 @@ jobs:
           ./start.sh
           ```
           
-          Then open http://localhost:3030 in your browser.
-          
-          ## URLs
-          
-          - **Web UI**: http://localhost:3030
-          - **API**: http://127.0.0.1:5170
+          Open http://localhost:3030
           
           ## Requirements
-          
           - Docker Engine running
-          - Node.js 20+ (included in bundle)
+          - Node.js 20+ (included in executables)
           
           ## Features
-          
-          - Container management (start, stop, restart, remove)
+          - Container management
           - Image management & Docker Hub search
           - Volume management with size reporting
           - Network management
-          - Real-time logs via WebSocket
+          - Real-time logs
           - Multi-context support (Docker Desktop, WSL, SSH, TCP)
           - Turkish & English support
-          - Performance optimized
-          
-          ## Troubleshooting
-          
-          **Port already in use?**
-          - API runs on port 5170
-          - Web UI runs on port 3030
-          
-          **Docker not found?**
-          - Ensure Docker Engine is running
-          - Check Docker socket/pipe permissions
-          
-          **For WSL support:**
-          - Ensure Docker is running in your WSL distro
-          - Add WSL context from Settings in the UI
           
           ## License
-          
           MIT
           README
 
-      - name: Package
+      - name: Package (Windows)
+        if: matrix.os == 'windows'
         shell: bash
         run: |
-          mkdir -p dist/${{ matrix.os }}/packages
-          if [ "${{ matrix.os }}" = "windows" ]; then
-            cd dist/${{ matrix.os }}
-            7z a packages/rihtim-${{ github.ref_name }}-windows-x64.zip rihtim/
-          else
-            cd dist/${{ matrix.os }}
-            tar -czf packages/rihtim-${{ github.ref_name }}-${{ matrix.os }}-x64.tar.gz rihtim/
-          fi
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.artifact-name }}
-          path: dist/${{ matrix.os }}/packages/
-
-  release:
-    name: Create Release
-    needs: build
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            artifacts/**/*.zip
-            artifacts/**/*.tar.gz
-          draft: false
-          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          mkdir -p dist/windows/packages
+          cd dist/windows/rihtim
+          7z a ../packages/rihtim-](#)
+
