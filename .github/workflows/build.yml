@@ -1,203 +1,238 @@
-name: Multi-Platform Build
+name: Release Packages
 
 on:
   push:
-    branches: [ main ]
-    tags: [ 'v*' ]
+    tags:
+      - "v*"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  build:
-    name: Build for ${{ matrix.os }}
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      matrix:
-        include:
-          # Windows
-          - os: windows
-            runner: windows-latest
-            artifact-name: rihtim-windows-x64
-
-          # Ubuntu/Linux
-          - os: ubuntu
-            runner: ubuntu-latest
-            artifact-name: rihtim-linux-x64
-
-          # macOS
-          - os: macos
-            runner: macos-latest
-            artifact-name: rihtim-macos-x64
-
+  build-windows:
+    name: Build Windows package
+    runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
           version: 9.0.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: 20
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build project
-        run: pnpm build
+      - name: Build
+        run: pnpm -r run build
 
-      - name: Install ncc
-        run: npm install -g @vercel/ncc
-
-      - name: Create executables (Windows)
-        if: matrix.os == 'windows'
+      - name: Prepare package
         shell: pwsh
         run: |
-          mkdir -p dist/windows/rihtim
-          
-          # Compile API to single file
-          ncc build apps/api/dist/server.js -o dist/windows/rihtim/api-dist -m
-          
-          # Compile Web to single file
-          ncc build apps/web/.next/standalone/server.js -o dist/windows/rihtim/web-dist -m
-          
-          # Create API wrapper
-          $apiWrapper = @"
-          const path = require('path');
-          process.env.NODE_ENV = 'production';
-          require('./api-dist/index.js');
-          "@
-          
-          Set-Content -Path "dist/windows/rihtim/api-wrapper.js" -Value $apiWrapper
-          
-          # Create Web wrapper  
-          $webWrapper = @"
-          const path = require('path');
-          process.env.NODE_ENV = 'production';
-          process.env.PORT = '3030';
-          require('./web-dist/index.js');
-          "@
-          
-          Set-Content -Path "dist/windows/rihtim/web-wrapper.js" -Value $webWrapper
+          New-Item -ItemType Directory -Force -Path release\rihtim-windows-x64 | Out-Null
+          pnpm --filter @rihtim/api deploy --prod release\rihtim-windows-x64\api
+          pnpm --filter @rihtim/web deploy --prod release\rihtim-windows-x64\web
 
-      - name: Create executables (Linux/macOS)
-        if: matrix.os != 'windows'
-        shell: bash
-        run: |
-          mkdir -p dist/${{ matrix.os }}/rihtim
-          
-          # Compile API to single file
-          ncc build apps/api/dist/server.js -o dist/${{ matrix.os }}/rihtim/api-dist -m
-          
-          # Compile Web to single file
-          ncc build apps/web/.next/standalone/server.js -o dist/${{ matrix.os }}/rihtim/web-dist -m
-          
-          # Create API wrapper
-          cat > dist/${{ matrix.os }}/rihtim/api-wrapper.js << 'EOF'
-          const path = require('path');
-          process.env.NODE_ENV = 'production';
-          require('./api-dist/index.js');
-          EOF
-          
-          # Create Web wrapper
-          cat > dist/${{ matrix.os }}/rihtim/web-wrapper.js << 'EOF'
-          const path = require('path');
-          process.env.NODE_ENV = 'production';
-          process.env.PORT = '3030';
-          require('./web-dist/index.js');
-          EOF
-
-      - name: Create Windows start script
-        if: matrix.os == 'windows'
-        shell: pwsh
-        run: |
-          $batContent = @"
+          @'
           @echo off
+          setlocal
           cd /d "%~dp0"
-          
-          echo Starting Rihtim...
-          echo.
-          
-          start /min "Rihtim API" node api-wrapper.js
-          timeout /t 2 /nobreak
-          start "Rihtim Web" cmd /k "node web-wrapper.js"
-          
-          echo.
+          start /min "Rihtim API" cmd /c "cd api && node dist/server.js"
+          timeout /t 2 /nobreak >nul
+          start "Rihtim Web" cmd /k "cd web && node node_modules/next/dist/bin/next start -p 3030"
+          echo Rihtim baslatildi:
           echo API: http://127.0.0.1:5170
-          echo Web UI: http://localhost:3030
-          "@
-          
-          Set-Content -Path "dist/${{ matrix.os }}/rihtim/start.bat" -Value $batContent -Encoding ASCII
+          echo Web: http://localhost:3030
+          '@ | Set-Content -Path release\rihtim-windows-x64\start.bat -Encoding ascii
 
-      - name: Create Linux/macOS start script
-        if: matrix.os != 'windows'
-        shell: bash
+          @'
+          # Rihtim Release Paketi
+
+          ## Calistirma (Windows)
+          `start.bat` dosyasini calistirin.
+
+          ## Notlar
+          - Docker Engine calisir durumda olmalidir.
+          - Varsayilan API adresi: http://127.0.0.1:5170
+          - Varsayilan Web adresi: http://localhost:3030
+          '@ | Set-Content -Path release\rihtim-windows-x64\README.md -Encoding utf8
+
+      - name: Archive package
+        shell: pwsh
+        run: Compress-Archive -Path release\rihtim-windows-x64\* -DestinationPath release\rihtim-windows-x64.zip -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rihtim-windows-x64
+          path: release/rihtim-windows-x64.zip
+
+  build-linux:
+    name: Build Linux package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm -r run build
+
+      - name: Prepare package
         run: |
-          cat > dist/${{ matrix.os }}/rihtim/start.sh << 'SCRIPT'
-          #!/bin/bash
+          mkdir -p release/rihtim-linux-x64
+          pnpm --filter @rihtim/api deploy --prod release/rihtim-linux-x64/api
+          pnpm --filter @rihtim/web deploy --prod release/rihtim-linux-x64/web
+
+          cat > release/rihtim-linux-x64/start.sh << 'EOF'
+          #!/usr/bin/env bash
+          set -euo pipefail
           cd "$(dirname "$0")"
-          
-          echo "Starting Rihtim..."
-          node api-wrapper.js &
-          API_PID=$!
-          sleep 2
-          
-          echo ""
-          echo "API: http://127.0.0.1:5170"
-          echo "Web UI: http://localhost:3030"
-          echo ""
-          
-          node web-wrapper.js
-          trap "kill $API_PID" EXIT
-          SCRIPT
-          
-          chmod +x dist/${{ matrix.os }}/rihtim/start.sh
 
-      - name: Create README
-        shell: bash
-        run: |
-          cat > dist/${{ matrix.os }}/rihtim/README.md << 'README'
-          # Rihtim - Docker Management UI
-          
-          A web-based Docker management interface with native WSL2 support.
-          
-          ## Quick Start
-          
-          ### Windows
-          Double-click `start.bat`
-          
-          ### Linux / macOS
-          ```bash
+          (
+            cd api
+            node dist/server.js
+          ) &
+          API_PID=$!
+          trap 'kill $API_PID' EXIT
+
+          sleep 2
+          cd web
+          node node_modules/next/dist/bin/next start -p 3030
+          EOF
+
+          chmod +x release/rihtim-linux-x64/start.sh
+
+          cat > release/rihtim-linux-x64/README.md << 'EOF'
+          # Rihtim Release Paketi
+
+          ## Calistirma (Linux)
           chmod +x start.sh
           ./start.sh
-          ```
-          
-          Open http://localhost:3030
-          
-          ## Requirements
-          - Docker Engine running
-          - Node.js 20+ (included in executables)
-          
-          ## Features
-          - Container management
-          - Image management & Docker Hub search
-          - Volume management with size reporting
-          - Network management
-          - Real-time logs
-          - Multi-context support (Docker Desktop, WSL, SSH, TCP)
-          - Turkish & English support
-          
-          ## License
-          MIT
-          README
 
-      - name: Package (Windows)
-        if: matrix.os == 'windows'
-        shell: bash
+          ## Notlar
+          - Docker Engine calisir durumda olmalidir.
+          - Varsayilan API adresi: http://127.0.0.1:5170
+          - Varsayilan Web adresi: http://localhost:3030
+          EOF
+
+      - name: Archive package
+        run: tar -C release -czf release/rihtim-linux-x64.tar.gz rihtim-linux-x64
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rihtim-linux-x64
+          path: release/rihtim-linux-x64.tar.gz
+
+  build-macos:
+    name: Build macOS package
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm -r run build
+
+      - name: Prepare package
         run: |
-          mkdir -p dist/windows/packages
-          cd dist/windows/rihtim
-          7z a ../packages/rihtim-](#)
-
+          mkdir -p release/rihtim-macos-x64
+          pnpm --filter @rihtim/api deploy --prod release/rihtim-macos-x64/api
+          pnpm --filter @rihtim/web deploy --prod release/rihtim-macos-x64/web
+
+          cat > release/rihtim-macos-x64/start.sh << 'EOF'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$(dirname "$0")"
+
+          (
+            cd api
+            node dist/server.js
+          ) &
+          API_PID=$!
+          trap 'kill $API_PID' EXIT
+
+          sleep 2
+          cd web
+          node node_modules/next/dist/bin/next start -p 3030
+          EOF
+
+          chmod +x release/rihtim-macos-x64/start.sh
+
+          cat > release/rihtim-macos-x64/README.md << 'EOF'
+          # Rihtim Release Paketi
+
+          ## Calistirma (macOS)
+          chmod +x start.sh
+          ./start.sh
+
+          ## Notlar
+          - Docker Engine calisir durumda olmalidir.
+          - Varsayilan API adresi: http://127.0.0.1:5170
+          - Varsayilan Web adresi: http://localhost:3030
+          EOF
+
+      - name: Archive package
+        run: tar -C release -czf release/rihtim-macos-x64.tar.gz rihtim-macos-x64
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rihtim-macos-x64
+          path: release/rihtim-macos-x64.tar.gz
+
+  release:
+    name: Publish GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            release-assets/rihtim-windows-x64/rihtim-windows-x64.zip
+            release-assets/rihtim-linux-x64/rihtim-linux-x64.tar.gz
+            release-assets/rihtim-macos-x64/rihtim-macos-x64.tar.gz
