@@ -2,6 +2,15 @@ appId: com.rihtim.desktop
 productName: Rihtim
 copyright: Copyright © 2026 Rihtim
 
+# Pinned so electron-builder doesn't need to resolve the electron module from
+# node_modules (it isn't in apps/desktop/node_modules under a hoisted layout).
+electronVersion: 31.7.7
+
+# The bundled servers run as separate Node processes, so no native modules need
+# rebuilding against Electron. Skipping this also avoids electron-builder running
+# a package install that chokes on pnpm `workspace:*` deps.
+npmRebuild: false
+
 directories:
   output: release
   buildResources: buildResources
