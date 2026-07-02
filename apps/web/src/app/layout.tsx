@@ -6,7 +6,7 @@ import { Providers } from "@/components/Providers";
 import { themeInitScript } from "@/components/ThemeProvider";
 
 export const metadata = {
-  title: "Rihtim — Docker UI",
+  title: "Rihtim",
   description: "Open-source Docker Desktop alternative with WSL support",
 };
 

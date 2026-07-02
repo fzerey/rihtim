@@ -4,6 +4,7 @@ copyright: Copyright © 2026 Rihtim
 
 directories:
   output: release
+  buildResources: buildResources
 
 # Clean, scope-free installer file names (avoids the "@rihtim/..." path).
 artifactName: ${productName}-${version}-${arch}.${ext}
