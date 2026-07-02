@@ -18,21 +18,21 @@ jobs:
             runner: windows-latest
             build-cmd: pnpm build
             artifact-name: rihtim-windows-x64
-            package-cmd: mkdir -p dist/windows && 7z a dist/windows/rihtim-${{ github.ref_name }}-windows-x64.zip apps/api/dist apps/web/.next package.json pnpm-workspace.yaml
+            exe-cmd: npx pkg --compress Brotli --targets node22-win-x64 apps/api/dist/server.js -o dist/windows/rihtim-api.exe && npx pkg --compress Brotli --targets node22-win-x64 apps/web/.next/standalone/server.js -o dist/windows/rihtim-web.exe
 
           # Ubuntu/Linux
           - os: ubuntu
             runner: ubuntu-latest
             build-cmd: pnpm build
             artifact-name: rihtim-linux-x64
-            package-cmd: mkdir -p dist/linux && tar -czf dist/linux/rihtim-${{ github.ref_name }}-linux-x64.tar.gz apps/api/dist apps/web/.next package.json pnpm-workspace.yaml
+            exe-cmd: npx pkg --compress Brotli --targets node22-linux-x64 apps/api/dist/server.js -o dist/linux/rihtim-api && npx pkg --compress Brotli --targets node22-linux-x64 apps/web/.next/standalone/server.js -o dist/linux/rihtim-web && chmod +x dist/linux/rihtim-*
 
           # macOS
           - os: macos
             runner: macos-latest
             build-cmd: pnpm build
             artifact-name: rihtim-macos-x64
-            package-cmd: mkdir -p dist/macos && tar -czf dist/macos/rihtim-${{ github.ref_name }}-macos-x64.tar.gz apps/api/dist apps/web/.next package.json pnpm-workspace.yaml
+            exe-cmd: npx pkg --compress Brotli --targets node22-macos-x64 apps/api/dist/server.js -o dist/macos/rihtim-api && npx pkg --compress Brotli --targets node22-macos-x64 apps/web/.next/standalone/server.js -o dist/macos/rihtim-web && chmod +x dist/macos/rihtim-*
 
     steps:
       - uses: actions/checkout@v4
@@ -54,15 +54,29 @@ jobs:
       - name: Build project
         run: ${{ matrix.build-cmd }}
 
-      - name: Create packages
+      - name: Create standalone executables
         shell: bash
-        run: ${{ matrix.package-cmd }}
+        run: |
+          npm install -g pkg
+          mkdir -p dist/${{ matrix.os }}
+          ${{ matrix.exe-cmd }}
+
+      - name: Package executables
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            cd dist/windows
+            7z a rihtim-${{ github.ref_name }}-windows-x64.zip rihtim-*.exe
+          else
+            cd dist/${{ matrix.os }}
+            tar -czf rihtim-${{ github.ref_name }}-${{ matrix.os }}-x64.tar.gz rihtim-*
+          fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: dist/${{ matrix.os }}/
+          path: dist/${{ matrix.os }}/rihtim-*
 
   release:
     name: Create Release
