@@ -17,7 +17,8 @@
     "filter": "Filtrar…",
     "clear": "Limpar",
     "autoscroll": "Auto-rolagem",
-    "selectFile": "Selecione um arquivo",    "retry": "Tentar novamente",
+    "selectFile": "Selecione um arquivo",
+    "retry": "Tentar novamente",
     "loadError": "Falha ao carregar dados",
     "copy": "Copiar",
     "pagination": {
@@ -68,7 +69,8 @@
       "title": "Eventos recentes",
       "subtitle": "Atividade do Docker Engine nos últimos {minutes} minutos",
       "empty": "Sem eventos recentes",
-      "error": "Falha ao carregar eventos"    },
+      "error": "Falha ao carregar eventos"
+    },
     "storage": {
       "title": "Uso de armazenamento",
       "subtitle": "{total} usado • {reclaimable} recuperável",
@@ -78,7 +80,8 @@
       "volumes": "Volumes",
       "buildCache": "Cache de build",
       "count": "{active} ativos / {total} total",
-      "reclaimable": "{value} recuperável"    }
+      "reclaimable": "{value} recuperável"
+    }
   },
   "containers": {
     "title": "Contêineres",
@@ -155,8 +158,48 @@
           "command": "Comando",
           "security": "Segurança",
           "raw": "JSON bruto"
-        }
-      }
+        },
+        "section": "Section",
+        "all": "All",
+        "copy": "Copy",
+        "copied": "Copied",
+        "filterPlaceholder": "Filter keys...",
+        "empty": "No matching keys",
+        "expandAll": "Expand all",
+        "collapseAll": "Collapse all"
+      },
+      "sections": {
+        "state": "State",
+        "imageCmd": "Image & Command",
+        "resources": "Resources & Restart",
+        "ports": "Port Bindings",
+        "env": "Environment Variables ({count})",
+        "mounts": "Mounts ({count})",
+        "networks": "Networks ({count})",
+        "labels": "Labels ({count})"
+      },
+      "fields": {
+        "status": "Status",
+        "started": "Started",
+        "finished": "Finished",
+        "exitCode": "Exit Code",
+        "restartCount": "Restart Count",
+        "image": "Image",
+        "imageId": "Image ID",
+        "entrypoint": "Entrypoint",
+        "cmd": "Cmd",
+        "workingDir": "WorkingDir",
+        "user": "User",
+        "restartPolicy": "RestartPolicy",
+        "memory": "Memory",
+        "cpuShares": "CPU Shares",
+        "nanoCpus": "NanoCPUs",
+        "privileged": "Privileged"
+      },
+      "noPortBindings": "None",
+      "noEnv": "None",
+      "noMounts": "None",
+      "noLabels": "None"
     },
     "stats": {
       "cpu": "CPU",
@@ -172,6 +215,11 @@
       "restartAll": "Reiniciar todos",
       "removeAll": "Remover todos",
       "projectLabel": "Projeto Compose"
+    },
+    "files": {
+      "empty": "Select a file",
+      "rootDir": "Root",
+      "upDir": "Parent directory"
     }
   },
   "images": {
@@ -179,7 +227,15 @@
     "pullSection": "Baixar imagem",
     "pullPlaceholder": "ex. nginx:alpine",
     "pull": "Baixar",
-    "columns": { "inUse": "Em uso", "pulled": "Baixada" },
+    "columns": {
+      "inUse": "Em uso",
+      "pulled": "Baixada",
+      "tag": "Tag",
+      "id": "ID",
+      "size": "Size",
+      "created": "Created",
+      "actions": "Actions"
+    },
     "inUse": {
       "unused": "Sem uso",
       "running": "{running}/{total} rodando",
@@ -217,7 +273,17 @@
       "alreadyPulled": "Esta tag já foi baixada",
       "loadingTags": "Carregando tags…",
       "tagsEmpty": "Sem tags",
-      "openInHub": "Abrir no Docker Hub"
+      "openInHub": "Abrir no Docker Hub",
+      "dockerHub": "Docker Hub (Official)"
+    },
+    "pullFromRegistry": {
+      "section": "Pull from Registry",
+      "selectRegistry": "Select a registry",
+      "imageName": "Image name",
+      "imageNamePlaceholder": "e.g. nginx, postgres, node",
+      "imageTag": "Tag",
+      "pull": "Pull Image",
+      "pulling": "Pulling..."
     }
   },
   "volumes": {
@@ -317,7 +383,54 @@
     "active": "ativo",
     "test": "Testar",
     "makeActive": "Ativar",
-    "newContext": "Novo contexto"
+    "newContext": "Novo contexto",
+    "contexts": "Docker Contexts",
+    "registries": "Image Registries",
+    "newRegistry": "New registry",
+    "registryPublic": "Public",
+    "registryAuthenticated": "Authenticated",
+    "registryIsPublic": "Public registry (credentials optional)",
+    "fields": {
+      "name": "Name",
+      "kind": "Type",
+      "socketPath": "Socket / Pipe path",
+      "host": "Host",
+      "port": "Port",
+      "sshHost": "SSH host (user@host)",
+      "wslDistro": "WSL distribution name",
+      "registryName": "Registry name",
+      "registryUrl": "Registry URL",
+      "username": "Username",
+      "password": "Password"
+    },
+    "placeholders": {
+      "name": "e.g. wsl-ubuntu",
+      "socketNpipe": "//./pipe/docker_engine",
+      "socketUnix": "/var/run/docker.sock",
+      "sshHost": "root@10.0.0.5",
+      "wslDistro": "Ubuntu",
+      "registryName": "e.g. My Private Registry",
+      "registryUrl": "e.g. https://ghcr.io or https://registry.example.com",
+      "username": "registry_username",
+      "usernameOptional": "registry_username (optional)",
+      "password": "registry_password",
+      "passwordOptional": "registry_password (optional)"
+    },
+    "kinds": {
+      "npipe": "Windows Named Pipe",
+      "socket": "Unix Socket",
+      "tcp": "TCP (Remote Docker)",
+      "ssh": "SSH",
+      "wsl": "WSL Distribution"
+    },
+    "wslHint": {
+      "title": "Requirements for WSL connection",
+      "line1": "wsl.exe must be available on Windows.",
+      "line2": "Docker daemon must be running inside the selected distribution with /var/run/docker.sock present.",
+      "line3": "socat must be installed: sudo apt-get install -y socat",
+      "line4": "Rihtim bridges via wsl -d <distro> -u root socat over stdio. No extra ports or TCP required."
+    },
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
   },
   "errors": {
     "dockerUnreachable": "Não é possível alcançar o contexto Docker ativo. Verifique se o motor está rodando ou escolha outro contexto em Configurações."

@@ -3,6 +3,7 @@ import cors from "@fastify/cors";
 import websocket from "@fastify/websocket";
 import { config } from "./config.js";
 import { contextRoutes } from "./routes/contexts.js";
+import { registryRoutes } from "./routes/registries.js";
 import {
   containerRoutes,
   imageRoutes,
@@ -54,6 +55,7 @@ app.setErrorHandler((err, _req, reply) => {
 app.get("/health", async () => ({ ok: true, name: "rihtim-api" }));
 
 await app.register(contextRoutes, { prefix: "/api" });
+await app.register(registryRoutes, { prefix: "/api" });
 await app.register(containerRoutes, { prefix: "/api" });
 await app.register(imageRoutes, { prefix: "/api" });
 await app.register(volumeRoutes, { prefix: "/api" });

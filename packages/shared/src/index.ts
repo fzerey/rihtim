@@ -43,6 +43,18 @@ export interface ContextTestResult {
   };
 }
 
+export interface Registry {
+  id: string;
+  name: string;
+  url: string;
+  /** Whether this is a public registry (credentials optional) */
+  isPublic?: boolean;
+  /** Optional username for authentication */
+  username?: string;
+  /** Optional password/token for authentication */
+  password?: string;
+}
+
 export interface ContainerSummary {
   id: string;
   names: string[];

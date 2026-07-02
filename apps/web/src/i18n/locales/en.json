@@ -257,10 +257,11 @@
     },
     "hub": {
       "section": "Search Docker Hub",
+      "dockerHub": "Docker Hub (Official)",
       "placeholder": "e.g. postgres, redis, node...",
       "search": "Search",
       "empty": "No results",
-      "idle": "Type a name to search Docker Hub",
+      "idle": "Type a name to search",
       "typeMore": "Type at least 2 characters…",
       "loading": "Searching...",
       "official": "Official",
@@ -274,6 +275,15 @@
       "loadingTags": "Loading tags…",
       "tagsEmpty": "No tags found",
       "openInHub": "Open on Docker Hub"
+    },
+    "pullFromRegistry": {
+      "section": "Pull from Registry",
+      "selectRegistry": "Select a registry",
+      "imageName": "Image name",
+      "imageNamePlaceholder": "e.g. nginx, postgres, node",
+      "imageTag": "Tag",
+      "pull": "Pull Image",
+      "pulling": "Pulling..."
     }
   },
   "volumes": {
@@ -370,10 +380,16 @@
   "settings": {
     "title": "Settings",
     "subtitle": "Manage Docker connection contexts. WSL is supported.",
+    "contexts": "Docker Contexts",
+    "registries": "Image Registries",
     "active": "active",
     "test": "Test",
     "makeActive": "Make active",
     "newContext": "New context",
+    "newRegistry": "New registry",
+    "registryPublic": "Public",
+    "registryAuthenticated": "Authenticated",
+    "registryIsPublic": "Public registry (credentials optional)",
     "fields": {
       "name": "Name",
       "kind": "Type",
@@ -381,14 +397,24 @@
       "host": "Host",
       "port": "Port",
       "sshHost": "SSH host (user@host)",
-      "wslDistro": "WSL distribution name"
+      "wslDistro": "WSL distribution name",
+      "registryName": "Registry name",
+      "registryUrl": "Registry URL",
+      "username": "Username",
+      "password": "Password"
     },
     "placeholders": {
       "name": "e.g. wsl-ubuntu",
       "socketNpipe": "//./pipe/docker_engine",
       "socketUnix": "/var/run/docker.sock",
       "sshHost": "root@10.0.0.5",
-      "wslDistro": "Ubuntu"
+      "wslDistro": "Ubuntu",
+      "registryName": "e.g. My Private Registry",
+      "registryUrl": "e.g. https://ghcr.io or https://registry.example.com",
+      "username": "registry_username",
+      "usernameOptional": "registry_username (optional)",
+      "password": "registry_password",
+      "passwordOptional": "registry_password (optional)"
     },
     "kinds": {
       "npipe": "Windows Named Pipe",

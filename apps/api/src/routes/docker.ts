@@ -5,6 +5,7 @@ import * as path from "node:path";
 import * as tar from "tar-stream";
 import type Docker from "dockerode";
 import { currentDocker } from "../contexts/docker-client.js";
+import { registryStore } from "../registries/store.js";
 import { demuxDockerLog } from "../util/demux.js";
 import type {
   ContainerSummary,
@@ -46,6 +47,19 @@ function looksBinary(buf: Buffer): boolean {
     if (b < 7 && b !== 0) return true;
   }
   return false;
+}
+
+function hasRegistryPrefix(image: string): boolean {
+  const first = image.split("/")[0] ?? "";
+  return first.includes(".") || first.includes(":") || first === "localhost";
+}
+
+function buildRegistryImageReference(registryUrl: string, image: string): string {
+  if (hasRegistryPrefix(image)) return image;
+  const url = new URL(registryUrl);
+  const basePath = url.pathname.replace(/^\/+|\/+$/g, "");
+  const registryRoot = [url.host, basePath].filter(Boolean).join("/");
+  return `${registryRoot}/${image}`;
 }
 
 export const containerRoutes: FastifyPluginAsync = async (app) => {
@@ -444,12 +458,34 @@ export const imageRoutes: FastifyPluginAsync = async (app) => {
     return docker.getImage(req.params.id).inspect();
   });
 
-  app.post<{ Body: { fromImage: string; tag?: string } }>("/images/pull", async (req, reply) => {
+  app.post<{ Body: { fromImage: string; tag?: string; registryId?: string } }>("/images/pull", async (req, reply) => {
     const docker = await currentDocker();
-    const { fromImage, tag } = req.body ?? { fromImage: "" };
+    const { fromImage, tag, registryId } = req.body ?? { fromImage: "" };
     if (!fromImage) return reply.code(400).send({ error: "fromImage required" });
 
-    const stream = await docker.pull(tag ? `${fromImage}:${tag}` : fromImage);
+    let imageRef = fromImage;
+    let authconfig:
+      | {
+          username?: string;
+          password?: string;
+          serveraddress?: string;
+        }
+      | undefined;
+
+    if (registryId) {
+      const registry = await registryStore.get(registryId);
+      if (!registry) return reply.code(404).send({ error: "registry not found" });
+      imageRef = buildRegistryImageReference(registry.url, fromImage);
+      if (registry.username || registry.password) {
+        authconfig = {
+          username: registry.username,
+          password: registry.password,
+          serveraddress: registry.url,
+        };
+      }
+    }
+
+    const stream = await docker.pull(tag ? `${imageRef}:${tag}` : imageRef, authconfig ? { authconfig } : undefined);
     reply.raw.setHeader("Content-Type", "application/x-ndjson");
     stream.pipe(reply.raw);
     return reply;
