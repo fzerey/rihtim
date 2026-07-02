@@ -18,21 +18,21 @@ jobs:
             runner: windows-latest
             build-cmd: pnpm build
             artifact-name: rihtim-windows-x64
-            package-cmd: mkdir -p dist/windows && 7z a dist/windows/rihtim-${{ github.ref_name }}-windows-x64.zip apps/api/dist/* apps/web/.next/* apps/web/public/* package.json pnpm-workspace.yaml
+            package-cmd: mkdir -p dist/windows && 7z a dist/windows/rihtim-${{ github.ref_name }}-windows-x64.zip apps/api/dist apps/web/.next package.json pnpm-workspace.yaml
 
           # Ubuntu/Linux
           - os: ubuntu
             runner: ubuntu-latest
             build-cmd: pnpm build
             artifact-name: rihtim-linux-x64
-            package-cmd: mkdir -p dist/linux && tar -czf dist/linux/rihtim-${{ github.ref_name }}-linux-x64.tar.gz apps/api/dist/ apps/web/.next/ apps/web/public/ package.json pnpm-workspace.yaml
+            package-cmd: mkdir -p dist/linux && tar -czf dist/linux/rihtim-${{ github.ref_name }}-linux-x64.tar.gz apps/api/dist apps/web/.next package.json pnpm-workspace.yaml
 
           # macOS
           - os: macos
             runner: macos-latest
             build-cmd: pnpm build
             artifact-name: rihtim-macos-x64
-            package-cmd: mkdir -p dist/macos && tar -czf dist/macos/rihtim-${{ github.ref_name }}-macos-x64.tar.gz apps/api/dist/ apps/web/.next/ apps/web/public/ package.json pnpm-workspace.yaml
+            package-cmd: mkdir -p dist/macos && tar -czf dist/macos/rihtim-${{ github.ref_name }}-macos-x64.tar.gz apps/api/dist apps/web/.next package.json pnpm-workspace.yaml
 
     steps:
       - uses: actions/checkout@v4
