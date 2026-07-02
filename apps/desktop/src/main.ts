@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, utilityProcess } from "electron";
+import { app, BrowserWindow, Menu, shell, utilityProcess } from "electron";
 import path from "node:path";
 import net from "node:net";
 
@@ -105,6 +105,7 @@ async function createWindow(): Promise<void> {
     minWidth: 1000,
     minHeight: 680,
     show: false,
+    autoHideMenuBar: true,
     backgroundColor: "#0b0f14",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -112,6 +113,8 @@ async function createWindow(): Promise<void> {
       nodeIntegration: false,
     },
   });
+
+  mainWindow.setMenuBarVisibility(false);
 
   mainWindow.once("ready-to-show", () => mainWindow?.show());
 
@@ -130,6 +133,9 @@ async function createWindow(): Promise<void> {
 }
 
 async function bootstrap(): Promise<void> {
+  // Remove the default application menu (File / Edit / View / ...).
+  Menu.setApplicationMenu(null);
+
   // When packaged we launch the bundled servers ourselves. In development we
   // assume `pnpm dev` is already serving the web (3030) and API (5170) apps.
   if (app.isPackaged) {
