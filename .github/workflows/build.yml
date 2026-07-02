@@ -52,14 +52,89 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist/${{ matrix.os }}/rihtim
-
-          # API'yi kopyala
           cp -r apps/api/dist dist/${{ matrix.os }}/rihtim/api
           cp apps/api/package.json dist/${{ matrix.os }}/rihtim/api/
+          cp -r apps/web/.next/standalone/* dist/${{ matrix.os }}/rihtim/web/ 2>/dev/null || true
+          cp -r apps/web/public dist/${{ matrix.os }}/rihtim/web/ 2>/dev/null || true
+          mkdir -p dist/${{ matrix.os }}/rihtim/node_modules
+          cp -r node_modules/* dist/${{ matrix.os }}/rihtim/node_modules/ 2>/dev/null || true
 
-          # Web'i kopyala (standalone mode)
-          cp -r apps/web/.next/standalone/* dist/${{ matrix.os }}/rihtim/web/
-          cp -r apps/web/public dist/${{ matrix.os }}/rihtim/web/ || true
+      - name: Create start scripts
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            cat > dist/${{ matrix.os }}/rihtim/start.bat << 'SCRIPT'
+          @echo off
+          cd /d "%~dp0"
+          start "Rihtim API" cmd /k "node api/dist/server.js"
+          start "Rihtim Web" cmd /k "cd web && node server.js"
+          echo.
+          echo API: http://127.0.0.1:5170
+          echo Web: http://localhost:3030
+          pause
+          SCRIPT
+          else
+            cat > dist/${{ matrix.os }}/rihtim/start.sh << 'SCRIPT'
+          #!/bin/bash
+          cd "$(dirname "$0")"
+          node api/dist/server.js &
+          cd web && node server.js &
+          echo ""
+          echo "API: http://127.0.0.1:5170"
+          echo "Web: http://localhost:3030"
+          wait
+          SCRIPT
+            chmod +x dist/${{ matrix.os }}/rihtim/start.sh
+          fi
+          cat > dist/${{ matrix.os }}/rihtim/README.txt << 'SCRIPT'
+          === Rihtim ===
+          Çalıştırmak için:
+          - Windows: start.bat dosyasını çift tıklayın
+          - Linux/macOS: ./start.sh komutunu çalıştırın
+          Web UI: http://localhost:3030
+          API: http://127.0.0.1:5170
+          SCRIPT
 
-          # node_modules'](#)
-
+      - name: Package
+        shell: bash
+        run: |
+          mkdir -p dist/${{ matrix.os }}/packages
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            cd dist/${{ matrix.os }}
+            7z a packages/rihtim-${{ github.ref_name }}-windows-x64.zip rihtim/
+          else
+            cd dist/${{ matrix.os }}
+            tar -czf packages/rihtim-${{ github.ref_name }}-${{ matrix.os }}-x64.tar.gz rihtim/
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: dist/${{ matrix.os }}/packages/
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/**/*.zip
+            artifacts/**/*.tar.gz
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') }}
+          token: ${{ secrets.GITHUB_TOKEN }}
