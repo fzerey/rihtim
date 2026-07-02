@@ -69,14 +69,3 @@ pnpm dev
 pnpm build
 pnpm start
 ```
-
-## Roadmap
-
-- [ ] Interactive exec (xterm.js + WS)
-- [ ] Live container stats charts
-- [ ] Docker Compose (yaml deploy / down)
-- [ ] Docker Hub search + login
-- [ ] Container creation wizard (port/env/mount UI)
-- [ ] Kubernetes contexts
-- [ ] Extension SDK
-- [ ] Desktop package via Tauri / Electron
