@@ -7,20 +7,7 @@ import type { ImageSummary, ContainerSummary } from "@rihtim/shared";
 import { QueryErrorBanner } from "@/components/QueryErrorBanner";
 import { Trash2, Download, Search, Star, BadgeCheck, ExternalLink, ChevronDown, ArrowUp, ArrowDown, Play, X } from "lucide-react";
 import { useT } from "@/i18n/provider";
-
-type HubResult = {
-  name: string;
-  description: string;
-  isOfficial: boolean;
-  isAutomated: boolean;
-  starCount: number;
-};
-
-type HubTag = {
-  name: string;
-  lastUpdated?: string;
-  size?: number;
-};
+import type { HubResult, HubTag } from "@/types/hub";
 
 export default function ImagesPage() {
   const qc = useQueryClient();

@@ -3,37 +3,12 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useT } from "@/i18n/provider";
 import { Folder, File as FileIcon, ChevronLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
-
-interface Entry {
-  name: string;
-  isDir: boolean;
-  isLink: boolean;
-  size: number;
-  mode: number;
-  mtime: number;
-  linkTarget?: string;
-}
-
-interface ListResponse {
-  path: string;
-  isDir: boolean;
-  truncated: boolean;
-  entries: Entry[];
-}
-
-interface FileResponse {
-  path: string;
-  size: number;
-  truncated: boolean;
-  binary: boolean;
-  content: string;
-  encoding: "utf-8" | "base64";
-}
+import type { FileEntry, FileListResponse, FileResponse } from "@/types/files";
 
 export function FileBrowser({ containerId }: { containerId: string }) {
   const { t } = useT();
   const [path, setPath] = useState("/");
-  const [entries, setEntries] = useState<Entry[]>([]);
+  const [entries, setEntries] = useState<FileEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [truncated, setTruncated] = useState(false);
@@ -50,7 +25,7 @@ export function FileBrowser({ containerId }: { containerId: string }) {
     setError(null);
     setViewFile(null);
     try {
-      const res = await api<ListResponse>(
+      const res = await api<FileListResponse>(
         `/containers/${containerId}/fs?path=${encodeURIComponent(target)}`,
       );
       setEntries(res.entries);
@@ -69,7 +44,7 @@ export function FileBrowser({ containerId }: { containerId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerId]);
 
-  function open(entry: Entry) {
+  function open(entry: FileEntry) {
     if (entry.isDir) {
       const next = joinPath(path, entry.name);
       load(next);
