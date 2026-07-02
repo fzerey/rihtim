@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import type { VolumeSummary } from "@rihtim/shared";
+import { QueryErrorBanner } from "@/components/QueryErrorBanner";
 import { Trash2, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { useT } from "@/i18n/provider";
@@ -9,7 +10,7 @@ import { useT } from "@/i18n/provider";
 export default function VolumesPage() {
   const qc = useQueryClient();
   const { t } = useT();
-  const { data } = useQuery({
+  const { data, error, isFetching, refetch } = useQuery({
     queryKey: ["volumes"],
     queryFn: () => api<VolumeSummary[]>("/volumes"),
   });
@@ -31,6 +32,7 @@ export default function VolumesPage() {
 
   return (
     <div className="space-y-4">
+      <QueryErrorBanner error={error} isFetching={isFetching} onRetry={() => refetch()} />
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">{t("volumes.title")}</h1>
         <div className="flex gap-2">

@@ -17,8 +17,8 @@
     "filter": "Filtrar…",
     "clear": "Limpar",
     "autoscroll": "Auto-rolagem",
-    "selectFile": "Selecione um arquivo",
-    "pagination": {
+    "selectFile": "Selecione um arquivo",    "retry": "Tentar novamente",
+    "loadError": "Falha ao carregar dados",    "pagination": {
       "prev": "Anterior",
       "next": "Próximo",
       "rowsPerPage": "Linhas por página",

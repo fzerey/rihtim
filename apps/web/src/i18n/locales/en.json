@@ -18,6 +18,8 @@
     "clear": "Clear",
     "autoscroll": "Auto-scroll",
     "selectFile": "Select a file",
+    "retry": "Retry",
+    "loadError": "Failed to load data",
     "pagination": {
       "prev": "Prev",
       "next": "Next",

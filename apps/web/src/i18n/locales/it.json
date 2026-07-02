@@ -18,6 +18,8 @@
     "clear": "Pulisci",
     "autoscroll": "Scorrimento auto",
     "selectFile": "Seleziona un file",
+    "retry": "Riprova",
+    "loadError": "Impossibile caricare i dati",
     "pagination": {
       "prev": "Prec.",
       "next": "Succ.",

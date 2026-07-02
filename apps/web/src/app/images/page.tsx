@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, humanBytes, timeAgo } from "@/lib/api";
 import type { ImageSummary, ContainerSummary } from "@rihtim/shared";
+import { QueryErrorBanner } from "@/components/QueryErrorBanner";
 import { Trash2, Download, Search, Star, BadgeCheck, ExternalLink, ChevronDown, ArrowUp, ArrowDown, Play, X } from "lucide-react";
 import { useT } from "@/i18n/provider";
 
@@ -25,7 +26,7 @@ export default function ImagesPage() {
   const qc = useQueryClient();
   const router = useRouter();
   const { t, locale } = useT();
-  const { data } = useQuery({
+  const { data, error, isFetching, refetch } = useQuery({
     queryKey: ["images"],
     queryFn: () => api<ImageSummary[]>("/images"),
   });
@@ -174,6 +175,7 @@ export default function ImagesPage() {
 
   return (
     <div className="space-y-4">
+      <QueryErrorBanner error={error} isFetching={isFetching} onRetry={() => refetch()} />
       <h1 className="text-xl font-semibold">{t("images.title")}</h1>
 
       <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">

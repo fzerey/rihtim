@@ -18,6 +18,8 @@
     "clear": "Effacer",
     "autoscroll": "Défilement auto",
     "selectFile": "Choisir un fichier",
+    "retry": "Réessayer",
+    "loadError": "Échec du chargement des données",
     "pagination": {
       "prev": "Préc.",
       "next": "Suiv.",

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, timeAgo } from "@/lib/api";
 import type { ContainerSummary } from "@rihtim/shared";
+import { QueryErrorBanner } from "@/components/QueryErrorBanner";
 import {
   Play,
   Square,
@@ -29,7 +30,7 @@ type Group = { key: string; project: string | null; items: ContainerSummary[] };
 export default function ContainersPage() {
   const qc = useQueryClient();
   const { t, locale } = useT();
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, isFetching, refetch } = useQuery({
     queryKey: ["containers"],
     queryFn: () => api<ContainerSummary[]>("/containers?all=true"),
   });
@@ -114,6 +115,7 @@ export default function ContainersPage() {
 
   return (
     <div className="space-y-4">
+      <QueryErrorBanner error={error} isFetching={isFetching} onRetry={() => refetch()} />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold">{t("containers.title")}</h1>

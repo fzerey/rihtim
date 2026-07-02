@@ -18,6 +18,8 @@
     "clear": "Löschen",
     "autoscroll": "Auto-Scrollen",
     "selectFile": "Datei auswählen",
+    "retry": "Erneut versuchen",
+    "loadError": "Daten konnten nicht geladen werden",
     "pagination": {
       "prev": "Zurück",
       "next": "Weiter",

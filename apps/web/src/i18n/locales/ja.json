@@ -18,6 +18,8 @@
     "clear": "クリア",
     "autoscroll": "自動スクロール",
     "selectFile": "ファイルを選択",
+    "retry": "再試行",
+    "loadError": "データの読み込みに失敗しました",
     "pagination": {
       "prev": "前へ",
       "next": "次へ",

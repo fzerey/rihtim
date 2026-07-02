@@ -18,6 +18,8 @@
     "clear": "Temizle",
     "autoscroll": "Otomatik kaydır",
     "selectFile": "Bir dosya seçin",
+    "retry": "Yeniden dene",
+    "loadError": "Veri yüklenemedi",
     "pagination": {
       "prev": "Önceki",
       "next": "Sonraki",
