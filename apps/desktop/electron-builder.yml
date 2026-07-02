@@ -5,6 +5,9 @@ copyright: Copyright © 2026 Rihtim
 directories:
   output: release
 
+# Clean, scope-free installer file names (avoids the "@rihtim/..." path).
+artifactName: ${productName}-${version}-${arch}.${ext}
+
 # Only the compiled Electron shell lives inside the asar archive.
 files:
   - dist/**/*

@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "description": "Rihtim desktop shell (Electron) — bundles the web UI and API for Windows, macOS and Linux",
+  "homepage": "https://github.com/fzerey/rihtim",
+  "author": {
+    "name": "Rihtim",
+    "email": "noreply@rihtim.local"
+  },
   "main": "dist/main.js",
   "scripts": {
     "build:main": "tsc -p tsconfig.json",
