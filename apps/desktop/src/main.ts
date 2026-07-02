@@ -41,33 +41,54 @@ function waitForPort(port: number, timeoutMs = 30_000): Promise<void> {
   });
 }
 
-/** Spawn the bundled API and Next.js servers using Electron's built-in Node. */
-function startBackends(): void {
-  apiProc = utilityProcess.fork(resource("server", "dist", "server.js"), [], {
-    serviceName: "rihtim-api",
-    stdio: "inherit",
-    env: {
-      ...process.env,
-      NODE_ENV: "production",
-      HOST,
-      PORT: String(API_PORT),
-      CORS_ORIGIN: WEB_URL,
-    },
+/** Resolve true if something is already listening on the port. */
+function isPortInUse(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const socket = net.connect({ host: HOST, port });
+    socket.once("connect", () => {
+      socket.destroy();
+      resolve(true);
+    });
+    socket.once("error", () => {
+      socket.destroy();
+      resolve(false);
+    });
   });
+}
 
-  const webDir = resource("web", "apps", "web");
-  webProc = utilityProcess.fork(path.join(webDir, "server.js"), [], {
-    serviceName: "rihtim-web",
-    stdio: "inherit",
-    cwd: webDir,
-    env: {
-      ...process.env,
-      NODE_ENV: "production",
-      HOSTNAME: HOST,
-      PORT: String(WEB_PORT),
-      NEXT_PUBLIC_API_URL: `http://${HOST}:${API_PORT}`,
-    },
-  });
+/** Spawn the bundled API and Next.js servers using Electron's built-in Node. */
+async function startBackends(): Promise<void> {
+  // Reuse a server left over from a previous (possibly crashed) session
+  // instead of failing to bind and leaving the app unusable on reopen.
+  if (!(await isPortInUse(API_PORT))) {
+    apiProc = utilityProcess.fork(resource("server", "dist", "server.js"), [], {
+      serviceName: "rihtim-api",
+      stdio: "inherit",
+      env: {
+        ...process.env,
+        NODE_ENV: "production",
+        HOST,
+        PORT: String(API_PORT),
+        CORS_ORIGIN: WEB_URL,
+      },
+    });
+  }
+
+  if (!(await isPortInUse(WEB_PORT))) {
+    const webDir = resource("web", "apps", "web");
+    webProc = utilityProcess.fork(path.join(webDir, "server.js"), [], {
+      serviceName: "rihtim-web",
+      stdio: "inherit",
+      cwd: webDir,
+      env: {
+        ...process.env,
+        NODE_ENV: "production",
+        HOSTNAME: HOST,
+        PORT: String(WEB_PORT),
+        NEXT_PUBLIC_API_URL: `http://${HOST}:${API_PORT}`,
+      },
+    });
+  }
 }
 
 function stopBackends(): void {
@@ -112,7 +133,7 @@ async function bootstrap(): Promise<void> {
   // When packaged we launch the bundled servers ourselves. In development we
   // assume `pnpm dev` is already serving the web (3030) and API (5170) apps.
   if (app.isPackaged) {
-    startBackends();
+    await startBackends();
   }
 
   try {
@@ -124,10 +145,26 @@ async function bootstrap(): Promise<void> {
   await createWindow();
 }
 
-app.whenReady().then(bootstrap).catch((err) => {
-  console.error("[rihtim] failed to start:", err);
+// Ensure only a single instance runs; a second launch focuses the existing one.
+const gotSingleInstanceLock = app.requestSingleInstanceLock();
+if (!gotSingleInstanceLock) {
   app.quit();
-});
+} else {
+  app.on("second-instance", () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.show();
+      mainWindow.focus();
+    } else {
+      void createWindow();
+    }
+  });
+
+  app.whenReady().then(bootstrap).catch((err) => {
+    console.error("[rihtim] failed to start:", err);
+    app.quit();
+  });
+}
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
@@ -142,3 +179,4 @@ app.on("window-all-closed", () => {
 });
 
 app.on("before-quit", stopBackends);
+app.on("will-quit", stopBackends);
