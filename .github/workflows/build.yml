@@ -18,37 +18,21 @@ jobs:
             runner: windows-latest
             build-cmd: pnpm build
             artifact-name: rihtim-windows-x64
-            package-cmd: |
-              mkdir -p dist/windows
-              7z a dist/windows/rihtim-${{ github.ref_name }}-windows-x64.zip apps/api/dist/* apps/web/.next/* apps/web/public/* package.json pnpm-workspace.yaml
+            package-cmd: mkdir -p dist/windows && 7z a dist/windows/rihtim-${{ github.ref_name }}-windows-x64.zip apps/api/dist/* apps/web/.next/* apps/web/public/* package.json pnpm-workspace.yaml
 
           # Ubuntu/Linux
           - os: ubuntu
             runner: ubuntu-latest
             build-cmd: pnpm build
             artifact-name: rihtim-linux-x64
-            package-cmd: |
-              mkdir -p dist/linux
-              tar -czf dist/linux/rihtim-${{ github.ref_name }}-linux-x64.tar.gz \
-                apps/api/dist/ \
-                apps/web/.next/ \
-                apps/web/public/ \
-                package.json \
-                pnpm-workspace.yaml
+            package-cmd: mkdir -p dist/linux && tar -czf dist/linux/rihtim-${{ github.ref_name }}-linux-x64.tar.gz apps/api/dist/ apps/web/.next/ apps/web/public/ package.json pnpm-workspace.yaml
 
           # macOS
           - os: macos
             runner: macos-latest
             build-cmd: pnpm build
             artifact-name: rihtim-macos-x64
-            package-cmd: |
-              mkdir -p dist/macos
-              tar -czf dist/macos/rihtim-${{ github.ref_name }}-macos-x64.tar.gz \
-                apps/api/dist/ \
-                apps/web/.next/ \
-                apps/web/public/ \
-                package.json \
-                pnpm-workspace.yaml
+            package-cmd: mkdir -p dist/macos && tar -czf dist/macos/rihtim-${{ github.ref_name }}-macos-x64.tar.gz apps/api/dist/ apps/web/.next/ apps/web/public/ package.json pnpm-workspace.yaml
 
     steps:
       - uses: actions/checkout@v4
@@ -71,12 +55,34 @@ jobs:
         run: ${{ matrix.build-cmd }}
 
       - name: Create packages
-        run: ${{ matrix.package-cmd }}
         shell: bash
+        run: ${{ matrix.package-cmd }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: dist/${{ matrix.os }}/](#)
-
+          path: dist/${{ matrix.os }}/
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/**/*
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
