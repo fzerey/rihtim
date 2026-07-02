@@ -26,6 +26,68 @@ type Tab = "overview" | "logs" | "stats" | "exec" | "files" | "inspect";
 
 const TABS: Tab[] = ["overview", "logs", "stats", "exec", "files", "inspect"];
 
+interface HostPortBinding { HostIp?: string; HostPort?: string }
+interface ContainerMount { Type?: string; Source?: string; Destination?: string; Mode?: string }
+interface NetworkConfig { IPAddress?: string; Gateway?: string; MacAddress?: string; NetworkID?: string }
+interface ContainerConfig {
+  Image?: string;
+  Env?: string[];
+  Labels?: Record<string, string>;
+  Entrypoint?: string[];
+  Cmd?: string[];
+  WorkingDir?: string;
+  User?: string;
+  Tty?: boolean;
+  OpenStdin?: boolean;
+  ExposedPorts?: Record<string, unknown>;
+  Healthcheck?: unknown;
+}
+interface HostConfig {
+  PortBindings?: Record<string, HostPortBinding[]>;
+  RestartPolicy?: { Name?: string };
+  Memory?: number;
+  MemorySwap?: number;
+  MemoryReservation?: number;
+  NanoCpus?: number;
+  CpuShares?: number;
+  CpuQuota?: number;
+  CpuPeriod?: number;
+  CpusetCpus?: string;
+  PidsLimit?: number;
+  Privileged?: boolean;
+  CapAdd?: string[];
+  CapDrop?: string[];
+  SecurityOpt?: string[];
+  ReadonlyRootfs?: boolean;
+  UsernsMode?: string;
+  LogConfig?: unknown;
+  Binds?: string[];
+}
+interface NetworkSettings { Networks?: Record<string, NetworkConfig>; Ports?: unknown }
+interface ContainerState {
+  Status?: string;
+  StartedAt?: string;
+  FinishedAt?: string;
+  ExitCode?: number;
+  Health?: unknown;
+}
+interface ContainerInspect {
+  Id: string;
+  Name?: string;
+  Image?: string;
+  Created?: string;
+  Path?: string;
+  Args?: string[];
+  Platform?: string;
+  Driver?: string;
+  RestartCount?: number;
+  Config?: ContainerConfig;
+  HostConfig?: HostConfig;
+  NetworkSettings?: NetworkSettings;
+  State?: ContainerState;
+  Mounts?: ContainerMount[];
+}
+
 export default function ContainerDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -36,7 +98,7 @@ export default function ContainerDetailPage() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["container", params.id],
-    queryFn: () => api<any>(`/containers/${params.id}`),
+    queryFn: () => api<ContainerInspect>(`/containers/${params.id}`),
     refetchInterval: 5000,
   });
 
@@ -153,7 +215,7 @@ export default function ContainerDetailPage() {
   );
 }
 
-const INSPECT_SECTIONS: Array<{ key: string; get: (d: any) => any }> = [
+const INSPECT_SECTIONS: Array<{ key: string; get: (d: ContainerInspect) => unknown }> = [
   {
     key: "general",
     get: (d) => ({
@@ -224,15 +286,15 @@ const INSPECT_SECTIONS: Array<{ key: string; get: (d: any) => any }> = [
   { key: "raw", get: (d) => d },
 ];
 
-function isEmptyValue(v: any): boolean {
+function isEmptyValue(v: unknown): boolean {
   if (v === null || v === undefined) return true;
   if (Array.isArray(v)) return v.length === 0;
-  if (typeof v === "object") return Object.keys(v).length === 0 || Object.values(v).every(isEmptyValue);
+  if (typeof v === "object") return Object.keys(v as object).length === 0 || Object.values(v as object).every(isEmptyValue);
   if (typeof v === "string") return v === "";
   return false;
 }
 
-function InspectPanel({ data }: { data: any }) {
+function InspectPanel({ data }: { data: ContainerInspect }) {
   const { t } = useT();
   const [filter, setFilter] = useState("");
   const [copied, setCopied] = useState(false);
@@ -253,7 +315,7 @@ function InspectPanel({ data }: { data: any }) {
       const sub = filterObject(raw, needle);
       return sub === undefined ? null : { key, label, value: sub };
     })
-    .filter(Boolean) as Array<{ key: string; label: string; value: any }>;
+    .filter(Boolean) as Array<{ key: string; label: string; value: unknown }>;
 
   const copyAll = async () => {
     try {
@@ -326,7 +388,7 @@ function InspectSection({
   onToggle,
 }: {
   name: string;
-  value: any;
+  value: unknown;
   open: boolean;
   onToggle: () => void;
 }) {
@@ -354,14 +416,14 @@ function InspectSection({
   );
 }
 
-function describeValue(v: any): string {
+function describeValue(v: unknown): string {
   if (v === null) return "null";
   if (Array.isArray(v)) return `array(${v.length})`;
-  if (typeof v === "object") return `object(${Object.keys(v).length})`;
+  if (typeof v === "object") return `object(${Object.keys(v as object).length})`;
   return typeof v;
 }
 
-function filterObject(value: any, needle: string): any {
+function filterObject(value: unknown, needle: string): unknown {
   if (value === null || value === undefined) return value;
   if (Array.isArray(value)) {
     const arr = value
@@ -370,8 +432,8 @@ function filterObject(value: any, needle: string): any {
     return arr.length ? arr : undefined;
   }
   if (typeof value === "object") {
-    const out: Record<string, any> = {};
-    for (const [k, v] of Object.entries(value)) {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
       if (k.toLowerCase().includes(needle)) {
         out[k] = v;
         continue;
@@ -392,16 +454,16 @@ function Overview({
   netCfg,
   state,
 }: {
-  data: any;
-  cfg: any;
-  hostCfg: any;
-  netCfg: any;
-  state: any;
+  data: ContainerInspect;
+  cfg: ContainerConfig;
+  hostCfg: HostConfig;
+  netCfg: NetworkSettings;
+  state: ContainerState;
 }) {
   const { t } = useT();
   const env: string[] = cfg.Env ?? [];
   const labels: Record<string, string> = cfg.Labels ?? {};
-  const mounts: any[] = data.Mounts ?? [];
+  const mounts: ContainerMount[] = data.Mounts ?? [];
   const portBindings: Record<string, Array<{ HostIp?: string; HostPort?: string }>> =
     hostCfg.PortBindings ?? {};
   const networks = netCfg.Networks ?? {};
@@ -494,7 +556,7 @@ function Overview({
             {env.map((e, i) => {
               const [k, ...rest] = e.split("=");
               return (
-                <div key={i} className="grid grid-cols-[10rem_1fr] gap-2">
+                <div key={`${i}-${e}`} className="grid grid-cols-[10rem_1fr] gap-2">
                   <span className="text-slate-400 truncate">{k}</span>
                   <span className="text-slate-200 break-all">{rest.join("=")}</span>
                 </div>
@@ -510,7 +572,7 @@ function Overview({
         ) : (
           <div className="space-y-1 text-xs font-mono">
             {mounts.map((m, i) => (
-              <div key={i}>
+              <div key={`${m.Destination ?? ""}-${m.Source ?? ""}-${i}`}>
                 <span className="text-slate-400">{m.Type}</span>{" "}
                 <span className="text-slate-500">{m.Source}</span> →{" "}
                 <span className="text-brand-300">{m.Destination}</span>{" "}
@@ -525,7 +587,7 @@ function Overview({
         title={t("containers.detail.sections.networks", { count: Object.keys(networks).length })}
       >
         <div className="space-y-2 text-xs">
-          {Object.entries<any>(networks).map(([n, cfg]) => (
+          {Object.entries(networks).map(([n, cfg]) => (
             <div key={n} className="rounded border border-slate-800 p-2">
               <div className="font-medium text-slate-200">{n}</div>
               <div className="grid grid-cols-2 gap-1 mt-1 text-slate-400 font-mono">

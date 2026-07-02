@@ -68,8 +68,9 @@ export const contextRoutes: FastifyPluginAsync = async (app) => {
           arch: version.Arch,
         },
       };
-    } catch (err: any) {
-      return { ok: false, error: err?.message ?? String(err) };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return { ok: false, error: message };
     }
   });
 };

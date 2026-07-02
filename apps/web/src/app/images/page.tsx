@@ -672,8 +672,8 @@ function RunImageModal({
         await api(`/containers/${created.id}/start`, { method: "POST" });
       }
       onCreated(created.id);
-    } catch (e: any) {
-      setError(e?.message ?? String(e));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
     } finally {
       setBusy(false);
     }

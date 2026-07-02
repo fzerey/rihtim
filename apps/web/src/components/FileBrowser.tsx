@@ -56,8 +56,8 @@ export function FileBrowser({ containerId }: { containerId: string }) {
       setEntries(res.entries);
       setTruncated(res.truncated);
       setPath(res.path);
-    } catch (e: any) {
-      setError(e.message ?? String(e));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
       setEntries([]);
     } finally {
       setLoading(false);
@@ -91,10 +91,10 @@ export function FileBrowser({ containerId }: { containerId: string }) {
         truncated: res.truncated,
         size: res.size,
       });
-    } catch (e: any) {
+    } catch (e) {
       setViewFile({
         name: full,
-        content: e.message ?? String(e),
+        content: e instanceof Error ? e.message : String(e),
         binary: false,
         truncated: false,
         size: 0,
