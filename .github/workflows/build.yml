@@ -16,23 +16,17 @@ jobs:
           # Windows
           - os: windows
             runner: windows-latest
-            build-cmd: pnpm build
             artifact-name: rihtim-windows-x64
-            exe-cmd: npx pkg --compress Brotli --targets node22-win-x64 apps/api/dist/server.js -o dist/windows/rihtim-api.exe && npx pkg --compress Brotli --targets node22-win-x64 apps/web/.next/standalone/server.js -o dist/windows/rihtim-web.exe
 
           # Ubuntu/Linux
           - os: ubuntu
             runner: ubuntu-latest
-            build-cmd: pnpm build
             artifact-name: rihtim-linux-x64
-            exe-cmd: npx pkg --compress Brotli --targets node22-linux-x64 apps/api/dist/server.js -o dist/linux/rihtim-api && npx pkg --compress Brotli --targets node22-linux-x64 apps/web/.next/standalone/server.js -o dist/linux/rihtim-web && chmod +x dist/linux/rihtim-*
 
           # macOS
           - os: macos
             runner: macos-latest
-            build-cmd: pnpm build
             artifact-name: rihtim-macos-x64
-            exe-cmd: npx pkg --compress Brotli --targets node22-macos-x64 apps/api/dist/server.js -o dist/macos/rihtim-api && npx pkg --compress Brotli --targets node22-macos-x64 apps/web/.next/standalone/server.js -o dist/macos/rihtim-web && chmod +x dist/macos/rihtim-*
 
     steps:
       - uses: actions/checkout@v4
@@ -45,38 +39,87 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build project
-        run: ${{ matrix.build-cmd }}
+        run: pnpm build
 
-      - name: Create standalone executables
+      - name: Create standalone bundle
         shell: bash
         run: |
-          npm install -g pkg
-          mkdir -p dist/${{ matrix.os }}
-          ${{ matrix.exe-cmd }}
+          mkdir -p dist/${{ matrix.os }}/rihtim
 
-      - name: Package executables
-        shell: bash
-        run: |
+          # API'yi kopyala
+          cp -r apps/api/dist dist/${{ matrix.os }}/rihtim/api
+          cp apps/api/package.json dist/${{ matrix.os }}/rihtim/api/
+
+          # Web'i kopyala (standalone mode)
+          cp -r apps/web/.next/standalone/* dist/${{ matrix.os }}/rihtim/web/
+          cp -r apps/web/public dist/${{ matrix.os }}/rihtim/web/ || true
+
+          # node_modules'ı kopyala (shared)
+          mkdir -p dist/${{ matrix.os }}/rihtim/node_modules
+          cp -r node_modules/* dist/${{ matrix.os }}/rihtim/node_modules/ || true
+
+          # Start script'i oluştur
           if [ "${{ matrix.os }}" = "windows" ]; then
-            cd dist/windows
-            7z a rihtim-${{ github.ref_name }}-windows-x64.zip rihtim-*.exe
+            cat > dist/${{ matrix.os }}/rihtim/start.bat << 'EOF'
+@echo off
+cd /d "%~dp0"
+start "Rihtim API" cmd /k "node api/dist/server.js"
+start "Rihtim Web" cmd /k "cd web && node server.js"
+echo.
+echo API: http://127.0.0.1:5170
+echo Web: http://localhost:3030
+pause
+EOF
+          else
+            cat > dist/${{ matrix.os }}/rihtim/start.sh << 'EOF'
+#!/bin/bash
+cd "$(dirname "$0")"
+node api/dist/server.js &
+cd web && node server.js &
+echo ""
+echo "API: http://127.0.0.1:5170"
+echo "Web: http://localhost:3030"
+wait
+EOF
+            chmod +x dist/${{ matrix.os }}/rihtim/start.sh
+          fi
+
+          # README ekle
+          cat > dist/${{ matrix.os }}/rihtim/README.txt << 'EOF'
+=== Rihtim ===
+
+Çalıştırmak için:
+- Windows: start.bat dosyasını çift tıklayın
+- Linux/macOS: ./start.sh komutunu çalıştırın
+
+Web UI: http://localhost:3030
+API: http://127.0.0.1:5170
+EOF
+
+      - name: Package
+        shell: bash
+        run: |
+          mkdir -p dist/${{ matrix.os }}/packages
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            cd dist/${{ matrix.os }}
+            7z a packages/rihtim-${{ github.ref_name }}-windows-x64.zip rihtim/
           else
             cd dist/${{ matrix.os }}
-            tar -czf rihtim-${{ github.ref_name }}-${{ matrix.os }}-x64.tar.gz rihtim-*
+            tar -czf packages/rihtim-${{ github.ref_name }}-${{ matrix.os }}-x64.tar.gz rihtim/
           fi
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: dist/${{ matrix.os }}/rihtim-*
+          path: dist/${{ matrix.os }}/packages/
 
   release:
     name: Create Release
@@ -97,7 +140,8 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/**/*
+          files: artifacts/**/*.zip
+          files: artifacts/**/*.tar.gz
           draft: false
           prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') }}
           token: ${{ secrets.GITHUB_TOKEN }}
