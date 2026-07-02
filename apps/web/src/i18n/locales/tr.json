@@ -257,10 +257,11 @@
     },
     "hub": {
       "section": "Docker Hub'da ara",
+      "dockerHub": "Docker Hub (Resmi)",
       "placeholder": "ör: postgres, redis, node...",
       "search": "Ara",
       "empty": "Sonuç yok",
-      "idle": "Docker Hub'da aramak için bir ad yazın",
+      "idle": "Aramak için bir ad yazın",
       "typeMore": "En az 2 karakter yazın…",
       "loading": "Aranıyor...",
       "official": "Resmi",
@@ -274,6 +275,15 @@
       "loadingTags": "Etiketler yükleniyor…",
       "tagsEmpty": "Etiket bulunamadı",
       "openInHub": "Docker Hub'da aç"
+    },
+    "pullFromRegistry": {
+      "section": "Depodan İmaj Çek",
+      "selectRegistry": "Depo seçin",
+      "imageName": "İmaj adı",
+      "imageNamePlaceholder": "ör: nginx, postgres, node",
+      "imageTag": "Etiket",
+      "pull": "İmaj Çek",
+      "pulling": "Çekiliyor..."
     }
   },
   "volumes": {
@@ -370,10 +380,16 @@
   "settings": {
     "title": "Ayarlar",
     "subtitle": "Docker bağlantı bağlamlarını yönetin. WSL desteklenir.",
+    "contexts": "Docker Bağlamları",
+    "registries": "Image Depoları",
     "active": "aktif",
     "test": "Test et",
     "makeActive": "Aktif yap",
     "newContext": "Yeni bağlam",
+    "newRegistry": "Yeni depo",
+    "registryPublic": "Genel",
+    "registryAuthenticated": "Kimlik Doğrulamalı",
+    "registryIsPublic": "Genel depo (kimlik bilgileri isteğe bağlı)",
     "fields": {
       "name": "Ad",
       "kind": "Tür",
@@ -381,14 +397,24 @@
       "host": "Host",
       "port": "Port",
       "sshHost": "SSH host (user@host)",
-      "wslDistro": "WSL Dağıtım adı"
+      "wslDistro": "WSL Dağıtım adı",
+      "registryName": "Depo adı",
+      "registryUrl": "Depo URL'si",
+      "username": "Kullanıcı adı",
+      "password": "Parola"
     },
     "placeholders": {
       "name": "ör: wsl-ubuntu",
       "socketNpipe": "//./pipe/docker_engine",
       "socketUnix": "/var/run/docker.sock",
       "sshHost": "root@10.0.0.5",
-      "wslDistro": "Ubuntu"
+      "wslDistro": "Ubuntu",
+      "registryName": "ör: Benim Özel Depo",
+      "registryUrl": "ör: https://ghcr.io veya https://depo.ornek.com",
+      "username": "depo_kullanicisi",
+      "usernameOptional": "depo_kullanicisi (isteğe bağlı)",
+      "password": "depo_sifresi",
+      "passwordOptional": "depo_sifresi (isteğe bağlı)"
     },
     "kinds": {
       "npipe": "Windows Named Pipe",

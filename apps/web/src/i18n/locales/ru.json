@@ -69,7 +69,8 @@
       "title": "Недавние события",
       "subtitle": "Активность Docker Engine за последние {minutes} мин",
       "empty": "Нет недавних событий",
-      "error": "Не удалось загрузить события"    },
+      "error": "Не удалось загрузить события"
+    },
     "storage": {
       "title": "Использование хранилища",
       "subtitle": "{total} использовано • {reclaimable} можно освободить",
@@ -79,7 +80,8 @@
       "volumes": "Тома",
       "buildCache": "Кэш сборки",
       "count": "{active} активно из {total}",
-      "reclaimable": "{value} можно освободить"    }
+      "reclaimable": "{value} можно освободить"
+    }
   },
   "containers": {
     "title": "Контейнеры",
@@ -156,8 +158,48 @@
           "command": "Команда",
           "security": "Безопасность",
           "raw": "Сырой JSON"
-        }
-      }
+        },
+        "section": "Section",
+        "all": "All",
+        "copy": "Copy",
+        "copied": "Copied",
+        "filterPlaceholder": "Filter keys...",
+        "empty": "No matching keys",
+        "expandAll": "Expand all",
+        "collapseAll": "Collapse all"
+      },
+      "sections": {
+        "state": "State",
+        "imageCmd": "Image & Command",
+        "resources": "Resources & Restart",
+        "ports": "Port Bindings",
+        "env": "Environment Variables ({count})",
+        "mounts": "Mounts ({count})",
+        "networks": "Networks ({count})",
+        "labels": "Labels ({count})"
+      },
+      "fields": {
+        "status": "Status",
+        "started": "Started",
+        "finished": "Finished",
+        "exitCode": "Exit Code",
+        "restartCount": "Restart Count",
+        "image": "Image",
+        "imageId": "Image ID",
+        "entrypoint": "Entrypoint",
+        "cmd": "Cmd",
+        "workingDir": "WorkingDir",
+        "user": "User",
+        "restartPolicy": "RestartPolicy",
+        "memory": "Memory",
+        "cpuShares": "CPU Shares",
+        "nanoCpus": "NanoCPUs",
+        "privileged": "Privileged"
+      },
+      "noPortBindings": "None",
+      "noEnv": "None",
+      "noMounts": "None",
+      "noLabels": "None"
     },
     "stats": {
       "cpu": "CPU",
@@ -173,6 +215,11 @@
       "restartAll": "Перезапустить все",
       "removeAll": "Удалить все",
       "projectLabel": "Проект Compose"
+    },
+    "files": {
+      "empty": "Select a file",
+      "rootDir": "Root",
+      "upDir": "Parent directory"
     }
   },
   "images": {
@@ -180,7 +227,15 @@
     "pullSection": "Скачать образ",
     "pullPlaceholder": "напр. nginx:alpine",
     "pull": "Скачать",
-    "columns": { "inUse": "Используется", "pulled": "Скачан" },
+    "columns": {
+      "inUse": "Используется",
+      "pulled": "Скачан",
+      "tag": "Tag",
+      "id": "ID",
+      "size": "Size",
+      "created": "Created",
+      "actions": "Actions"
+    },
     "inUse": {
       "unused": "Не используется",
       "running": "{running}/{total} активно",
@@ -218,7 +273,17 @@
       "alreadyPulled": "Этот тег уже скачан",
       "loadingTags": "Загрузка тегов…",
       "tagsEmpty": "Нет тегов",
-      "openInHub": "Открыть на Docker Hub"
+      "openInHub": "Открыть на Docker Hub",
+      "dockerHub": "Docker Hub (Official)"
+    },
+    "pullFromRegistry": {
+      "section": "Pull from Registry",
+      "selectRegistry": "Select a registry",
+      "imageName": "Image name",
+      "imageNamePlaceholder": "e.g. nginx, postgres, node",
+      "imageTag": "Tag",
+      "pull": "Pull Image",
+      "pulling": "Pulling..."
     }
   },
   "volumes": {
@@ -318,7 +383,54 @@
     "active": "активен",
     "test": "Проверить",
     "makeActive": "Сделать активным",
-    "newContext": "Новый контекст"
+    "newContext": "Новый контекст",
+    "contexts": "Docker Contexts",
+    "registries": "Image Registries",
+    "newRegistry": "New registry",
+    "registryPublic": "Public",
+    "registryAuthenticated": "Authenticated",
+    "registryIsPublic": "Public registry (credentials optional)",
+    "fields": {
+      "name": "Name",
+      "kind": "Type",
+      "socketPath": "Socket / Pipe path",
+      "host": "Host",
+      "port": "Port",
+      "sshHost": "SSH host (user@host)",
+      "wslDistro": "WSL distribution name",
+      "registryName": "Registry name",
+      "registryUrl": "Registry URL",
+      "username": "Username",
+      "password": "Password"
+    },
+    "placeholders": {
+      "name": "e.g. wsl-ubuntu",
+      "socketNpipe": "//./pipe/docker_engine",
+      "socketUnix": "/var/run/docker.sock",
+      "sshHost": "root@10.0.0.5",
+      "wslDistro": "Ubuntu",
+      "registryName": "e.g. My Private Registry",
+      "registryUrl": "e.g. https://ghcr.io or https://registry.example.com",
+      "username": "registry_username",
+      "usernameOptional": "registry_username (optional)",
+      "password": "registry_password",
+      "passwordOptional": "registry_password (optional)"
+    },
+    "kinds": {
+      "npipe": "Windows Named Pipe",
+      "socket": "Unix Socket",
+      "tcp": "TCP (Remote Docker)",
+      "ssh": "SSH",
+      "wsl": "WSL Distribution"
+    },
+    "wslHint": {
+      "title": "Requirements for WSL connection",
+      "line1": "wsl.exe must be available on Windows.",
+      "line2": "Docker daemon must be running inside the selected distribution with /var/run/docker.sock present.",
+      "line3": "socat must be installed: sudo apt-get install -y socat",
+      "line4": "Rihtim bridges via wsl -d <distro> -u root socat over stdio. No extra ports or TCP required."
+    },
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
   },
   "errors": {
     "dockerUnreachable": "Не удалось подключиться к активному контексту Docker. Убедитесь, что движок запущен, или выберите другой в Настройках."

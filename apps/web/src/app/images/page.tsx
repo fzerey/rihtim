@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, humanBytes, timeAgo } from "@/lib/api";
-import type { ImageSummary, ContainerSummary } from "@rihtim/shared";
+import type { ImageSummary, ContainerSummary, Registry } from "@rihtim/shared";
 import { QueryErrorBanner } from "@/components/QueryErrorBanner";
 import { Trash2, Download, Search, Star, BadgeCheck, ExternalLink, ChevronDown, ArrowUp, ArrowDown, Play, X } from "lucide-react";
 import { useT } from "@/i18n/provider";
@@ -22,6 +22,11 @@ export default function ImagesPage() {
     queryKey: ["containers"],
     queryFn: () => api<ContainerSummary[]>("/containers"),
     refetchInterval: 5_000,
+  });
+
+  const { data: registries } = useQuery({
+    queryKey: ["registries"],
+    queryFn: () => api<Registry[]>("/registries"),
   });
 
   const usage = (() => {
@@ -48,6 +53,13 @@ export default function ImagesPage() {
   })();
 
   const [pulling, setPulling] = useState(false);
+  const [pullLogs, setPullLogs] = useState<string[]>([]);
+  const [showPullTerminal, setShowPullTerminal] = useState(false);
+  const pullTerminalTimeoutRef = useRef<NodeJS.Timeout>();
+
+  const [registryForPull, setRegistryForPull] = useState<string>("");
+  const [imageNameToPull, setImageNameToPull] = useState("");
+  const [imageTagToPull, setImageTagToPull] = useState("latest");
 
   const [hubTerm, setHubTerm] = useState("");
   const [hubQuery, setHubQuery] = useState("");
@@ -137,22 +149,36 @@ export default function ImagesPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["images"] }),
   });
 
-  async function doPull(image: string, tag: string) {
+  async function doPull(image: string, tag: string, registryId?: string) {
     setPulling(true);
+    setPullLogs([]);
+    setShowPullTerminal(true);
+    if (pullTerminalTimeoutRef.current) {
+      clearTimeout(pullTerminalTimeoutRef.current);
+    }
     try {
       const res = await fetch("/api/images/pull", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fromImage: image, tag: tag || "latest" }),
+        body: JSON.stringify({ fromImage: image, tag: tag || "latest", registryId }),
       });
       const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
       while (reader) {
-        const { done } = await reader.read();
+        const { done, value } = await reader.read();
         if (done) break;
+        const text = decoder.decode(value);
+        const lines = text.split("\n").filter((l) => l.trim());
+        setPullLogs((prev) => [...prev, ...lines]);
       }
     } finally {
       setPulling(false);
       qc.invalidateQueries({ queryKey: ["images"] });
+      // Auto-close terminal after 2 seconds
+      pullTerminalTimeoutRef.current = setTimeout(() => {
+        setShowPullTerminal(false);
+        setPullLogs([]);
+      }, 2000);
     }
   }
 
@@ -211,6 +237,89 @@ export default function ImagesPage() {
             ))}
           </ul>
         )}
+      </div>
+
+      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+        <div className="text-sm text-slate-400 mb-2">{t("images.pullFromRegistry.section")}</div>
+        <div className="space-y-2">
+          <select
+            value={registryForPull}
+            onChange={(e) => setRegistryForPull(e.target.value)}
+            className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm text-slate-200"
+          >
+            <option value="">{t("images.pullFromRegistry.selectRegistry")}</option>
+            <option value="_docker_hub">{t("images.hub.dockerHub")}</option>
+            {registries?.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
+          </select>
+
+          <div className="grid grid-cols-3 gap-2">
+            <div className="col-span-2">
+              <div className="text-xs text-slate-400 mb-1">{t("images.pullFromRegistry.imageName")}</div>
+              <input
+                className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm"
+                placeholder={t("images.pullFromRegistry.imageNamePlaceholder")}
+                value={imageNameToPull}
+                onChange={(e) => setImageNameToPull(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && registryForPull && imageNameToPull.trim()) {
+                    doPull(
+                      imageNameToPull.trim(),
+                      imageTagToPull || "latest",
+                      registryForPull === "_docker_hub" ? undefined : registryForPull,
+                    );
+                    setImageNameToPull("");
+                    setImageTagToPull("latest");
+                  }
+                }}
+                autoComplete="off"
+              />
+            </div>
+            <div>
+              <div className="text-xs text-slate-400 mb-1">{t("images.pullFromRegistry.imageTag")}</div>
+              <input
+                className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm"
+                placeholder="latest"
+                value={imageTagToPull}
+                onChange={(e) => setImageTagToPull(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && registryForPull && imageNameToPull.trim()) {
+                    doPull(
+                      imageNameToPull.trim(),
+                      imageTagToPull || "latest",
+                      registryForPull === "_docker_hub" ? undefined : registryForPull,
+                    );
+                    setImageNameToPull("");
+                    setImageTagToPull("latest");
+                  }
+                }}
+                autoComplete="off"
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              if (imageNameToPull.trim()) {
+                doPull(
+                  imageNameToPull.trim(),
+                  imageTagToPull || "latest",
+                  registryForPull === "_docker_hub" ? undefined : registryForPull,
+                );
+                setImageNameToPull("");
+                setImageTagToPull("latest");
+              }
+            }}
+            disabled={pulling || !registryForPull || !imageNameToPull.trim()}
+            className="w-full px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            {pulling ? t("images.pullFromRegistry.pulling") : t("images.pullFromRegistry.pull")}
+          </button>
+        </div>
       </div>
 
       <div className="rounded-xl border border-slate-800 overflow-hidden">
@@ -347,6 +456,20 @@ export default function ImagesPage() {
             setRunTarget(null);
             qc.invalidateQueries({ queryKey: ["containers"] });
             router.push(`/containers/${id}`);
+          }}
+        />
+      )}
+
+      {showPullTerminal && (
+        <PullTerminalBanner
+          logs={pullLogs}
+          isRunning={pulling}
+          onClose={() => {
+            setShowPullTerminal(false);
+            setPullLogs([]);
+            if (pullTerminalTimeoutRef.current) {
+              clearTimeout(pullTerminalTimeoutRef.current);
+            }
           }}
         />
       )}
@@ -752,6 +875,84 @@ function RunImageModal({
             {t("images.runModal.run")}
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function PullTerminalBanner({
+  logs,
+  isRunning,
+  onClose,
+}: {
+  logs: string[];
+  isRunning: boolean;
+  onClose: () => void;
+}) {
+  const { t } = useT();
+  const terminalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [logs]);
+
+  return (
+    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 space-y-2">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium text-slate-200">{t("images.pullFromRegistry.pulling")}</div>
+          {isRunning && (
+            <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
+          )}
+          {!isRunning && (
+            <div className="w-2 h-2 bg-emerald-400 rounded-full" />
+          )}
+        </div>
+        <button
+          onClick={onClose}
+          className="p-1 text-slate-400 hover:text-slate-200"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+      <div
+        ref={terminalRef}
+        className="h-48 overflow-auto p-3 bg-slate-950 font-mono text-xs space-y-0 text-slate-300 rounded-md border border-slate-800"
+      >
+        {logs.length === 0 ? (
+          <div className="text-slate-500">{t("images.pullFromRegistry.pulling")}...</div>
+        ) : (
+          logs.map((log, idx) => {
+            try {
+              const parsed = JSON.parse(log);
+              const status = parsed.status || "";
+              let progress = "";
+              if (
+                parsed.progressDetail &&
+                typeof parsed.progressDetail === "object" &&
+                typeof parsed.progressDetail.current === "number" &&
+                typeof parsed.progressDetail.total === "number" &&
+                parsed.progressDetail.total > 0
+              ) {
+                const percent = Math.round((parsed.progressDetail.current / parsed.progressDetail.total) * 100);
+                progress = ` ${percent}%`;
+              }
+              return (
+                <div key={idx} className="break-all">
+                  {status}{progress}
+                </div>
+              );
+            } catch {
+              return (
+                <div key={idx} className="break-all">
+                  {log}
+                </div>
+              );
+            }
+          })
+        )}
       </div>
     </div>
   );

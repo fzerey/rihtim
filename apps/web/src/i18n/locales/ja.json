@@ -158,8 +158,48 @@
           "command": "コマンド",
           "security": "セキュリティ",
           "raw": "ロー JSON"
-        }
-      }
+        },
+        "section": "Section",
+        "all": "All",
+        "copy": "Copy",
+        "copied": "Copied",
+        "filterPlaceholder": "Filter keys...",
+        "empty": "No matching keys",
+        "expandAll": "Expand all",
+        "collapseAll": "Collapse all"
+      },
+      "sections": {
+        "state": "State",
+        "imageCmd": "Image & Command",
+        "resources": "Resources & Restart",
+        "ports": "Port Bindings",
+        "env": "Environment Variables ({count})",
+        "mounts": "Mounts ({count})",
+        "networks": "Networks ({count})",
+        "labels": "Labels ({count})"
+      },
+      "fields": {
+        "status": "Status",
+        "started": "Started",
+        "finished": "Finished",
+        "exitCode": "Exit Code",
+        "restartCount": "Restart Count",
+        "image": "Image",
+        "imageId": "Image ID",
+        "entrypoint": "Entrypoint",
+        "cmd": "Cmd",
+        "workingDir": "WorkingDir",
+        "user": "User",
+        "restartPolicy": "RestartPolicy",
+        "memory": "Memory",
+        "cpuShares": "CPU Shares",
+        "nanoCpus": "NanoCPUs",
+        "privileged": "Privileged"
+      },
+      "noPortBindings": "None",
+      "noEnv": "None",
+      "noMounts": "None",
+      "noLabels": "None"
     },
     "stats": {
       "cpu": "CPU",
@@ -175,6 +215,11 @@
       "restartAll": "すべて再起動",
       "removeAll": "すべて削除",
       "projectLabel": "Compose プロジェクト"
+    },
+    "files": {
+      "empty": "Select a file",
+      "rootDir": "Root",
+      "upDir": "Parent directory"
     }
   },
   "images": {
@@ -182,7 +227,15 @@
     "pullSection": "イメージをプル",
     "pullPlaceholder": "例: nginx:alpine",
     "pull": "プル",
-    "columns": { "inUse": "使用中", "pulled": "プル日時" },
+    "columns": {
+      "inUse": "使用中",
+      "pulled": "プル日時",
+      "tag": "Tag",
+      "id": "ID",
+      "size": "Size",
+      "created": "Created",
+      "actions": "Actions"
+    },
     "inUse": {
       "unused": "未使用",
       "running": "{running}/{total} 実行中",
@@ -207,7 +260,30 @@
       "alreadyPulled": "このタグはすでにプル済みです",
       "loadingTags": "タグを読み込み中…",
       "tagsEmpty": "タグなし",
-      "openInHub": "Docker Hub で開く"
+      "openInHub": "Docker Hub で開く",
+      "dockerHub": "Docker Hub (Official)"
+    },
+    "runModal": {
+      "title": "Run a new container",
+      "name": "Name",
+      "namePlaceholder": "optional container name",
+      "ports": "Port mappings",
+      "portsPlaceholder": "one per line, e.g. 8080:80",
+      "env": "Environment variables",
+      "envPlaceholder": "KEY=VALUE per line",
+      "command": "Command override",
+      "commandPlaceholder": "optional, replaces image CMD",
+      "autoStart": "Start container after create",
+      "run": "Run"
+    },
+    "pullFromRegistry": {
+      "section": "Pull from Registry",
+      "selectRegistry": "Select a registry",
+      "imageName": "Image name",
+      "imageNamePlaceholder": "e.g. nginx, postgres, node",
+      "imageTag": "Tag",
+      "pull": "Pull Image",
+      "pulling": "Pulling..."
     }
   },
   "volumes": {
@@ -307,7 +383,54 @@
     "active": "アクティブ",
     "test": "テスト",
     "makeActive": "アクティブにする",
-    "newContext": "新しいコンテキスト"
+    "newContext": "新しいコンテキスト",
+    "contexts": "Docker Contexts",
+    "registries": "Image Registries",
+    "newRegistry": "New registry",
+    "registryPublic": "Public",
+    "registryAuthenticated": "Authenticated",
+    "registryIsPublic": "Public registry (credentials optional)",
+    "fields": {
+      "name": "Name",
+      "kind": "Type",
+      "socketPath": "Socket / Pipe path",
+      "host": "Host",
+      "port": "Port",
+      "sshHost": "SSH host (user@host)",
+      "wslDistro": "WSL distribution name",
+      "registryName": "Registry name",
+      "registryUrl": "Registry URL",
+      "username": "Username",
+      "password": "Password"
+    },
+    "placeholders": {
+      "name": "e.g. wsl-ubuntu",
+      "socketNpipe": "//./pipe/docker_engine",
+      "socketUnix": "/var/run/docker.sock",
+      "sshHost": "root@10.0.0.5",
+      "wslDistro": "Ubuntu",
+      "registryName": "e.g. My Private Registry",
+      "registryUrl": "e.g. https://ghcr.io or https://registry.example.com",
+      "username": "registry_username",
+      "usernameOptional": "registry_username (optional)",
+      "password": "registry_password",
+      "passwordOptional": "registry_password (optional)"
+    },
+    "kinds": {
+      "npipe": "Windows Named Pipe",
+      "socket": "Unix Socket",
+      "tcp": "TCP (Remote Docker)",
+      "ssh": "SSH",
+      "wsl": "WSL Distribution"
+    },
+    "wslHint": {
+      "title": "Requirements for WSL connection",
+      "line1": "wsl.exe must be available on Windows.",
+      "line2": "Docker daemon must be running inside the selected distribution with /var/run/docker.sock present.",
+      "line3": "socat must be installed: sudo apt-get install -y socat",
+      "line4": "Rihtim bridges via wsl -d <distro> -u root socat over stdio. No extra ports or TCP required."
+    },
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
   },
   "errors": {
     "dockerUnreachable": "アクティブな Docker コンテキストに接続できません。エンジンが実行中か確認するか、設定で別のコンテキストを選択してください。"
