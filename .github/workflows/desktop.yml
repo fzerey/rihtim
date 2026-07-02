@@ -37,6 +37,10 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      - name: Install Linux packaging deps
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y fakeroot dpkg
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -45,8 +49,6 @@ jobs:
         env:
           # Produce unsigned macOS builds (no Apple certificates in CI).
           CSC_IDENTITY_AUTODISCOVERY: "false"
-          # Avoid electron-builder attempting to publish.
-          GH_TOKEN: ""
 
       - name: Upload installers
         uses: actions/upload-artifact@v4
