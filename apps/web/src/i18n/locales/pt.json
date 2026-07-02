@@ -18,7 +18,9 @@
     "clear": "Limpar",
     "autoscroll": "Auto-rolagem",
     "selectFile": "Selecione um arquivo",    "retry": "Tentar novamente",
-    "loadError": "Falha ao carregar dados",    "pagination": {
+    "loadError": "Falha ao carregar dados",
+    "copy": "Copiar",
+    "pagination": {
       "prev": "Anterior",
       "next": "Próximo",
       "rowsPerPage": "Linhas por página",
@@ -220,11 +222,53 @@
   },
   "volumes": {
     "title": "Volumes",
-    "newPlaceholder": "nome do novo volume"
+    "newPlaceholder": "nome do novo volume",
+    "prune": "Limpar",
+    "pruneHint": "Remover todos os volumes não utilizados",
+    "pruneConfirm": "Todos os volumes não utilizados serão removidos. Continuar?",
+    "onlyUnused": "Apenas não usados",
+    "summary": "{count} volumes · {size} · {unused} não utilizados",
+    "empty": "Nenhum volume encontrado.",
+    "inUseHint": "Volume em uso",
+    "columns": {
+      "name": "Nome",
+      "driver": "Driver",
+      "mount": "Montagem",
+      "size": "Tamanho",
+      "usedBy": "Usado por",
+      "actions": "Ações"
+    }
   },
   "networks": {
     "title": "Redes",
-    "newPlaceholder": "nome da nova rede"
+    "newPlaceholder": "nome da nova rede",
+    "prune": "Limpar",
+    "pruneHint": "Remover todas as redes não utilizadas",
+    "pruneConfirm": "Todas as redes não utilizadas serão removidas. Continuar?",
+    "onlyCustom": "Apenas personalizadas",
+    "empty": "Nenhuma rede encontrada.",
+    "builtinHint": "Redes integradas não podem ser removidas",
+    "columns": {
+      "name": "Nome",
+      "driver": "Driver",
+      "scope": "Escopo",
+      "subnet": "Sub-rede",
+      "actions": "Ações"
+    },
+    "detail": {
+      "general": "Geral",
+      "created": "Criado",
+      "internal": "Interna",
+      "attachable": "Anexável",
+      "ingress": "Ingress",
+      "ipv6": "IPv6",
+      "ipam": "IPAM",
+      "containers": "Contêineres ({count})",
+      "noContainers": "Nenhum contêiner conectado.",
+      "options": "Opções do driver",
+      "labels": "Rótulos",
+      "rawJson": "JSON bruto"
+    }
   },
   "builds": {
     "title": "Builds",

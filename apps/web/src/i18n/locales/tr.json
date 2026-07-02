@@ -20,6 +20,7 @@
     "selectFile": "Bir dosya seçin",
     "retry": "Yeniden dene",
     "loadError": "Veri yüklenemedi",
+    "copy": "Kopyala",
     "pagination": {
       "prev": "Önceki",
       "next": "Sonraki",
@@ -278,22 +279,51 @@
   "volumes": {
     "title": "Volume'ler",
     "newPlaceholder": "yeni volume adı",
+    "prune": "Temizle",
+    "pruneHint": "Kullanılmayan tüm birimleri sil",
+    "pruneConfirm": "Kullanılmayan tüm birimler silinecek. Devam?",
+    "onlyUnused": "Sadece kullanılmayan",
+    "summary": "{count} birim · {size} · {unused} kullanılmayan",
+    "empty": "Birim bulunamadı.",
+    "inUseHint": "Birim kullanımda",
     "columns": {
       "name": "Ad",
       "driver": "Sürücü",
       "mount": "Mount",
+      "size": "Boyut",
+      "usedBy": "Kullanım",
       "actions": "İşlem"
     }
   },
   "networks": {
     "title": "Ağlar",
     "newPlaceholder": "yeni ağ adı",
+    "prune": "Temizle",
+    "pruneHint": "Kullanılmayan tüm ağları sil",
+    "pruneConfirm": "Kullanılmayan tüm ağlar silinecek. Devam?",
+    "onlyCustom": "Sadece özel",
+    "empty": "Ağ bulunamadı.",
+    "builtinHint": "Yerleşik ağlar silinemez",
     "columns": {
       "name": "Ad",
       "driver": "Sürücü",
       "scope": "Kapsam",
       "subnet": "Subnet",
       "actions": "İşlem"
+    },
+    "detail": {
+      "general": "Genel",
+      "created": "Oluşturulma",
+      "internal": "Dahili",
+      "attachable": "Bağlanabilir",
+      "ingress": "Ingress",
+      "ipv6": "IPv6",
+      "ipam": "IPAM",
+      "containers": "Konteynerler ({count})",
+      "noContainers": "Bağlı konteyner yok.",
+      "options": "Sürücü seçenekleri",
+      "labels": "Etiketler",
+      "rawJson": "Ham JSON"
     }
   },
   "builds": {

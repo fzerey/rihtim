@@ -18,7 +18,9 @@
     "clear": "Limpiar",
     "autoscroll": "Auto-desplazar",
     "selectFile": "Selecciona un archivo",    "retry": "Reintentar",
-    "loadError": "Error al cargar los datos",    "pagination": {
+    "loadError": "Error al cargar los datos",
+    "copy": "Copiar",
+    "pagination": {
       "prev": "Anterior",
       "next": "Siguiente",
       "rowsPerPage": "Filas por página",
@@ -222,11 +224,53 @@
   },
   "volumes": {
     "title": "Volúmenes",
-    "newPlaceholder": "nombre del nuevo volumen"
+    "newPlaceholder": "nombre del nuevo volumen",
+    "prune": "Limpiar",
+    "pruneHint": "Eliminar todos los volúmenes no usados",
+    "pruneConfirm": "Se eliminarán todos los volúmenes no usados. ¿Continuar?",
+    "onlyUnused": "Solo no usados",
+    "summary": "{count} volúmenes · {size} · {unused} no usados",
+    "empty": "No se encontraron volúmenes.",
+    "inUseHint": "Volumen en uso",
+    "columns": {
+      "name": "Nombre",
+      "driver": "Driver",
+      "mount": "Montaje",
+      "size": "Tamaño",
+      "usedBy": "Usado por",
+      "actions": "Acciones"
+    }
   },
   "networks": {
     "title": "Redes",
-    "newPlaceholder": "nombre de la nueva red"
+    "newPlaceholder": "nombre de la nueva red",
+    "prune": "Limpiar",
+    "pruneHint": "Eliminar todas las redes no usadas",
+    "pruneConfirm": "Se eliminarán todas las redes no usadas. ¿Continuar?",
+    "onlyCustom": "Solo personalizadas",
+    "empty": "No se encontraron redes.",
+    "builtinHint": "Las redes integradas no se pueden eliminar",
+    "columns": {
+      "name": "Nombre",
+      "driver": "Driver",
+      "scope": "Ámbito",
+      "subnet": "Subred",
+      "actions": "Acciones"
+    },
+    "detail": {
+      "general": "General",
+      "created": "Creado",
+      "internal": "Interna",
+      "attachable": "Adjuntable",
+      "ingress": "Ingress",
+      "ipv6": "IPv6",
+      "ipam": "IPAM",
+      "containers": "Contenedores ({count})",
+      "noContainers": "Sin contenedores conectados.",
+      "options": "Opciones del driver",
+      "labels": "Etiquetas",
+      "rawJson": "JSON sin procesar"
+    }
   },
   "builds": {
     "title": "Compilaciones",

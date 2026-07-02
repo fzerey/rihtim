@@ -512,7 +512,21 @@ export const imageRoutes: FastifyPluginAsync = async (app) => {
 export const volumeRoutes: FastifyPluginAsync = async (app) => {
   app.get("/volumes", async () => {
     const docker = await currentDocker();
-    const res = await docker.listVolumes();
+    const [res, df] = await Promise.all([
+      docker.listVolumes(),
+      cachedDf(docker).catch(() => null),
+    ]);
+    const usage = new Map<string, { size?: number; refCount?: number }>();
+    if (df && Array.isArray(df.Volumes)) {
+      for (const v of df.Volumes) {
+        if (v.UsageData) {
+          usage.set(v.Name, {
+            size: v.UsageData.Size,
+            refCount: v.UsageData.RefCount,
+          });
+        }
+      }
+    }
     const mapped: VolumeSummary[] = (res.Volumes ?? []).map((v: any) => ({
       name: v.Name,
       driver: v.Driver,
@@ -520,6 +534,8 @@ export const volumeRoutes: FastifyPluginAsync = async (app) => {
       createdAt: v.CreatedAt,
       labels: v.Labels ?? {},
       scope: v.Scope,
+      size: usage.get(v.Name)?.size,
+      refCount: usage.get(v.Name)?.refCount,
     }));
     return mapped;
   });

@@ -83,6 +83,10 @@ export interface VolumeSummary {
   createdAt?: string;
   labels: Record<string, string>;
   scope: string;
+  /** Disk usage in bytes (from docker.df); -1 if driver doesn't report. */
+  size?: number;
+  /** Number of containers referencing this volume (from docker.df). */
+  refCount?: number;
 }
 
 export interface NetworkSummary {

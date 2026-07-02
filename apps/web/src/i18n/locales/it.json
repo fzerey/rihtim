@@ -20,6 +20,7 @@
     "selectFile": "Seleziona un file",
     "retry": "Riprova",
     "loadError": "Impossibile caricare i dati",
+    "copy": "Copia",
     "pagination": {
       "prev": "Prec.",
       "next": "Succ.",
@@ -224,11 +225,53 @@
   },
   "volumes": {
     "title": "Volumi",
-    "newPlaceholder": "nome nuovo volume"
+    "newPlaceholder": "nome nuovo volume",
+    "prune": "Pulisci",
+    "pruneHint": "Rimuovi tutti i volumi inutilizzati",
+    "pruneConfirm": "Tutti i volumi inutilizzati saranno rimossi. Continuare?",
+    "onlyUnused": "Solo inutilizzati",
+    "summary": "{count} volumi · {size} · {unused} inutilizzati",
+    "empty": "Nessun volume trovato.",
+    "inUseHint": "Volume in uso",
+    "columns": {
+      "name": "Nome",
+      "driver": "Driver",
+      "mount": "Mount",
+      "size": "Dimensione",
+      "usedBy": "Usato da",
+      "actions": "Azioni"
+    }
   },
   "networks": {
     "title": "Reti",
-    "newPlaceholder": "nome nuova rete"
+    "newPlaceholder": "nome nuova rete",
+    "prune": "Pulisci",
+    "pruneHint": "Rimuovi tutte le reti inutilizzate",
+    "pruneConfirm": "Tutte le reti inutilizzate saranno rimosse. Continuare?",
+    "onlyCustom": "Solo personalizzate",
+    "empty": "Nessuna rete trovata.",
+    "builtinHint": "Le reti integrate non possono essere rimosse",
+    "columns": {
+      "name": "Nome",
+      "driver": "Driver",
+      "scope": "Scope",
+      "subnet": "Subnet",
+      "actions": "Azioni"
+    },
+    "detail": {
+      "general": "Generale",
+      "created": "Creato",
+      "internal": "Interna",
+      "attachable": "Collegabile",
+      "ingress": "Ingress",
+      "ipv6": "IPv6",
+      "ipam": "IPAM",
+      "containers": "Container ({count})",
+      "noContainers": "Nessun container collegato.",
+      "options": "Opzioni driver",
+      "labels": "Etichette",
+      "rawJson": "JSON grezzo"
+    }
   },
   "builds": {
     "title": "Build",

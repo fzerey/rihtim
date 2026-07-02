@@ -20,6 +20,7 @@
     "selectFile": "Выберите файл",
     "retry": "Повторить",
     "loadError": "Не удалось загрузить данные",
+    "copy": "Копировать",
     "pagination": {
       "prev": "Назад",
       "next": "Вперёд",
@@ -222,11 +223,53 @@
   },
   "volumes": {
     "title": "Тома",
-    "newPlaceholder": "имя нового тома"
+    "newPlaceholder": "имя нового тома",
+    "prune": "Очистить",
+    "pruneHint": "Удалить все неиспользуемые тома",
+    "pruneConfirm": "Все неиспользуемые тома будут удалены. Продолжить?",
+    "onlyUnused": "Только неиспользуемые",
+    "summary": "Томов: {count} · {size} · неиспользуется: {unused}",
+    "empty": "Тома не найдены.",
+    "inUseHint": "Том используется",
+    "columns": {
+      "name": "Имя",
+      "driver": "Драйвер",
+      "mount": "Точка монтирования",
+      "size": "Размер",
+      "usedBy": "Используется",
+      "actions": "Действия"
+    }
   },
   "networks": {
     "title": "Сети",
-    "newPlaceholder": "имя новой сети"
+    "newPlaceholder": "имя новой сети",
+    "prune": "Очистить",
+    "pruneHint": "Удалить все неиспользуемые сети",
+    "pruneConfirm": "Все неиспользуемые сети будут удалены. Продолжить?",
+    "onlyCustom": "Только пользовательские",
+    "empty": "Сети не найдены.",
+    "builtinHint": "Встроенные сети нельзя удалить",
+    "columns": {
+      "name": "Имя",
+      "driver": "Драйвер",
+      "scope": "Область",
+      "subnet": "Subnet",
+      "actions": "Действия"
+    },
+    "detail": {
+      "general": "Общее",
+      "created": "Создано",
+      "internal": "Внутренняя",
+      "attachable": "Подключаемая",
+      "ingress": "Ingress",
+      "ipv6": "IPv6",
+      "ipam": "IPAM",
+      "containers": "Контейнеры ({count})",
+      "noContainers": "Нет подключённых контейнеров.",
+      "options": "Опции драйвера",
+      "labels": "Метки",
+      "rawJson": "Сырой JSON"
+    }
   },
   "builds": {
     "title": "Сборки",

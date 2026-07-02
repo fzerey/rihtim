@@ -20,6 +20,7 @@
     "selectFile": "选择文件",
     "retry": "重试",
     "loadError": "数据加载失败",
+    "copy": "复制",
     "pagination": {
       "prev": "上一页",
       "next": "下一页",
@@ -224,11 +225,53 @@
   },
   "volumes": {
     "title": "卷",
-    "newPlaceholder": "新卷名称"
+    "newPlaceholder": "新卷名称",
+    "prune": "清理",
+    "pruneHint": "删除所有未使用的卷",
+    "pruneConfirm": "将删除所有未使用的卷。继续？",
+    "onlyUnused": "仅未使用",
+    "summary": "{count} 个卷 · {size} · 未使用 {unused}",
+    "empty": "未找到卷。",
+    "inUseHint": "卷正在使用",
+    "columns": {
+      "name": "名称",
+      "driver": "驱动",
+      "mount": "挂载点",
+      "size": "大小",
+      "usedBy": "使用者",
+      "actions": "操作"
+    }
   },
   "networks": {
     "title": "网络",
-    "newPlaceholder": "新网络名称"
+    "newPlaceholder": "新网络名称",
+    "prune": "清理",
+    "pruneHint": "删除所有未使用的网络",
+    "pruneConfirm": "将删除所有未使用的网络。继续？",
+    "onlyCustom": "仅自定义",
+    "empty": "未找到网络。",
+    "builtinHint": "无法删除内置网络",
+    "columns": {
+      "name": "名称",
+      "driver": "驱动",
+      "scope": "范围",
+      "subnet": "子网",
+      "actions": "操作"
+    },
+    "detail": {
+      "general": "常规",
+      "created": "创建时间",
+      "internal": "内部",
+      "attachable": "可附加",
+      "ingress": "Ingress",
+      "ipv6": "IPv6",
+      "ipam": "IPAM",
+      "containers": "容器 ({count})",
+      "noContainers": "没有连接的容器。",
+      "options": "驱动选项",
+      "labels": "标签",
+      "rawJson": "原始 JSON"
+    }
   },
   "builds": {
     "title": "构建",

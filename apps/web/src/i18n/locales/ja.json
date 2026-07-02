@@ -20,6 +20,7 @@
     "selectFile": "ファイルを選択",
     "retry": "再試行",
     "loadError": "データの読み込みに失敗しました",
+    "copy": "コピー",
     "pagination": {
       "prev": "前へ",
       "next": "次へ",
@@ -211,11 +212,53 @@
   },
   "volumes": {
     "title": "ボリューム",
-    "newPlaceholder": "新しいボリューム名"
+    "newPlaceholder": "新しいボリューム名",
+    "prune": "整理",
+    "pruneHint": "未使用のボリュームを全て削除",
+    "pruneConfirm": "未使用のボリュームを全て削除します。続けますか？",
+    "onlyUnused": "未使用のみ",
+    "summary": "ボリューム {count} 個 · {size} · 未使用 {unused}",
+    "empty": "ボリュームが見つかりません。",
+    "inUseHint": "使用中のボリューム",
+    "columns": {
+      "name": "名前",
+      "driver": "ドライバ",
+      "mount": "マウント",
+      "size": "サイズ",
+      "usedBy": "使用中",
+      "actions": "操作"
+    }
   },
   "networks": {
     "title": "ネットワーク",
-    "newPlaceholder": "新しいネットワーク名"
+    "newPlaceholder": "新しいネットワーク名",
+    "prune": "整理",
+    "pruneHint": "未使用のネットワークを全て削除",
+    "pruneConfirm": "未使用のネットワークを全て削除します。続けますか？",
+    "onlyCustom": "ユーザー定義のみ",
+    "empty": "ネットワークが見つかりません。",
+    "builtinHint": "組み込みネットワークは削除できません",
+    "columns": {
+      "name": "名前",
+      "driver": "ドライバ",
+      "scope": "スコープ",
+      "subnet": "サブネット",
+      "actions": "操作"
+    },
+    "detail": {
+      "general": "一般",
+      "created": "作成日",
+      "internal": "内部",
+      "attachable": "接続可能",
+      "ingress": "Ingress",
+      "ipv6": "IPv6",
+      "ipam": "IPAM",
+      "containers": "コンテナ ({count})",
+      "noContainers": "接続されているコンテナはありません。",
+      "options": "ドライバオプション",
+      "labels": "ラベル",
+      "rawJson": "生 JSON"
+    }
   },
   "builds": {
     "title": "ビルド",

@@ -20,6 +20,7 @@
     "selectFile": "Datei auswählen",
     "retry": "Erneut versuchen",
     "loadError": "Daten konnten nicht geladen werden",
+    "copy": "Kopieren",
     "pagination": {
       "prev": "Zurück",
       "next": "Weiter",
@@ -222,11 +223,53 @@
   },
   "volumes": {
     "title": "Volumes",
-    "newPlaceholder": "neuer Volumename"
+    "newPlaceholder": "neuer Volumename",
+    "prune": "Aufräumen",
+    "pruneHint": "Alle ungenutzten Volumes entfernen",
+    "pruneConfirm": "Alle ungenutzten Volumes werden entfernt. Fortfahren?",
+    "onlyUnused": "Nur ungenutzte",
+    "summary": "{count} Volumes · {size} · {unused} ungenutzt",
+    "empty": "Keine Volumes gefunden.",
+    "inUseHint": "Volume wird verwendet",
+    "columns": {
+      "name": "Name",
+      "driver": "Treiber",
+      "mount": "Mount",
+      "size": "Größe",
+      "usedBy": "Verwendet von",
+      "actions": "Aktionen"
+    }
   },
   "networks": {
     "title": "Netzwerke",
-    "newPlaceholder": "neuer Netzwerkname"
+    "newPlaceholder": "neuer Netzwerkname",
+    "prune": "Aufräumen",
+    "pruneHint": "Alle ungenutzten Netzwerke entfernen",
+    "pruneConfirm": "Alle ungenutzten Netzwerke werden entfernt. Fortfahren?",
+    "onlyCustom": "Nur benutzerdefiniert",
+    "empty": "Keine Netzwerke gefunden.",
+    "builtinHint": "Integrierte Netzwerke können nicht entfernt werden",
+    "columns": {
+      "name": "Name",
+      "driver": "Treiber",
+      "scope": "Bereich",
+      "subnet": "Subnet",
+      "actions": "Aktionen"
+    },
+    "detail": {
+      "general": "Allgemein",
+      "created": "Erstellt",
+      "internal": "Intern",
+      "attachable": "Anfügbar",
+      "ingress": "Ingress",
+      "ipv6": "IPv6",
+      "ipam": "IPAM",
+      "containers": "Container ({count})",
+      "noContainers": "Keine Container verbunden.",
+      "options": "Treiber-Optionen",
+      "labels": "Labels",
+      "rawJson": "Rohes JSON"
+    }
   },
   "builds": {
     "title": "Builds",

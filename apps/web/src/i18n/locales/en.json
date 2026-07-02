@@ -20,6 +20,7 @@
     "selectFile": "Select a file",
     "retry": "Retry",
     "loadError": "Failed to load data",
+    "copy": "Copy",
     "pagination": {
       "prev": "Prev",
       "next": "Next",
@@ -278,22 +279,51 @@
   "volumes": {
     "title": "Volumes",
     "newPlaceholder": "new volume name",
+    "prune": "Prune",
+    "pruneHint": "Remove all unused volumes",
+    "pruneConfirm": "This will remove all unused volumes. Continue?",
+    "onlyUnused": "Only unused",
+    "summary": "{count} volumes · {size} · {unused} unused",
+    "empty": "No volumes found.",
+    "inUseHint": "Volume is in use",
     "columns": {
       "name": "Name",
       "driver": "Driver",
       "mount": "Mount",
+      "size": "Size",
+      "usedBy": "Used by",
       "actions": "Actions"
     }
   },
   "networks": {
     "title": "Networks",
     "newPlaceholder": "new network name",
+    "prune": "Prune",
+    "pruneHint": "Remove all unused networks",
+    "pruneConfirm": "This will remove all unused networks. Continue?",
+    "onlyCustom": "Only user-defined",
+    "empty": "No networks found.",
+    "builtinHint": "Built-in networks cannot be removed",
     "columns": {
       "name": "Name",
       "driver": "Driver",
       "scope": "Scope",
       "subnet": "Subnet",
       "actions": "Actions"
+    },
+    "detail": {
+      "general": "General",
+      "created": "Created",
+      "internal": "Internal",
+      "attachable": "Attachable",
+      "ingress": "Ingress",
+      "ipv6": "IPv6",
+      "ipam": "IPAM",
+      "containers": "Containers ({count})",
+      "noContainers": "No containers attached.",
+      "options": "Driver options",
+      "labels": "Labels",
+      "rawJson": "Raw JSON"
     }
   },
   "builds": {
