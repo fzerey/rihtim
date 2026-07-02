@@ -106,10 +106,22 @@ export default function ContainersPage() {
   }, [data, filter]);
 
   async function bulk(verb: "start" | "stop" | "restart" | "remove", items: ContainerSummary[]) {
+    const targets = items.filter((c) => {
+      switch (verb) {
+        case "start":
+          return c.state !== "running" && c.state !== "restarting" && c.state !== "paused";
+        case "stop":
+        case "restart":
+          return c.state === "running";
+        case "remove":
+          return true;
+      }
+    });
+    if (targets.length === 0) return;
     if (verb === "remove") {
-      await Promise.all(items.map((c) => remove.mutateAsync(c.id)));
+      await Promise.all(targets.map((c) => remove.mutateAsync(c.id)));
     } else {
-      await Promise.all(items.map((c) => action.mutateAsync({ id: c.id, verb })));
+      await Promise.all(targets.map((c) => action.mutateAsync({ id: c.id, verb })));
     }
   }
 
