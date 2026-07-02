@@ -32,7 +32,7 @@
     "dashboard": "Panel",
     "containers": "Konteynerler",
     "images": "İmajlar",
-    "builds": "Yapılar",
+    "builds": "Derlemeler",
     "volumes": "Volume'ler",
     "networks": "Ağlar",
     "settings": "Ayarlar"
@@ -77,7 +77,7 @@
       "images": "İmajlar",
       "containers": "Konteynerler",
       "volumes": "Volume'ler",
-      "buildCache": "Build önbelleği",
+      "buildCache": "Derleme önbelleği",
       "count": "{active} aktif / {total} toplam",
       "reclaimable": "{value} geri kazanılabilir"
     }
@@ -297,12 +297,12 @@
     }
   },
   "builds": {
-    "title": "Yapılar",
-    "newBuild": "Yeni build",
+    "title": "Derlemeler",
+    "newBuild": "Yeni derleme",
     "prune": "Kullanılmayanları temizle",
     "pruneAll": "Tümünü temizle",
-    "pruneAllConfirm": "Kullanımdakiler dahil tüm build önbelleği silinecek. Devam?",
-    "empty": "Build önbelleği boş.",
+    "pruneAllConfirm": "Kullanımdakiler dahil tüm derleme önbelleği silinecek. Devam?",
+    "empty": "Derleme önbelleği boş.",
     "summary": {
       "entries": "Kayıt sayısı",
       "total": "Toplam boyut",
@@ -322,13 +322,13 @@
       "idle": "Boşta"
     },
     "modal": {
-      "title": "Yeni build",
+      "title": "Yeni derleme",
       "contextPath": "Context yolu",
       "contextPathPlaceholder": "/yol/proje",
-      "contextPathHint": "Build context'in mutlak yolu (API sunucusundan görüldüğü şekilde).",
+      "contextPathHint": "Derleme context'inin mutlak yolu (API sunucusundan görüldüğü şekilde).",
       "dockerfile": "Dockerfile",
       "tag": "İmaj etiketi",
-      "buildArgs": "Build args (satır başına KEY=VALUE)",
+      "buildArgs": "Derleme args (satır başına KEY=VALUE)",
       "noCache": "Önbelleksiz",
       "pull": "Base imajı her zaman çek",
       "output": "Çıktı",
