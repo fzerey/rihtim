@@ -10,7 +10,7 @@ export function Providers({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            refetchInterval: 5000,
+            refetchInterval: 10_000,
             refetchOnMount: "always",
             refetchOnWindowFocus: true,
             refetchOnReconnect: true,

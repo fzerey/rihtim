@@ -1,9 +1,12 @@
 import Docker from "dockerode";
+import { Agent as HttpAgent } from "node:http";
 import type { DockerContext } from "@rihtim/shared";
 import { ensureWslBridge } from "./wsl-bridge.js";
 import { contextStore } from "./store.js";
 
 const clients = new Map<string, Docker>();
+
+const keepAliveAgent = new HttpAgent({ keepAlive: true, maxSockets: 8, keepAliveMsecs: 30_000 });
 
 export async function dockerFor(ctx: DockerContext): Promise<Docker> {
   const cached = clients.get(ctx.id);
@@ -36,7 +39,12 @@ export async function dockerFor(ctx: DockerContext): Promise<Docker> {
     case "wsl": {
       if (!ctx.wslDistro) throw new Error("wsl context missing wslDistro");
       const bridge = await ensureWslBridge(ctx.wslDistro);
-      docker = new Docker({ host: "127.0.0.1", port: bridge.port, protocol: "http" });
+      docker = new Docker({
+        host: "127.0.0.1",
+        port: bridge.port,
+        protocol: "http",
+        agent: keepAliveAgent,
+      } as any);
       break;
     }
     default:

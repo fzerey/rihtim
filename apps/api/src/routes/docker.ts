@@ -3,6 +3,7 @@ import { PassThrough } from "node:stream";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as tar from "tar-stream";
+import type Docker from "dockerode";
 import { currentDocker } from "../contexts/docker-client.js";
 import { demuxDockerLog } from "../util/demux.js";
 import type {
@@ -18,6 +19,23 @@ function basename(p: string): string {
   if (trimmed === "" || trimmed === "/") return "/";
   const idx = trimmed.lastIndexOf("/");
   return idx === -1 ? trimmed : trimmed.slice(idx + 1);
+}
+
+// docker.df() is expensive on daemons with many images/containers; multiple
+// routes (system/storage, build/cache, system/df) request it in parallel on
+// each poll. A short in-memory TTL lets them share one Docker round-trip.
+const DF_TTL_MS = 4000;
+const dfCache = new WeakMap<Docker, { at: number; value: Promise<unknown> }>();
+async function cachedDf(docker: Docker): Promise<any> {
+  const now = Date.now();
+  const entry = dfCache.get(docker);
+  if (entry && now - entry.at < DF_TTL_MS) return entry.value;
+  const value = docker.df().catch((err) => {
+    dfCache.delete(docker);
+    throw err;
+  });
+  dfCache.set(docker, { at: now, value });
+  return value;
 }
 
 function looksBinary(buf: Buffer): boolean {
@@ -602,12 +620,12 @@ export const systemRoutes: FastifyPluginAsync = async (app) => {
 
   app.get("/system/df", async () => {
     const docker = await currentDocker();
-    return docker.df();
+    return cachedDf(docker);
   });
 
   app.get("/system/storage", async () => {
     const docker = await currentDocker();
-    const df: any = await docker.df();
+    const df: any = await cachedDf(docker);
     const imgs: any[] = df.Images ?? [];
     const cts: any[] = df.Containers ?? [];
     const vols: any[] = df.Volumes ?? [];
@@ -777,7 +795,7 @@ async function collectContextFiles(root: string): Promise<string[]> {
 export const buildRoutes: FastifyPluginAsync = async (app) => {
   app.get("/build/cache", async () => {
     const docker = await currentDocker();
-    const df: any = await docker.df();
+    const df: any = await cachedDf(docker);
     const bc: any[] = df.BuildCache ?? [];
     const mapped: BuildCacheEntry[] = bc.map((b) => {
       const created = b.CreatedAt ? Date.parse(b.CreatedAt) : NaN;
