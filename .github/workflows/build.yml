@@ -59,41 +59,131 @@ jobs:
           mkdir -p dist/${{ matrix.os }}/rihtim/node_modules
           cp -r node_modules/* dist/${{ matrix.os }}/rihtim/node_modules/ 2>/dev/null || true
 
-      - name: Create start scripts
+      - name: Create Windows start script
+        if: matrix.os == 'windows'
+        shell: pwsh
+        run: |
+          $batContent = @"
+          @echo off
+          setlocal enabledelayedexpansion
+          
+          cd /d "%~dp0"
+          
+          echo Starting Rihtim...
+          echo.
+          
+          REM Start API in background
+          start /min "Rihtim API" node api\dist\server.js
+          
+          REM Wait a moment for API to start
+          timeout /t 2 /nobreak
+          
+          REM Start Web UI
+          start "Rihtim Web" cmd /k "cd web && node server.js"
+          
+          echo.
+          echo API running on: http://127.0.0.1:5170
+          echo Web UI: http://localhost:3030
+          "@
+          
+          Set-Content -Path "dist/${{ matrix.os }}/rihtim/start.bat" -Value $batContent -Encoding ASCII
+
+      - name: Create Linux/macOS start script
+        if: matrix.os != 'windows'
         shell: bash
         run: |
-          if [ "${{ matrix.os }}" = "windows" ]; then
-            cat > dist/${{ matrix.os }}/rihtim/start.bat << 'SCRIPT'
-          @echo off
-          cd /d "%~dp0"
-          start "Rihtim API" cmd /k "node api/dist/server.js"
-          start "Rihtim Web" cmd /k "cd web && node server.js"
-          echo.
-          echo API: http://127.0.0.1:5170
-          echo Web: http://localhost:3030
-          pause
-          SCRIPT
-          else
-            cat > dist/${{ matrix.os }}/rihtim/start.sh << 'SCRIPT'
+          cat > dist/${{ matrix.os }}/rihtim/start.sh << 'SCRIPT'
           #!/bin/bash
+          set -e
+          
           cd "$(dirname "$0")"
-          node api/dist/server.js &
-          cd web && node server.js &
+          
+          echo "Starting Rihtim..."
           echo ""
-          echo "API: http://127.0.0.1:5170"
-          echo "Web: http://localhost:3030"
-          wait
+          
+          # Start API in background
+          node api/dist/server.js &
+          API_PID=$!
+          
+          # Wait for API to be ready
+          sleep 2
+          
+          # Start Web UI (foreground)
+          echo ""
+          echo "API running on: http://127.0.0.1:5170"
+          echo "Web UI: http://localhost:3030"
+          echo ""
+          
+          cd web && node server.js
+          
+          # Clean up on exit
+          trap "kill $API_PID" EXIT
           SCRIPT
-            chmod +x dist/${{ matrix.os }}/rihtim/start.sh
-          fi
-          cat > dist/${{ matrix.os }}/rihtim/README.txt << 'SCRIPT'
-          === Rihtim ===
-          Çalıştırmak için:
-          - Windows: start.bat dosyasını çift tıklayın
-          - Linux/macOS: ./start.sh komutunu çalıştırın
-          Web UI: http://localhost:3030
-          API: http://127.0.0.1:5170
-          SCRIPT
+          
+          chmod +x dist/${{ matrix.os }}/rihtim/start.sh
+
+      - name: Create README
+        shell: bash
+        run: |
+          cat > dist/${{ matrix.os }}/rihtim/README.md << 'README'
+          # Rihtim - Docker Management UI
+          
+          A web-based Docker management interface with native WSL2 support.
+          
+          ## Quick Start
+          
+          ### Windows
+          Double-click `start.bat` to launch:
+          - API Server (background)
+          - Web UI (http://localhost:3030)
+          
+          ### Linux / macOS
+          ```bash
+          chmod +x start.sh
+          ./start.sh
+          ```
+          
+          Then open http://localhost:3030 in your browser.
+          
+          ## URLs
+          
+          - **Web UI**: http://localhost:3030
+          - **API**: http://127.0.0.1:5170
+          
+          ## Requirements
+          
+          - Docker Engine running
+          - Node.js 20+ (included in bundle)
+          
+          ## Features
+          
+          - Container management (start, stop, restart, remove)
+          - Image management & Docker Hub search
+          - Volume management with size reporting
+          - Network management
+          - Real-time logs via WebSocket
+          - Multi-context support (Docker Desktop, WSL, SSH, TCP)
+          - Turkish & English support
+          - Performance optimized
+          
+          ## Troubleshooting
+          
+          **Port already in use?**
+          - API runs on port 5170
+          - Web UI runs on port 3030
+          
+          **Docker not found?**
+          - Ensure Docker Engine is running
+          - Check Docker socket/pipe permissions
+          
+          **For WSL support:**
+          - Ensure Docker is running in your WSL distro
+          - Add WSL context from Settings in the UI
+          
+          ## License
+          
+          MIT
+          README
 
       - name: Package
         shell: bash
