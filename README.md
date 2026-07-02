@@ -1,50 +1,50 @@
 # Rihtim
 
-Docker Desktop'a açık kaynak, web tabanlı bir alternatif. Yerel Docker'a olduğu gibi
-**WSL içindeki Docker'a da** ekstra port açmadan bağlanabilir.
+An open-source, web-based alternative to Docker Desktop. Connects to your local
+Docker as well as **Docker running inside WSL** — with no extra port to expose.
 
-> Türkçe "rıhtım" = wharf/pier — Docker temasına uygun bir isim.
+> Turkish "rıhtım" = wharf/pier — a fitting name for a Docker-themed tool.
 
-## Özellikler
+## Features
 
-- 📊 **Panel**: Motor bilgisi, konteyner/imaj/CPU/bellek özetleri
-- 📦 **Konteynerler**: Listeleme, start/stop/restart/pause/kill, silme, prune
-- 🖼️ **İmajlar**: Listeleme, `docker pull` (canlı akış), silme
-- 💾 **Volume'ler**: Listeleme, oluşturma, silme
-- 🌐 **Ağlar**: Listeleme, oluşturma, silme
-- 📡 **Canlı loglar** (WebSocket)
-- 🔌 **Çoklu bağlam**: Windows npipe, Unix socket, TCP, SSH, **WSL dağıtımı**
+- 📊 **Dashboard**: engine info, container/image/CPU/memory summaries
+- 📦 **Containers**: list, start/stop/restart/pause/kill, delete, prune
+- 🖼️ **Images**: list, `docker pull` (live stream), delete
+- 💾 **Volumes**: list, create, delete, prune, size & ref-count reporting
+- 🌐 **Networks**: list, create, delete, prune, detail drawer with connected containers
+- 📡 **Live logs** (WebSocket)
+- 🔌 **Multiple contexts**: Windows npipe, Unix socket, TCP, SSH, **WSL distro**
 
-### WSL Bağlantısı Nasıl Çalışır?
+### How WSL Connectivity Works
 
-Rihtim, WSL dağıtımınızın içindeki `/var/run/docker.sock` unix soketine
-`wsl.exe -d <distro> -u root socat` ile stdio üzerinden köprü kurar. TCP açmanıza
-veya Docker Desktop'a ihtiyacınız yoktur.
+Rihtim bridges to the `/var/run/docker.sock` unix socket inside your WSL distro
+over stdio, using `wsl.exe -d <distro> -u root socat`. No TCP exposure or Docker
+Desktop required.
 
-Gereksinimler:
+Requirements:
 
-1. WSL2 kurulu.
-2. Dağıtım içinde Docker Engine kurulu ve çalışıyor:
+1. WSL2 installed.
+2. Docker Engine installed and running inside the distro:
    ```bash
    sudo apt-get update && sudo apt-get install -y docker.io socat
    sudo service docker start
    ```
-3. Ayarlar sayfasından **WSL Dağıtımı** türünde bir bağlam ekleyin (`wsl -l -q`
-   ile listelenen adı yazın, ör: `Ubuntu`).
+3. Add a context of type **WSL distro** from the Settings page (use the name
+   listed by `wsl -l -q`, e.g. `Ubuntu`).
 
-## Mimari
+## Architecture
 
 ```
 apps/
-  api/    # Fastify + dockerode (Node.js)  — port 4317
-  web/    # Next.js 14 + Tailwind          — port 3000
+  api/    # Fastify + dockerode (Node.js)  — port 5170
+  web/    # Next.js 14 + Tailwind          — port 3030
 packages/
-  shared/ # Ortak TypeScript tipleri
+  shared/ # Shared TypeScript types
 ```
 
-Web `/api/*` isteklerini Next.js rewrites üzerinden API'ye proxy'ler.
+The web app proxies `/api/*` requests to the API via Next.js rewrites.
 
-## Kurulum
+## Setup
 
 ```bash
 pnpm install
@@ -52,9 +52,9 @@ cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
 ```
 
-## Geliştirme
+## Development
 
-Aynı anda API + Web:
+Run API + Web together:
 
 ```bash
 pnpm dev
@@ -63,20 +63,20 @@ pnpm dev
 - API: http://127.0.0.1:5170
 - Web: http://localhost:3030
 
-## Üretim
+## Production
 
 ```bash
 pnpm build
 pnpm start
 ```
 
-## Yol Haritası
+## Roadmap
 
-- [ ] Interaktif exec (xterm.js + WS)
-- [ ] Konteyner stats grafik (canlı)
+- [ ] Interactive exec (xterm.js + WS)
+- [ ] Live container stats charts
 - [ ] Docker Compose (yaml deploy / down)
-- [ ] Docker Hub arama + login
-- [ ] Container oluşturma sihirbazı (port/env/mount UI)
-- [ ] Kubernetes bağlamı
+- [ ] Docker Hub search + login
+- [ ] Container creation wizard (port/env/mount UI)
+- [ ] Kubernetes contexts
 - [ ] Extension SDK
-- [ ] Tauri / Electron ile masaüstü paketi
+- [ ] Desktop package via Tauri / Electron
