@@ -34,7 +34,7 @@
     "containers": "Konteynerler",
     "images": "İmajlar",
     "builds": "Derlemeler",
-    "volumes": "Volume'ler",
+    "volumes": "Birimler",
     "networks": "Ağlar",
     "settings": "Ayarlar"
   },
@@ -77,7 +77,7 @@
       "error": "Disk kullanımı yüklenemedi",
       "images": "İmajlar",
       "containers": "Konteynerler",
-      "volumes": "Volume'ler",
+      "volumes": "Birimler",
       "buildCache": "Derleme önbelleği",
       "count": "{active} aktif / {total} toplam",
       "reclaimable": "{value} geri kazanılabilir"
@@ -277,8 +277,8 @@
     }
   },
   "volumes": {
-    "title": "Volume'ler",
-    "newPlaceholder": "yeni volume adı",
+    "title": "Birimler",
+    "newPlaceholder": "yeni birim adı",
     "prune": "Temizle",
     "pruneHint": "Kullanılmayan tüm birimleri sil",
     "pruneConfirm": "Kullanılmayan tüm birimler silinecek. Devam?",
