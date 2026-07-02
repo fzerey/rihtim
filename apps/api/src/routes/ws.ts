@@ -115,7 +115,9 @@ export const wsRoutes: FastifyPluginAsync = async (app) => {
         stream = (await exec.start({ hijack: true, stdin: true, Tty: true })) as NodeJS.ReadWriteStream;
         try {
           await exec.resize({ w: cols, h: rows });
-        } catch {}
+        } catch {
+          // best-effort resize; ignore if the exec instance rejects it
+        }
 
         stream.on("data", (chunk: Buffer) => {
           if (ws.readyState === ws.OPEN) ws.send(chunk);
@@ -154,12 +156,16 @@ export const wsRoutes: FastifyPluginAsync = async (app) => {
         ws.on("close", () => {
           try {
             (stream as any)?.destroy?.();
-          } catch {}
+          } catch {
+            // stream may already be closed
+          }
         });
       } catch (err: any) {
         try {
           ws.send(JSON.stringify({ error: err.message }));
-        } catch {}
+        } catch {
+          // socket may already be closed
+        }
         ws.close();
       }
     },

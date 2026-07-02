@@ -24,7 +24,9 @@ await app.register(cors, { origin: config.corsOrigin, credentials: true });
 await app.register(websocket);
 
 app.setErrorHandler((err, _req, reply) => {
-  const code = (err as any)?.code;
+  const code = typeof (err as NodeJS.ErrnoException).code === "string"
+    ? (err as NodeJS.ErrnoException).code
+    : undefined;
   const connErrors = new Set([
     "ECONNRESET",
     "ECONNREFUSED",

@@ -706,7 +706,9 @@ export const systemRoutes: FastifyPluginAsync = async (app) => {
             if (line) {
               try {
                 events.push(JSON.parse(line));
-              } catch {}
+              } catch {
+                // skip malformed event line
+              }
             }
             idx = buffer.indexOf("\n");
           }

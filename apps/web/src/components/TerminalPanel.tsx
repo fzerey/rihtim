@@ -50,7 +50,9 @@ export function TerminalPanel({
     requestAnimationFrame(() => {
       try {
         fit.fit();
-      } catch {}
+      } catch {
+        // fit may fail if the container is not yet laid out
+      }
     });
 
     const params = new URLSearchParams();
@@ -98,7 +100,9 @@ export function TerminalPanel({
     const onWinResize = () => {
       try {
         fit.fit();
-      } catch {}
+      } catch {
+        // ignore transient layout errors
+      }
     };
     window.addEventListener("resize", onWinResize);
 
@@ -108,7 +112,9 @@ export function TerminalPanel({
       resizeDisp.dispose();
       try {
         ws.close();
-      } catch {}
+      } catch {
+        // socket may already be closed
+      }
       term.dispose();
       termRef.current = null;
       fitRef.current = null;

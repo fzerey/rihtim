@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { api, humanBytes, timeAgo } from "@/lib/api";
 import type { SystemInfo, DockerEvent, SystemStorage } from "@rihtim/shared";
-import { Boxes, Image, Database, Network, Cpu, MemoryStick, Activity, HardDrive } from "lucide-react";
+import { Boxes, Image, Database, Network, Cpu, MemoryStick, Activity, HardDrive, type LucideIcon } from "lucide-react";
 import { useT } from "@/i18n/provider";
 
 function Card({
@@ -16,7 +16,7 @@ function Card({
   title: string;
   value: string | number;
   hint?: string;
-  icon: any;
+  icon: LucideIcon;
   href?: string;
 }) {
   const body = (

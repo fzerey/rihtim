@@ -18,6 +18,7 @@ import {
   Trash2,
   ChevronDown,
   ChevronRight,
+  type LucideIcon,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -260,7 +261,9 @@ function InspectPanel({ data }: { data: any }) {
       await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
       setCopied(true);
       setTimeout(() => setCopied(false), 1200);
-    } catch {}
+    } catch {
+      // clipboard API can reject in insecure contexts
+    }
   };
 
   const toggleAll = () => {
@@ -601,7 +604,7 @@ function ActionBtn({
   danger,
 }: {
   onClick: () => void;
-  icon: any;
+  icon: LucideIcon;
   label: string;
   danger?: boolean;
 }) {

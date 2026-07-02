@@ -55,7 +55,7 @@ export default function ContainersPage() {
     },
     onSettled: (_data, _err, vars) => {
       qc.invalidateQueries({ queryKey: ["containers"] });
-      setTimeout(() => clearPending(vars!.id), 1200);
+      setTimeout(() => clearPending(vars.id), 1200);
     },
   });
 
@@ -100,7 +100,7 @@ export default function ContainersPage() {
     return Array.from(map.values()).sort((a, b) => {
       if (a.project === null) return 1;
       if (b.project === null) return -1;
-      return a.project!.localeCompare(b.project!);
+      return a.project.localeCompare(b.project);
     });
   }, [data, filter]);
 
