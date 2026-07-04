@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, shell, utilityProcess } from "electron";
+import { app, BrowserWindow, Menu, Tray, nativeImage, shell, utilityProcess } from "electron";
 import path from "node:path";
 import net from "node:net";
 import fs from "node:fs";
@@ -13,6 +13,8 @@ type ForkedProcess = ReturnType<typeof utilityProcess.fork>;
 let apiProc: ForkedProcess | null = null;
 let webProc: ForkedProcess | null = null;
 let mainWindow: BrowserWindow | null = null;
+let tray: Tray | null = null;
+let isQuitting = false;
 let logFile = "";
 let logStream: fs.WriteStream | null = null;
 
@@ -150,6 +152,65 @@ function errorPage(message: string): string {
   )}`;
 }
 
+/** Bring the main window to the foreground, recreating it if needed. */
+function showMainWindow(): void {
+  if (!mainWindow) {
+    void createWindow(true);
+    return;
+  }
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.show();
+  mainWindow.focus();
+}
+
+/** Show the window and navigate it to a specific in-app path (e.g. "/settings"). */
+function openAppPath(pathname: string): void {
+  const url = `${WEB_URL}${pathname}`;
+  if (!mainWindow) {
+    void createWindow(true).then(() => mainWindow?.loadURL(url));
+    return;
+  }
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.show();
+  mainWindow.focus();
+  void mainWindow.loadURL(url);
+}
+
+/** Create the system-tray icon so the app keeps running when its window is closed. */
+function createTray(): void {
+  if (tray) return;
+  let image = nativeImage.createFromPath(path.join(__dirname, "icon.png"));
+  if (!image.isEmpty()) {
+    image = image.resize({ width: 16, height: 16 });
+  } else {
+    log("tray icon not found — using an empty image");
+  }
+  try {
+    tray = new Tray(image);
+  } catch (err) {
+    log(`failed to create tray: ${String(err)}`);
+    return;
+  }
+  tray.setToolTip("Rihtim");
+  const menu = Menu.buildFromTemplate([
+    { label: "Open Panel", click: () => showMainWindow() },
+    { label: "Containers", click: () => openAppPath("/containers") },
+    { label: "Images", click: () => openAppPath("/images") },
+    { label: "Settings", click: () => openAppPath("/settings") },
+    { type: "separator" },
+    {
+      label: "Quit Rihtim",
+      click: () => {
+        isQuitting = true;
+        app.quit();
+      },
+    },
+  ]);
+  tray.setContextMenu(menu);
+  tray.on("click", () => showMainWindow());
+  tray.on("double-click", () => showMainWindow());
+}
+
 async function createWindow(webReady: boolean): Promise<void> {
   mainWindow = new BrowserWindow({
     width: 1400,
@@ -186,6 +247,14 @@ async function createWindow(webReady: boolean): Promise<void> {
     if (url.startsWith(WEB_URL)) return { action: "allow" };
     void shell.openExternal(url);
     return { action: "deny" };
+  });
+
+  mainWindow.on("close", (event) => {
+    // Closing the window keeps the app alive in the tray unless we're quitting.
+    if (!isQuitting) {
+      event.preventDefault();
+      mainWindow?.hide();
+    }
   });
 
   mainWindow.on("closed", () => {
@@ -225,6 +294,7 @@ async function bootstrap(): Promise<void> {
   }
 
   await createWindow(webReady);
+  createTray();
 }
 
 process.on("uncaughtException", (err) => log(`uncaughtException: ${err?.stack ?? String(err)}`));
@@ -257,9 +327,12 @@ app.on("activate", () => {
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+  // Keep the app alive in the system tray; quit only via the tray menu
+  // (or the platform quit shortcut, which triggers before-quit).
+});
+
+app.on("before-quit", () => {
+  isQuitting = true;
 });
 
 app.on("before-quit", stopBackends);
