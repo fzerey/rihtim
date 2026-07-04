@@ -103,6 +103,18 @@ if (existsSync(publicDir)) {
 // 4. Package with electron-builder ----------------------------------------
 step("Running electron-builder");
 const forwarded = process.argv.slice(2);
+const hasVersionOverride = forwarded.some((arg) => arg.startsWith("--config.extraMetadata.version="));
+const githubTag =
+  process.env.GITHUB_REF_TYPE === "tag"
+    ? process.env.GITHUB_REF_NAME
+    : process.env.GITHUB_REF?.startsWith("refs/tags/")
+      ? process.env.GITHUB_REF.slice("refs/tags/".length)
+      : undefined;
+
+if (!hasVersionOverride && githubTag?.startsWith("v") && githubTag.length > 1) {
+  forwarded.push(`--config.extraMetadata.version=${githubTag.slice(1)}`);
+}
+
 run(pnpm, [
   "--filter",
   "@rihtim/desktop",
