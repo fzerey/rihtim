@@ -284,6 +284,37 @@
       "imageTag": "Tag",
       "pull": "Pull Image",
       "pulling": "Pulling..."
+    },
+    "detail": {
+      "tabDetails": "详情",
+      "tabScan": "漏洞",
+      "general": "常规",
+      "config": "配置",
+      "env": "环境变量",
+      "labels": "标签",
+      "layers": "层 ({count})",
+      "digest": "摘要",
+      "os": "操作系统",
+      "architecture": "架构",
+      "dockerVersion": "Docker 版本",
+      "created": "创建时间",
+      "author": "作者",
+      "exposedPorts": "暴露端口",
+      "volumes": "卷",
+      "rawJson": "原始 JSON"
+    },
+    "scan": {
+      "start": "扫描漏洞",
+      "rescan": "重新扫描",
+      "scanning": "扫描中…",
+      "description": "使用 Trivy 扫描此镜像的已知漏洞。",
+      "lastScanned": "上次扫描于 {value} 前",
+      "hint": "首次扫描可能较慢——扫描器镜像和漏洞数据库会在首次运行时下载。",
+      "idle": "运行扫描以检查此镜像的漏洞。",
+      "total": "总计",
+      "clean": "未发现已知漏洞。",
+      "noneForFilter": "所选严重级别没有漏洞。",
+      "fixedIn": "已在 {version} 修复"
     }
   },
   "volumes": {
@@ -302,8 +333,25 @@
       "mount": "挂载点",
       "size": "大小",
       "usedBy": "使用者",
-      "actions": "操作"
+      "actions": "操作",
+      "scope": "范围"
+    },
+    "detail": {
+      "tabDetails": "详情",
+      "tabFiles": "文件",
+      "general": "常规",
+      "created": "创建时间",
+      "mountpoint": "挂载点",
+      "options": "选项",
+      "labels": "标签",
+      "rawJson": "原始 JSON",
+      "filesHint": "通过挂载此卷的临时辅助容器浏览文件。"
     }
+  },
+  "files": {
+    "edit": "编辑",
+    "save": "保存",
+    "saved": "已保存"
   },
   "networks": {
     "title": "网络",

@@ -284,6 +284,38 @@
       "imageTag": "Tag",
       "pull": "Pull Image",
       "pulling": "Pulling..."
+    },
+    "detail": {
+      "tabDetails": "Details",
+      "tabScan": "Vulnerabilities",
+      "general": "General",
+      "config": "Configuration",
+      "env": "Environment",
+      "labels": "Labels",
+      "layers": "Layers ({count})",
+      "digest": "Digest",
+      "os": "OS",
+      "architecture": "Architecture",
+      "dockerVersion": "Docker version",
+      "created": "Created",
+      "author": "Author",
+      "exposedPorts": "Exposed ports",
+      "volumes": "Volumes",
+      "rawJson": "Raw JSON",
+      "remove": "Delete image"
+    },
+    "scan": {
+      "start": "Scan for vulnerabilities",
+      "rescan": "Rescan",
+      "scanning": "Scanning…",
+      "description": "Scan this image for known vulnerabilities using Trivy.",
+      "lastScanned": "Last scanned {value} ago",
+      "hint": "First scan may take a while — the scanner image and vulnerability database are downloaded on first run.",
+      "idle": "Run a scan to check this image for vulnerabilities.",
+      "total": "Total",
+      "clean": "No known vulnerabilities found.",
+      "noneForFilter": "No vulnerabilities for the selected severity.",
+      "fixedIn": "fixed in {version}"
     }
   },
   "volumes": {
@@ -301,9 +333,27 @@
       "driver": "Driver",
       "mount": "Mount",
       "size": "Size",
+      "scope": "Scope",
       "usedBy": "Used by",
       "actions": "Actions"
+    },
+    "detail": {
+      "tabDetails": "Details",
+      "tabFiles": "Files",
+      "general": "General",
+      "created": "Created",
+      "mountpoint": "Mountpoint",
+      "options": "Options",
+      "labels": "Labels",
+      "rawJson": "Raw JSON",
+      "filesHint": "Browsing files via a temporary helper container that mounts this volume.",
+      "remove": "Delete volume"
     }
+  },
+  "files": {
+    "edit": "Edit",
+    "save": "Save",
+    "saved": "Saved"
   },
   "networks": {
     "title": "Networks",
@@ -333,7 +383,8 @@
       "noContainers": "No containers attached.",
       "options": "Driver options",
       "labels": "Labels",
-      "rawJson": "Raw JSON"
+      "rawJson": "Raw JSON",
+      "remove": "Delete network"
     }
   },
   "builds": {

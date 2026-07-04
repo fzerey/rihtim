@@ -284,6 +284,37 @@
       "imageTag": "Tag",
       "pull": "Pull Image",
       "pulling": "Pulling..."
+    },
+    "detail": {
+      "tabDetails": "Dettagli",
+      "tabScan": "Vulnerabilità",
+      "general": "Generale",
+      "config": "Configurazione",
+      "env": "Ambiente",
+      "labels": "Etichette",
+      "layers": "Livelli ({count})",
+      "digest": "Digest",
+      "os": "OS",
+      "architecture": "Architettura",
+      "dockerVersion": "Versione Docker",
+      "created": "Creato",
+      "author": "Autore",
+      "exposedPorts": "Porte esposte",
+      "volumes": "Volumi",
+      "rawJson": "JSON grezzo"
+    },
+    "scan": {
+      "start": "Cerca vulnerabilità",
+      "rescan": "Ripeti scansione",
+      "scanning": "Scansione…",
+      "description": "Analizza questa immagine per vulnerabilità note con Trivy.",
+      "lastScanned": "Ultima scansione {value} fa",
+      "hint": "La prima scansione può richiedere tempo: l'immagine dello scanner e il database delle vulnerabilità vengono scaricati alla prima esecuzione.",
+      "idle": "Avvia una scansione per verificare le vulnerabilità di questa immagine.",
+      "total": "Totale",
+      "clean": "Nessuna vulnerabilità nota trovata.",
+      "noneForFilter": "Nessuna vulnerabilità per la gravità selezionata.",
+      "fixedIn": "risolto in {version}"
     }
   },
   "volumes": {
@@ -302,8 +333,25 @@
       "mount": "Mount",
       "size": "Dimensione",
       "usedBy": "Usato da",
-      "actions": "Azioni"
+      "actions": "Azioni",
+      "scope": "Ambito"
+    },
+    "detail": {
+      "tabDetails": "Dettagli",
+      "tabFiles": "File",
+      "general": "Generale",
+      "created": "Creato",
+      "mountpoint": "Punto di mount",
+      "options": "Opzioni",
+      "labels": "Etichette",
+      "rawJson": "JSON grezzo",
+      "filesHint": "Esplorazione dei file tramite un container di supporto temporaneo che monta questo volume."
     }
+  },
+  "files": {
+    "edit": "Modifica",
+    "save": "Salva",
+    "saved": "Salvato"
   },
   "networks": {
     "title": "Reti",

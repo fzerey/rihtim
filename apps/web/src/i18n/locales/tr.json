@@ -284,6 +284,38 @@
       "imageTag": "Etiket",
       "pull": "İmaj Çek",
       "pulling": "Çekiliyor..."
+    },
+    "detail": {
+      "tabDetails": "Ayrıntılar",
+      "tabScan": "Güvenlik Açıkları",
+      "general": "Genel",
+      "config": "Yapılandırma",
+      "env": "Ortam Değişkenleri",
+      "labels": "Etiketler",
+      "layers": "Katmanlar ({count})",
+      "digest": "Özet (digest)",
+      "os": "İşletim Sistemi",
+      "architecture": "Mimari",
+      "dockerVersion": "Docker sürümü",
+      "created": "Oluşturulma",
+      "author": "Yazar",
+      "exposedPorts": "Açık portlar",
+      "volumes": "Birimler",
+      "rawJson": "Ham JSON",
+      "remove": "İmajı sil"
+    },
+    "scan": {
+      "start": "Güvenlik açığı taraması",
+      "rescan": "Yeniden tara",
+      "scanning": "Taranıyor…",
+      "description": "Bu imajı Trivy ile bilinen güvenlik açıklarına karşı tarayın.",
+      "lastScanned": "Son tarama {value} önce",
+      "hint": "İlk tarama biraz sürebilir — tarayıcı imajı ve açık veritabanı ilk çalıştırmada indirilir.",
+      "idle": "İmajdaki güvenlik açıklarını kontrol etmek için bir tarama başlatın.",
+      "total": "Toplam",
+      "clean": "Bilinen güvenlik açığı bulunamadı.",
+      "noneForFilter": "Seçilen önem derecesi için açık yok.",
+      "fixedIn": "{version} sürümünde düzeltildi"
     }
   },
   "volumes": {
@@ -301,9 +333,27 @@
       "driver": "Sürücü",
       "mount": "Mount",
       "size": "Boyut",
+      "scope": "Kapsam",
       "usedBy": "Kullanım",
       "actions": "İşlem"
+    },
+    "detail": {
+      "tabDetails": "Ayrıntılar",
+      "tabFiles": "Dosyalar",
+      "general": "Genel",
+      "created": "Oluşturulma",
+      "mountpoint": "Bağlama noktası",
+      "options": "Seçenekler",
+      "labels": "Etiketler",
+      "rawJson": "Ham JSON",
+      "filesHint": "Dosyalar, bu birimi bağlayan geçici bir yardımcı container üzerinden gösteriliyor.",
+      "remove": "Birimi sil"
     }
+  },
+  "files": {
+    "edit": "Düzenle",
+    "save": "Kaydet",
+    "saved": "Kaydedildi"
   },
   "networks": {
     "title": "Ağlar",
@@ -333,7 +383,8 @@
       "noContainers": "Bağlı konteyner yok.",
       "options": "Sürücü seçenekleri",
       "labels": "Etiketler",
-      "rawJson": "Ham JSON"
+      "rawJson": "Ham JSON",
+      "remove": "Ağı sil"
     }
   },
   "builds": {

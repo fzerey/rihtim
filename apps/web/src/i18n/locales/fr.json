@@ -284,6 +284,37 @@
       "imageTag": "Tag",
       "pull": "Pull Image",
       "pulling": "Pulling..."
+    },
+    "detail": {
+      "tabDetails": "Détails",
+      "tabScan": "Vulnérabilités",
+      "general": "Général",
+      "config": "Configuration",
+      "env": "Environnement",
+      "labels": "Labels",
+      "layers": "Couches ({count})",
+      "digest": "Digest",
+      "os": "OS",
+      "architecture": "Architecture",
+      "dockerVersion": "Version de Docker",
+      "created": "Créé",
+      "author": "Auteur",
+      "exposedPorts": "Ports exposés",
+      "volumes": "Volumes",
+      "rawJson": "JSON brut"
+    },
+    "scan": {
+      "start": "Rechercher des vulnérabilités",
+      "rescan": "Réanalyser",
+      "scanning": "Analyse…",
+      "description": "Analyser cette image à la recherche de vulnérabilités connues avec Trivy.",
+      "lastScanned": "Dernière analyse il y a {value}",
+      "hint": "La première analyse peut prendre du temps — l'image du scanner et la base de vulnérabilités sont téléchargées au premier lancement.",
+      "idle": "Lancez une analyse pour vérifier les vulnérabilités de cette image.",
+      "total": "Total",
+      "clean": "Aucune vulnérabilité connue trouvée.",
+      "noneForFilter": "Aucune vulnérabilité pour la sévérité sélectionnée.",
+      "fixedIn": "corrigé dans {version}"
     }
   },
   "volumes": {
@@ -302,8 +333,25 @@
       "mount": "Mount",
       "size": "Taille",
       "usedBy": "Utilisé par",
-      "actions": "Actions"
+      "actions": "Actions",
+      "scope": "Portée"
+    },
+    "detail": {
+      "tabDetails": "Détails",
+      "tabFiles": "Fichiers",
+      "general": "Général",
+      "created": "Créé",
+      "mountpoint": "Point de montage",
+      "options": "Options",
+      "labels": "Labels",
+      "rawJson": "JSON brut",
+      "filesHint": "Exploration des fichiers via un conteneur auxiliaire temporaire qui monte ce volume."
     }
+  },
+  "files": {
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "saved": "Enregistré"
   },
   "networks": {
     "title": "Réseaux",

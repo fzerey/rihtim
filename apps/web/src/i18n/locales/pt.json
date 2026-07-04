@@ -284,6 +284,37 @@
       "imageTag": "Tag",
       "pull": "Pull Image",
       "pulling": "Pulling..."
+    },
+    "detail": {
+      "tabDetails": "Detalhes",
+      "tabScan": "Vulnerabilidades",
+      "general": "Geral",
+      "config": "Configuração",
+      "env": "Ambiente",
+      "labels": "Etiquetas",
+      "layers": "Camadas ({count})",
+      "digest": "Digest",
+      "os": "SO",
+      "architecture": "Arquitetura",
+      "dockerVersion": "Versão do Docker",
+      "created": "Criado",
+      "author": "Autor",
+      "exposedPorts": "Portas expostas",
+      "volumes": "Volumes",
+      "rawJson": "JSON bruto"
+    },
+    "scan": {
+      "start": "Verificar vulnerabilidades",
+      "rescan": "Verificar novamente",
+      "scanning": "Verificando…",
+      "description": "Verifique esta imagem em busca de vulnerabilidades conhecidas com o Trivy.",
+      "lastScanned": "Última verificação há {value}",
+      "hint": "A primeira verificação pode demorar — a imagem do scanner e o banco de dados de vulnerabilidades são baixados na primeira execução.",
+      "idle": "Execute uma verificação para checar vulnerabilidades nesta imagem.",
+      "total": "Total",
+      "clean": "Nenhuma vulnerabilidade conhecida encontrada.",
+      "noneForFilter": "Nenhuma vulnerabilidade para a severidade selecionada.",
+      "fixedIn": "corrigido em {version}"
     }
   },
   "volumes": {
@@ -302,8 +333,25 @@
       "mount": "Montagem",
       "size": "Tamanho",
       "usedBy": "Usado por",
-      "actions": "Ações"
+      "actions": "Ações",
+      "scope": "Escopo"
+    },
+    "detail": {
+      "tabDetails": "Detalhes",
+      "tabFiles": "Arquivos",
+      "general": "Geral",
+      "created": "Criado",
+      "mountpoint": "Ponto de montagem",
+      "options": "Opções",
+      "labels": "Etiquetas",
+      "rawJson": "JSON bruto",
+      "filesHint": "Explorando arquivos por meio de um contêiner auxiliar temporário que monta este volume."
     }
+  },
+  "files": {
+    "edit": "Editar",
+    "save": "Salvar",
+    "saved": "Salvo"
   },
   "networks": {
     "title": "Redes",

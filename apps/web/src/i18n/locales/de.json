@@ -284,6 +284,37 @@
       "imageTag": "Tag",
       "pull": "Pull Image",
       "pulling": "Pulling..."
+    },
+    "detail": {
+      "tabDetails": "Details",
+      "tabScan": "Schwachstellen",
+      "general": "Allgemein",
+      "config": "Konfiguration",
+      "env": "Umgebung",
+      "labels": "Labels",
+      "layers": "Ebenen ({count})",
+      "digest": "Digest",
+      "os": "OS",
+      "architecture": "Architektur",
+      "dockerVersion": "Docker-Version",
+      "created": "Erstellt",
+      "author": "Autor",
+      "exposedPorts": "Offene Ports",
+      "volumes": "Volumes",
+      "rawJson": "Rohes JSON"
+    },
+    "scan": {
+      "start": "Auf Schwachstellen prüfen",
+      "rescan": "Erneut prüfen",
+      "scanning": "Wird geprüft…",
+      "description": "Dieses Image mit Trivy auf bekannte Schwachstellen prüfen.",
+      "lastScanned": "Zuletzt geprüft vor {value}",
+      "hint": "Der erste Scan kann etwas dauern – Scanner-Image und Schwachstellen-Datenbank werden beim ersten Lauf geladen.",
+      "idle": "Starten Sie einen Scan, um dieses Image auf Schwachstellen zu prüfen.",
+      "total": "Gesamt",
+      "clean": "Keine bekannten Schwachstellen gefunden.",
+      "noneForFilter": "Keine Schwachstellen für die gewählte Stufe.",
+      "fixedIn": "behoben in {version}"
     }
   },
   "volumes": {
@@ -302,8 +333,25 @@
       "mount": "Mount",
       "size": "Größe",
       "usedBy": "Verwendet von",
-      "actions": "Aktionen"
+      "actions": "Aktionen",
+      "scope": "Bereich"
+    },
+    "detail": {
+      "tabDetails": "Details",
+      "tabFiles": "Dateien",
+      "general": "Allgemein",
+      "created": "Erstellt",
+      "mountpoint": "Mountpoint",
+      "options": "Optionen",
+      "labels": "Labels",
+      "rawJson": "Rohes JSON",
+      "filesHint": "Dateien werden über einen temporären Hilfs-Container angezeigt, der dieses Volume einbindet."
     }
+  },
+  "files": {
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "saved": "Gespeichert"
   },
   "networks": {
     "title": "Netzwerke",

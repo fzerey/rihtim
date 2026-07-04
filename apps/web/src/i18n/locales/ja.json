@@ -284,6 +284,37 @@
       "imageTag": "Tag",
       "pull": "Pull Image",
       "pulling": "Pulling..."
+    },
+    "detail": {
+      "tabDetails": "詳細",
+      "tabScan": "脆弱性",
+      "general": "一般",
+      "config": "構成",
+      "env": "環境変数",
+      "labels": "ラベル",
+      "layers": "レイヤー ({count})",
+      "digest": "ダイジェスト",
+      "os": "OS",
+      "architecture": "アーキテクチャ",
+      "dockerVersion": "Docker バージョン",
+      "created": "作成日時",
+      "author": "作成者",
+      "exposedPorts": "公開ポート",
+      "volumes": "ボリューム",
+      "rawJson": "生 JSON"
+    },
+    "scan": {
+      "start": "脆弱性をスキャン",
+      "rescan": "再スキャン",
+      "scanning": "スキャン中…",
+      "description": "Trivy を使ってこのイメージの既知の脆弱性をスキャンします。",
+      "lastScanned": "最終スキャン: {value} 前",
+      "hint": "初回スキャンは時間がかかる場合があります。スキャナーイメージと脆弱性データベースが初回実行時にダウンロードされます。",
+      "idle": "スキャンを実行してこのイメージの脆弱性を確認します。",
+      "total": "合計",
+      "clean": "既知の脆弱性は見つかりませんでした。",
+      "noneForFilter": "選択した重大度の脆弱性はありません。",
+      "fixedIn": "{version} で修正"
     }
   },
   "volumes": {
@@ -302,8 +333,25 @@
       "mount": "マウント",
       "size": "サイズ",
       "usedBy": "使用中",
-      "actions": "操作"
+      "actions": "操作",
+      "scope": "スコープ"
+    },
+    "detail": {
+      "tabDetails": "詳細",
+      "tabFiles": "ファイル",
+      "general": "一般",
+      "created": "作成日時",
+      "mountpoint": "マウントポイント",
+      "options": "オプション",
+      "labels": "ラベル",
+      "rawJson": "生 JSON",
+      "filesHint": "このボリュームをマウントする一時的なヘルパーコンテナ経由でファイルを閲覧しています。"
     }
+  },
+  "files": {
+    "edit": "編集",
+    "save": "保存",
+    "saved": "保存しました"
   },
   "networks": {
     "title": "ネットワーク",
