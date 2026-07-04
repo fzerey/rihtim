@@ -2,25 +2,29 @@ import type { FastifyPluginAsync } from "fastify";
 import { PassThrough } from "node:stream";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import * as tar from "tar-stream";
 import type Docker from "dockerode";
 import { currentDocker } from "../contexts/docker-client.js";
 import { registryStore } from "../registries/store.js";
+import { scanStore } from "../images/scan-store.js";
 import { demuxDockerLog } from "../util/demux.js";
+import {
+  ArchiveError,
+  listArchiveDir,
+  readArchiveFile,
+  writeArchiveFile,
+} from "../util/archive-fs.js";
 import type {
   ContainerSummary,
   ImageSummary,
+  ImageHistoryEntry,
+  ImageScanResult,
+  ScanTarget,
+  Vulnerability,
+  VulnerabilitySeverity,
   VolumeSummary,
   NetworkSummary,
   BuildCacheEntry,
 } from "@rihtim/shared";
-
-function basename(p: string): string {
-  const trimmed = p.replace(/\/+$/, "");
-  if (trimmed === "" || trimmed === "/") return "/";
-  const idx = trimmed.lastIndexOf("/");
-  return idx === -1 ? trimmed : trimmed.slice(idx + 1);
-}
 
 // docker.df() is expensive on daemons with many images/containers; multiple
 // routes (system/storage, build/cache, system/df) request it in parallel on
@@ -37,16 +41,6 @@ async function cachedDf(docker: Docker): Promise<any> {
   });
   dfCache.set(docker, { at: now, value });
   return value;
-}
-
-function looksBinary(buf: Buffer): boolean {
-  const sample = buf.subarray(0, Math.min(buf.length, 8000));
-  for (let i = 0; i < sample.length; i++) {
-    const b = sample[i];
-    if (b === 0) return true;
-    if (b < 7 && b !== 0) return true;
-  }
-  return false;
 }
 
 function hasRegistryPrefix(image: string): boolean {
@@ -67,7 +61,9 @@ export const containerRoutes: FastifyPluginAsync = async (app) => {
     const all = (req.query as any)?.all !== "false";
     const docker = await currentDocker();
     const list = await docker.listContainers({ all });
-    const mapped: ContainerSummary[] = list.map((c) => ({
+    const mapped: ContainerSummary[] = list
+      .filter((c) => !(c.Labels ?? {})[VOLUME_HELPER_LABEL])
+      .map((c) => ({
       id: c.Id,
       names: c.Names,
       image: c.Image,
@@ -76,7 +72,7 @@ export const containerRoutes: FastifyPluginAsync = async (app) => {
       createdAt: c.Created,
       state: c.State,
       status: c.Status,
-      ports: c.Ports.map((p) => ({
+      ports: (c.Ports ?? []).map((p) => ({
         ip: p.IP,
         privatePort: p.PrivatePort,
         publicPort: p.PublicPort,
@@ -214,111 +210,18 @@ export const containerRoutes: FastifyPluginAsync = async (app) => {
     const limit = Math.max(1, Math.min(Number(req.query.limit ?? 2000), 20000));
     const docker = await currentDocker();
     const container = docker.getContainer(req.params.id);
-
-    let archiveStream: NodeJS.ReadableStream;
     try {
-      archiveStream = await (container as any).getArchive({ path: target });
+      return await listArchiveDir(
+        (p) => (container as any).getArchive({ path: p }),
+        target,
+        limit,
+      );
     } catch (err) {
-      const e = err as { statusCode?: number; message?: string };
-      return reply.code(e.statusCode ?? 404).send({
-        error: "path_not_found",
-        message: e.message ?? String(err),
-      });
+      if (err instanceof ArchiveError) {
+        return reply.code(err.status).send({ error: err.code, message: err.message });
+      }
+      throw err;
     }
-
-    type FsEntry = {
-      name: string;
-      isDir: boolean;
-      isLink: boolean;
-      size: number;
-      mode: number;
-      mtime: number;
-      linkTarget?: string;
-    };
-
-    const rootBase = target === "/" ? "" : basename(target);
-    const entries: FsEntry[] = [];
-    let selfIsDir = false;
-    let count = 0;
-    const sampleNames: string[] = [];
-
-    await new Promise<void>((resolve, reject) => {
-      const extract = tar.extract();
-      extract.on("entry", (header, stream, next) => {
-        stream.on("end", next);
-        stream.on("error", next);
-
-        if (count >= limit) {
-          stream.resume();
-          return;
-        }
-
-        if (sampleNames.length < 10) sampleNames.push(header.name);
-
-        // Normalize: strip trailing "/", leading "./", leading "/"
-        let raw = header.name.replace(/\/$/, "");
-        if (raw.startsWith("./")) raw = raw.slice(2);
-        if (raw.startsWith("/")) raw = raw.slice(1);
-
-        // "self" entry: the target directory itself
-        if (raw === "" || raw === "." || (rootBase !== "" && raw === rootBase)) {
-          if (header.type === "directory") selfIsDir = true;
-          stream.resume();
-          return;
-        }
-
-        // Determine relative path under target
-        let rel: string;
-        if (rootBase === "") {
-          rel = raw;
-        } else {
-          const prefix = `${rootBase}/`;
-          if (!raw.startsWith(prefix)) {
-            stream.resume();
-            return;
-          }
-          rel = raw.slice(prefix.length);
-        }
-
-        if (!rel || rel.includes("/")) {
-          stream.resume();
-          return;
-        }
-
-        const isDir = header.type === "directory";
-        const isLink = header.type === "symlink" || header.type === "link";
-        entries.push({
-          name: rel,
-          isDir,
-          isLink,
-          size: header.size ?? 0,
-          mode: header.mode ?? 0,
-          mtime: header.mtime instanceof Date ? Math.floor(header.mtime.getTime() / 1000) : 0,
-          linkTarget: (header as any).linkname || undefined,
-        });
-        count++;
-        stream.resume();
-      });
-      extract.on("finish", () => resolve());
-      extract.on("error", (e) => reject(e));
-      (archiveStream as NodeJS.ReadableStream).pipe(extract);
-    });
-
-    if (entries.length === 0) {
-      req.log.info({ target, sampleNames }, "empty archive listing");
-    }
-
-    entries.sort((a, b) => {
-      if (a.isDir !== b.isDir) return a.isDir ? -1 : 1;
-      return a.name.localeCompare(b.name);
-    });
-
-    return {
-      path: target,
-      isDir: selfIsDir || entries.length > 0,
-      truncated: count >= limit,
-      entries,
-    };
   });
 
   // Read a single file (up to 1 MiB by default) via archive API.
@@ -331,94 +234,44 @@ export const containerRoutes: FastifyPluginAsync = async (app) => {
     const maxBytes = Math.max(1024, Math.min(Number(req.query.max ?? 1_048_576), 16_777_216));
     const docker = await currentDocker();
     const container = docker.getContainer(req.params.id);
-
-    let archiveStream: NodeJS.ReadableStream;
     try {
-      archiveStream = await (container as any).getArchive({ path: target });
+      return await readArchiveFile(
+        (p) => (container as any).getArchive({ path: p }),
+        target,
+        maxBytes,
+      );
     } catch (err) {
-      const e = err as { statusCode?: number; message?: string };
-      return reply.code(e.statusCode ?? 404).send({
-        error: "path_not_found",
-        message: e.message ?? String(err),
-      });
+      if (err instanceof ArchiveError) {
+        return reply.code(err.status).send({ error: err.code, message: err.message });
+      }
+      throw err;
     }
+  });
 
-    const wantedBase = basename(target);
-    let picked: { size: number; content: Buffer; truncated: boolean; binary: boolean } | null =
-      null;
-    let isDirTarget = false;
-
-    await new Promise<void>((resolve, reject) => {
-      const extract = tar.extract();
-      extract.on("entry", (header, stream, next) => {
-        if (picked || isDirTarget) {
-          stream.on("end", next);
-          stream.resume();
-          return;
-        }
-        const raw = header.name.replace(/\/$/, "");
-        if (raw !== wantedBase) {
-          stream.on("end", next);
-          stream.resume();
-          return;
-        }
-        if (header.type === "directory") {
-          isDirTarget = true;
-          stream.on("end", next);
-          stream.resume();
-          return;
-        }
-        const chunks: Buffer[] = [];
-        let received = 0;
-        let truncated = false;
-        stream.on("data", (chunk: Buffer) => {
-          if (received >= maxBytes) {
-            truncated = true;
-            return;
-          }
-          const remaining = maxBytes - received;
-          if (chunk.length > remaining) {
-            chunks.push(chunk.subarray(0, remaining));
-            received += remaining;
-            truncated = true;
-          } else {
-            chunks.push(chunk);
-            received += chunk.length;
-          }
-        });
-        stream.on("end", () => {
-          const buf = Buffer.concat(chunks);
-          picked = {
-            size: header.size ?? received,
-            content: buf,
-            truncated,
-            binary: looksBinary(buf),
-          };
-          next();
-        });
-        stream.on("error", next);
-        stream.resume();
-      });
-      extract.on("finish", () => resolve());
-      extract.on("error", (e) => reject(e));
-      (archiveStream as NodeJS.ReadableStream).pipe(extract);
-    });
-
-    if (isDirTarget) {
-      return reply.code(400).send({ error: "is_directory" });
+  // Write/overwrite a single file via archive API.
+  app.put<{
+    Params: { id: string };
+    Body: { path?: string; content?: string; encoding?: "utf-8" | "base64" };
+  }>("/containers/:id/file", async (req, reply) => {
+    const { path: target, content, encoding } = req.body ?? {};
+    if (!target) return reply.code(400).send({ error: "path required" });
+    if (typeof content !== "string") return reply.code(400).send({ error: "content required" });
+    const buf = Buffer.from(content, encoding === "base64" ? "base64" : "utf-8");
+    const docker = await currentDocker();
+    const container = docker.getContainer(req.params.id);
+    try {
+      await writeArchiveFile(
+        (stream, p) => (container as any).putArchive(stream, { path: p }),
+        target,
+        buf,
+      );
+      return reply.code(204).send();
+    } catch (err) {
+      if (err instanceof ArchiveError) {
+        return reply.code(err.status).send({ error: err.code, message: err.message });
+      }
+      throw err;
     }
-    if (!picked) {
-      return reply.code(404).send({ error: "not_found" });
-    }
-    const file = picked as { size: number; content: Buffer; truncated: boolean; binary: boolean };
-    return {
-      path: target,
-      size: file.size,
-      truncated: file.truncated,
-      binary: file.binary,
-      content: file.binary ? file.content.toString("base64") : file.content.toString("utf-8"),
-      encoding: file.binary ? "base64" : "utf-8",
-    };
   });
 };
 
@@ -456,6 +309,192 @@ export const imageRoutes: FastifyPluginAsync = async (app) => {
   app.get<{ Params: { id: string } }>("/images/:id", async (req) => {
     const docker = await currentDocker();
     return docker.getImage(req.params.id).inspect();
+  });
+
+  app.get<{ Params: { id: string } }>("/images/:id/history", async (req) => {
+    const docker = await currentDocker();
+    const history = (await docker.getImage(req.params.id).history()) as any[];
+    const mapped: ImageHistoryEntry[] = history.map((h) => ({
+      id: h.Id && h.Id !== "<missing>" ? h.Id : undefined,
+      createdAt: h.Created,
+      createdBy: h.CreatedBy ?? "",
+      size: h.Size ?? 0,
+      comment: h.Comment || undefined,
+      tags: h.Tags ?? [],
+    }));
+    return mapped;
+  });
+
+  app.get<{ Params: { id: string } }>("/images/:id/scan", async (req, reply) => {
+    const cached = await scanStore.get(req.params.id);
+    if (!cached) return reply.code(204).send();
+    return cached;
+  });
+
+  app.post<{ Params: { id: string } }>("/images/:id/scan", async (req, reply) => {
+    const docker = await currentDocker();
+
+    let imageRef = req.params.id;
+    try {
+      const info = (await docker.getImage(req.params.id).inspect()) as any;
+      const tag = (info.RepoTags ?? []).find(
+        (t: string) => t && t !== "<none>:<none>",
+      );
+      if (tag) imageRef = tag;
+    } catch {
+      // fall back to the raw id/reference
+    }
+
+    const TRIVY_IMAGE = "aquasec/trivy:latest";
+    const CACHE_VOLUME = "rihtim-trivy-cache";
+
+    // Ensure the Trivy scanner image is available.
+    try {
+      await docker.getImage(TRIVY_IMAGE).inspect();
+    } catch {
+      try {
+        const stream = await docker.pull(TRIVY_IMAGE);
+        await new Promise<void>((resolve, rejectPull) => {
+          (docker as any).modem.followProgress(stream, (err: any) =>
+            err ? rejectPull(err) : resolve(),
+          );
+        });
+      } catch (err) {
+        return reply.code(502).send({
+          error: "scanner_unavailable",
+          message: `Could not pull scanner image ${TRIVY_IMAGE}: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+        });
+      }
+    }
+
+    // A cache volume keeps the vulnerability DB between scans.
+    try {
+      await docker.getVolume(CACHE_VOLUME).inspect();
+    } catch {
+      try {
+        await docker.createVolume({ Name: CACHE_VOLUME });
+      } catch {
+        // proceed without cache if volume creation fails
+      }
+    }
+
+    let container: Docker.Container | undefined;
+    try {
+      container = await docker.createContainer({
+        Image: TRIVY_IMAGE,
+        Cmd: [
+          "image",
+          "--format",
+          "json",
+          "--quiet",
+          "--scanners",
+          "vuln",
+          imageRef,
+        ],
+        HostConfig: {
+          AutoRemove: false,
+          Binds: [
+            "/var/run/docker.sock:/var/run/docker.sock",
+            `${CACHE_VOLUME}:/root/.cache/`,
+          ],
+        },
+      });
+
+      await container.start();
+      const result = (await container.wait()) as { StatusCode?: number };
+
+      const stdoutBuf = (await container.logs({
+        follow: false,
+        stdout: true,
+        stderr: false,
+      } as any)) as unknown as Buffer;
+      const stderrBuf = (await container.logs({
+        follow: false,
+        stdout: false,
+        stderr: true,
+      } as any)) as unknown as Buffer;
+
+      const stdout = demuxDockerLog(stdoutBuf).trim();
+      const stderr = demuxDockerLog(stderrBuf).trim();
+
+      if (!stdout) {
+        return reply.code(500).send({
+          error: "scan_failed",
+          message: stderr || `Scanner exited with code ${result.StatusCode ?? "?"}`,
+        });
+      }
+
+      let parsed: any;
+      try {
+        // Trivy emits a single JSON document; guard against leading noise.
+        const start = stdout.indexOf("{");
+        parsed = JSON.parse(start >= 0 ? stdout.slice(start) : stdout);
+      } catch {
+        return reply.code(500).send({
+          error: "scan_parse_failed",
+          message: stderr || "Could not parse scanner output.",
+        });
+      }
+
+      const summary: Record<VulnerabilitySeverity, number> = {
+        CRITICAL: 0,
+        HIGH: 0,
+        MEDIUM: 0,
+        LOW: 0,
+        UNKNOWN: 0,
+      };
+      const targets: ScanTarget[] = [];
+      let total = 0;
+
+      for (const res of parsed.Results ?? []) {
+        const vulns: Vulnerability[] = (res.Vulnerabilities ?? []).map((v: any) => {
+          const sev = (String(v.Severity ?? "UNKNOWN").toUpperCase() as VulnerabilitySeverity);
+          const severity: VulnerabilitySeverity =
+            sev in summary ? sev : "UNKNOWN";
+          summary[severity] += 1;
+          total += 1;
+          return {
+            vulnerabilityId: v.VulnerabilityID ?? "",
+            pkgName: v.PkgName ?? "",
+            installedVersion: v.InstalledVersion ?? "",
+            fixedVersion: v.FixedVersion || undefined,
+            severity,
+            title: v.Title || undefined,
+            primaryUrl: v.PrimaryURL || undefined,
+          };
+        });
+        targets.push({
+          target: res.Target ?? "",
+          type: res.Type || undefined,
+          vulnerabilities: vulns,
+        });
+      }
+
+      const scan: ImageScanResult = {
+        imageRef,
+        scannedAt: Math.floor(Date.now() / 1000),
+        summary,
+        total,
+        targets,
+      };
+      await scanStore.set(req.params.id, scan);
+      return scan;
+    } catch (err) {
+      return reply.code(500).send({
+        error: "scan_failed",
+        message: err instanceof Error ? err.message : String(err),
+      });
+    } finally {
+      if (container) {
+        try {
+          await container.remove({ force: true });
+        } catch {
+          // best-effort cleanup
+        }
+      }
+    }
   });
 
   app.post<{ Body: { fromImage: string; tag?: string; registryId?: string } }>("/images/pull", async (req, reply) => {
@@ -535,6 +574,7 @@ export const imageRoutes: FastifyPluginAsync = async (app) => {
     async (req, reply) => {
       const docker = await currentDocker();
       await docker.getImage(req.params.id).remove({ force: req.query.force === "true" });
+      await scanStore.remove(req.params.id);
       return reply.code(204).send();
     },
   );
@@ -544,6 +584,84 @@ export const imageRoutes: FastifyPluginAsync = async (app) => {
     return docker.pruneImages({ filters: { dangling: { false: true } } as any });
   });
 };
+
+// Volume file browsing needs a helper container that mounts the volume, since
+// the Docker API exposes no direct filesystem access for volumes. We reuse a
+// long-lived (labeled) helper per volume and clean it up when the UI closes.
+const VOLUME_HELPER_IMAGE = "busybox:latest";
+const VOLUME_HELPER_LABEL = "com.rihtim.volume-helper";
+const VOLUME_MOUNT = "/mnt/vol";
+
+function toHelperPath(volPath: string): string {
+  if (!volPath || volPath === "/") return VOLUME_MOUNT;
+  const clean = volPath.startsWith("/") ? volPath : `/${volPath}`;
+  return VOLUME_MOUNT + clean;
+}
+
+function fromHelperPath(helperPath: string): string {
+  if (helperPath === VOLUME_MOUNT) return "/";
+  if (helperPath.startsWith(`${VOLUME_MOUNT}/`)) return helperPath.slice(VOLUME_MOUNT.length);
+  return helperPath;
+}
+
+async function ensureVolumeHelper(
+  docker: Docker,
+  volumeName: string,
+): Promise<Docker.Container> {
+  const existing = await docker.listContainers({
+    all: true,
+    filters: { label: [`${VOLUME_HELPER_LABEL}=${volumeName}`] } as any,
+  });
+  if (existing.length > 0) {
+    const c = docker.getContainer(existing[0].Id);
+    if (existing[0].State !== "running") {
+      try {
+        await c.start();
+      } catch {
+        // container may already be running; ignore
+      }
+    }
+    return c;
+  }
+
+  try {
+    await docker.getImage(VOLUME_HELPER_IMAGE).inspect();
+  } catch {
+    const stream = await docker.pull(VOLUME_HELPER_IMAGE);
+    await new Promise<void>((resolve, reject) => {
+      (docker as any).modem.followProgress(stream, (err: any) =>
+        err ? reject(err) : resolve(),
+      );
+    });
+  }
+
+  const container = await docker.createContainer({
+    Image: VOLUME_HELPER_IMAGE,
+    Cmd: ["sleep", "2147483647"],
+    Labels: { [VOLUME_HELPER_LABEL]: volumeName, "com.rihtim.managed": "true" },
+    HostConfig: {
+      Binds: [`${volumeName}:${VOLUME_MOUNT}`],
+      AutoRemove: false,
+    },
+  });
+  await container.start();
+  return container;
+}
+
+async function removeVolumeHelper(docker: Docker, volumeName: string): Promise<void> {
+  const existing = await docker.listContainers({
+    all: true,
+    filters: { label: [`${VOLUME_HELPER_LABEL}=${volumeName}`] } as any,
+  });
+  await Promise.all(
+    existing.map((c) =>
+      docker
+        .getContainer(c.Id)
+        .remove({ force: true })
+        .catch(() => undefined),
+    ),
+  );
+}
 
 export const volumeRoutes: FastifyPluginAsync = async (app) => {
   app.get("/volumes", async () => {
@@ -581,10 +699,98 @@ export const volumeRoutes: FastifyPluginAsync = async (app) => {
     return docker.createVolume(req.body as any);
   });
 
+  app.get<{ Params: { name: string } }>("/volumes/:name", async (req) => {
+    const docker = await currentDocker();
+    return docker.getVolume(req.params.name).inspect();
+  });
+
+  // List files inside a volume (via a helper container that mounts it).
+  app.get<{
+    Params: { name: string };
+    Querystring: { path?: string; limit?: string };
+  }>("/volumes/:name/fs", async (req, reply) => {
+    const volPath = req.query.path && req.query.path.length > 0 ? req.query.path : "/";
+    const limit = Math.max(1, Math.min(Number(req.query.limit ?? 2000), 20000));
+    const docker = await currentDocker();
+    try {
+      const helper = await ensureVolumeHelper(docker, req.params.name);
+      const listing = await listArchiveDir(
+        (p) => (helper as any).getArchive({ path: p }),
+        toHelperPath(volPath),
+        limit,
+      );
+      return { ...listing, path: fromHelperPath(listing.path) };
+    } catch (err) {
+      if (err instanceof ArchiveError) {
+        return reply.code(err.status).send({ error: err.code, message: err.message });
+      }
+      throw err;
+    }
+  });
+
+  // Read a single file from a volume.
+  app.get<{
+    Params: { name: string };
+    Querystring: { path?: string; max?: string };
+  }>("/volumes/:name/file", async (req, reply) => {
+    const volPath = req.query.path;
+    if (!volPath) return reply.code(400).send({ error: "path required" });
+    const maxBytes = Math.max(1024, Math.min(Number(req.query.max ?? 1_048_576), 16_777_216));
+    const docker = await currentDocker();
+    try {
+      const helper = await ensureVolumeHelper(docker, req.params.name);
+      const file = await readArchiveFile(
+        (p) => (helper as any).getArchive({ path: p }),
+        toHelperPath(volPath),
+        maxBytes,
+      );
+      return { ...file, path: fromHelperPath(file.path) };
+    } catch (err) {
+      if (err instanceof ArchiveError) {
+        return reply.code(err.status).send({ error: err.code, message: err.message });
+      }
+      throw err;
+    }
+  });
+
+  // Write/overwrite a single file in a volume.
+  app.put<{
+    Params: { name: string };
+    Body: { path?: string; content?: string; encoding?: "utf-8" | "base64" };
+  }>("/volumes/:name/file", async (req, reply) => {
+    const { path: volPath, content, encoding } = req.body ?? {};
+    if (!volPath) return reply.code(400).send({ error: "path required" });
+    if (typeof content !== "string") return reply.code(400).send({ error: "content required" });
+    const buf = Buffer.from(content, encoding === "base64" ? "base64" : "utf-8");
+    const docker = await currentDocker();
+    try {
+      const helper = await ensureVolumeHelper(docker, req.params.name);
+      await writeArchiveFile(
+        (stream, p) => (helper as any).putArchive(stream, { path: p }),
+        toHelperPath(volPath),
+        buf,
+      );
+      return reply.code(204).send();
+    } catch (err) {
+      if (err instanceof ArchiveError) {
+        return reply.code(err.status).send({ error: err.code, message: err.message });
+      }
+      throw err;
+    }
+  });
+
+  // Tear down the volume's helper container (called when the browser closes).
+  app.delete<{ Params: { name: string } }>("/volumes/:name/helper", async (req, reply) => {
+    const docker = await currentDocker();
+    await removeVolumeHelper(docker, req.params.name);
+    return reply.code(204).send();
+  });
+
   app.delete<{ Params: { name: string }; Querystring: { force?: string } }>(
     "/volumes/:name",
     async (req, reply) => {
       const docker = await currentDocker();
+      await removeVolumeHelper(docker, req.params.name).catch(() => undefined);
       await docker.getVolume(req.params.name).remove({ force: req.query.force === "true" });
       return reply.code(204).send();
     },
