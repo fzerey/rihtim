@@ -2,10 +2,25 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useT } from "@/i18n/provider";
-import { Folder, File as FileIcon, ChevronLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
+import {
+  Folder,
+  File as FileIcon,
+  ChevronLeft,
+  RefreshCw,
+  Link as LinkIcon,
+  Pencil,
+  Save,
+  X,
+} from "lucide-react";
 import type { FileEntry, FileListResponse, FileResponse } from "@/types/files";
 
-export function FileBrowser({ containerId }: { containerId: string }) {
+export function FileBrowser({
+  apiBase,
+  editable = false,
+}: {
+  apiBase: string;
+  editable?: boolean;
+}) {
   const { t } = useT();
   const [path, setPath] = useState("/");
   const [entries, setEntries] = useState<FileEntry[]>([]);
@@ -20,13 +35,20 @@ export function FileBrowser({ containerId }: { containerId: string }) {
     size: number;
   } | null>(null);
 
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+
   async function load(target: string) {
     setLoading(true);
     setError(null);
     setViewFile(null);
+    setEditing(false);
     try {
       const res = await api<FileListResponse>(
-        `/containers/${containerId}/fs?path=${encodeURIComponent(target)}`,
+        `${apiBase}/fs?path=${encodeURIComponent(target)}`,
       );
       setEntries(res.entries);
       setTruncated(res.truncated);
@@ -42,7 +64,7 @@ export function FileBrowser({ containerId }: { containerId: string }) {
   useEffect(() => {
     load("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerId]);
+  }, [apiBase]);
 
   function open(entry: FileEntry) {
     if (entry.isDir) {
@@ -55,9 +77,12 @@ export function FileBrowser({ containerId }: { containerId: string }) {
 
   async function openFile(name: string) {
     const full = joinPath(path, name);
+    setEditing(false);
+    setSaveError(null);
+    setSavedAt(null);
     try {
       const res = await api<FileResponse>(
-        `/containers/${containerId}/file?path=${encodeURIComponent(full)}`,
+        `${apiBase}/file?path=${encodeURIComponent(full)}`,
       );
       setViewFile({
         name: full,
@@ -76,6 +101,35 @@ export function FileBrowser({ containerId }: { containerId: string }) {
       });
     }
   }
+
+  function startEdit() {
+    if (!viewFile) return;
+    setDraft(viewFile.content);
+    setSaveError(null);
+    setSavedAt(null);
+    setEditing(true);
+  }
+
+  async function saveEdit() {
+    if (!viewFile) return;
+    setSaving(true);
+    setSaveError(null);
+    try {
+      await api(`${apiBase}/file`, {
+        method: "PUT",
+        json: { path: viewFile.name, content: draft, encoding: "utf-8" },
+      });
+      setViewFile({ ...viewFile, content: draft, size: new Blob([draft]).size });
+      setEditing(false);
+      setSavedAt(Date.now());
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const canEdit = editable && viewFile && !viewFile.binary && !viewFile.truncated;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-[400px]">
@@ -155,18 +209,68 @@ export function FileBrowser({ containerId }: { containerId: string }) {
             {viewFile?.name ?? t("containers.files.empty")}
           </span>
           {viewFile && (
-            <span className="text-slate-500">
+            <span className="text-slate-500 shrink-0">
               {viewFile.size}B
               {viewFile.binary ? " • binary" : ""}
               {viewFile.truncated ? " • truncated" : ""}
             </span>
           )}
+          {canEdit && !editing && (
+            <button
+              onClick={startEdit}
+              className="p-1 rounded hover:bg-slate-800 text-brand-300 shrink-0"
+              title={t("files.edit")}
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {editing && (
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={saveEdit}
+                disabled={saving}
+                className="p-1 rounded hover:bg-slate-800 text-emerald-400 disabled:opacity-50"
+                title={t("files.save")}
+              >
+                <Save className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => {
+                  setEditing(false);
+                  setSaveError(null);
+                }}
+                className="p-1 rounded hover:bg-slate-800 text-slate-400"
+                title={t("common.cancel")}
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
         </div>
-        <pre className="flex-1 overflow-auto p-3 text-xs whitespace-pre-wrap font-mono">
-          {viewFile?.binary
-            ? "[binary content omitted]"
-            : (viewFile?.content ?? "")}
-        </pre>
+        {saveError && (
+          <div className="px-3 py-1.5 text-xs text-rose-300 bg-rose-500/10 border-b border-rose-500/30">
+            {saveError}
+          </div>
+        )}
+        {savedAt && !editing && (
+          <div className="px-3 py-1.5 text-xs text-emerald-300 bg-emerald-500/10 border-b border-emerald-500/30">
+            {t("files.saved")}
+          </div>
+        )}
+        {editing ? (
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            spellCheck={false}
+            className="flex-1 w-full resize-none bg-slate-950 p-3 text-xs font-mono outline-none"
+          />
+        ) : (
+          <pre className="flex-1 overflow-auto p-3 text-xs whitespace-pre-wrap font-mono">
+            {viewFile?.binary
+              ? "[binary content omitted]"
+              : (viewFile?.content ?? "")}
+          </pre>
+        )}
       </div>
     </div>
   );

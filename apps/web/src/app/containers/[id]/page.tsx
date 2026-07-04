@@ -154,7 +154,7 @@ export default function ContainerDetailPage() {
         {tab === "logs" && <LogsPanel containerId={data.Id} />}
         {tab === "stats" && <StatsPanel containerId={data.Id} />}
         {tab === "exec" && <TerminalPanel containerId={data.Id} running={state.Status === "running"} />}
-        {tab === "files" && <FileBrowser containerId={data.Id} />}
+        {tab === "files" && <FileBrowser apiBase={`/containers/${data.Id}`} editable />}
         {tab === "inspect" && <InspectPanel data={data} />}
       </div>
     </div>

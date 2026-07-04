@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import type { VolumeSummary } from "@rihtim/shared";
 import { Plus, Search, Trash2, Sparkles } from "lucide-react";
 import { api, humanBytes } from "@/lib/api";
@@ -9,6 +10,7 @@ import { useT } from "@/i18n/provider";
 
 export default function VolumesPage() {
   const qc = useQueryClient();
+  const router = useRouter();
   const { t } = useT();
   const { data, error, isFetching, refetch } = useQuery({
     queryKey: ["volumes"],
@@ -149,8 +151,14 @@ export default function VolumesPage() {
             {rows.map((v) => {
               const inUse = (v.refCount ?? 0) > 0;
               return (
-                <tr key={v.name}>
-                  <td className="px-4 py-2 font-medium">{v.name}</td>
+                <tr
+                  key={v.name}
+                  onClick={() => router.push(`/volumes/${encodeURIComponent(v.name)}`)}
+                  className="hover:bg-slate-900/40 cursor-pointer"
+                >
+                  <td className="px-4 py-2 font-medium">
+                    <span className="text-brand-300 hover:underline">{v.name}</span>
+                  </td>
                   <td className="px-4 py-2">{v.driver}</td>
                   <td className="px-4 py-2 font-mono text-xs text-slate-400">{v.mountpoint}</td>
                   <td className="px-4 py-2 text-right tabular-nums">
@@ -173,7 +181,10 @@ export default function VolumesPage() {
                   </td>
                   <td className="px-4 py-2 text-right">
                     <button
-                      onClick={() => remove.mutate(v.name)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        remove.mutate(v.name);
+                      }}
                       disabled={inUse}
                       title={inUse ? t("volumes.inUseHint") : undefined}
                       className="p-1.5 rounded hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
