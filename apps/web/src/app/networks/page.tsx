@@ -1,10 +1,10 @@
 "use client";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import type { NetworkSummary } from "@rihtim/shared";
 import { QueryErrorBanner } from "@/components/QueryErrorBanner";
-import { NetworkDetailDrawer } from "@/components/NetworkDetailDrawer";
 import { Trash2, Plus, Search, Sparkles } from "lucide-react";
 import { useT } from "@/i18n/provider";
 
@@ -12,6 +12,7 @@ const BUILTIN_NETWORKS = new Set(["bridge", "host", "none"]);
 
 export default function NetworksPage() {
   const qc = useQueryClient();
+  const router = useRouter();
   const { t } = useT();
   const { data, error, isFetching, refetch } = useQuery({
     queryKey: ["networks"],
@@ -20,7 +21,6 @@ export default function NetworksPage() {
   const [name, setName] = useState("");
   const [filter, setFilter] = useState("");
   const [onlyCustom, setOnlyCustom] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const create = useMutation({
     mutationFn: () => api("/networks", { method: "POST", json: { Name: name } }),
@@ -133,7 +133,7 @@ export default function NetworksPage() {
               return (
                 <tr
                   key={n.id}
-                  onClick={() => setSelectedId(n.id)}
+                  onClick={() => router.push(`/networks/${encodeURIComponent(n.id)}`)}
                   className="cursor-pointer hover:bg-slate-900/40"
                 >
                   <td className="px-4 py-2 font-medium">
@@ -177,10 +177,6 @@ export default function NetworksPage() {
           </tbody>
         </table>
       </div>
-
-      {selectedId && (
-        <NetworkDetailDrawer networkId={selectedId} onClose={() => setSelectedId(null)} />
-      )}
     </div>
   );
 }
