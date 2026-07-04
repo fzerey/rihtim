@@ -88,6 +88,46 @@ export interface ImageSummary {
   containers: number;
 }
 
+export interface ImageHistoryEntry {
+  id?: string;
+  createdAt: number;
+  createdBy: string;
+  size: number;
+  comment?: string;
+  tags: string[];
+}
+
+export type VulnerabilitySeverity =
+  | "CRITICAL"
+  | "HIGH"
+  | "MEDIUM"
+  | "LOW"
+  | "UNKNOWN";
+
+export interface Vulnerability {
+  vulnerabilityId: string;
+  pkgName: string;
+  installedVersion: string;
+  fixedVersion?: string;
+  severity: VulnerabilitySeverity;
+  title?: string;
+  primaryUrl?: string;
+}
+
+export interface ScanTarget {
+  target: string;
+  type?: string;
+  vulnerabilities: Vulnerability[];
+}
+
+export interface ImageScanResult {
+  imageRef: string;
+  scannedAt: number;
+  summary: Record<VulnerabilitySeverity, number>;
+  total: number;
+  targets: ScanTarget[];
+}
+
 export interface VolumeSummary {
   name: string;
   driver: string;
