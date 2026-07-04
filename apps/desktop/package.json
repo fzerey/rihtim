@@ -10,7 +10,7 @@
   },
   "main": "dist/main.js",
   "scripts": {
-    "build:main": "tsc -p tsconfig.json",
+    "build:main": "tsc -p tsconfig.json && node -e \"require('fs').copyFileSync('buildResources/icon.png','dist/icon.png')\"",
     "electron:dev": "pnpm build:main && electron .",
     "package": "node ../../scripts/build-desktop.mjs",
     "typecheck": "tsc --noEmit"
