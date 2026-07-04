@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, humanBytes, timeAgo } from "@/lib/api";
 import type { ImageSummary, ContainerSummary, Registry } from "@rihtim/shared";
 import { QueryErrorBanner } from "@/components/QueryErrorBanner";
-import { Trash2, Download, Search, Star, BadgeCheck, ExternalLink, ChevronDown, ArrowUp, ArrowDown, Play, X } from "lucide-react";
+import { Trash2, Download, Search, Star, BadgeCheck, ExternalLink, ChevronDown, ArrowUp, ArrowDown, Play, X, ShieldCheck } from "lucide-react";
 import { useT } from "@/i18n/provider";
 import type { HubResult, HubTag } from "@/types/hub";
 
@@ -366,9 +366,15 @@ export default function ImagesPage() {
           </thead>
           <tbody className="divide-y divide-slate-800 bg-slate-950/40">
             {pagedImages.map((img) => (
-              <tr key={img.id} className="hover:bg-slate-900/40">
+              <tr
+                key={img.id}
+                onClick={() => router.push(`/images/${encodeURIComponent(img.id)}`)}
+                className="hover:bg-slate-900/40 cursor-pointer"
+              >
                 <td className="px-4 py-2 font-mono text-xs">
-                  {img.repoTags.length ? img.repoTags.join(", ") : "<none>"}
+                  <span className="text-brand-300 hover:underline">
+                    {img.repoTags.length ? img.repoTags.join(", ") : "<none>"}
+                  </span>
                 </td>
                 <td className="px-4 py-2 font-mono text-xs">
                   {img.id.replace("sha256:", "").slice(0, 12)}
@@ -388,14 +394,30 @@ export default function ImagesPage() {
                 <td className="px-4 py-2 text-right">
                   <div className="inline-flex items-center gap-1">
                     <button
-                      onClick={() => setRunTarget(img)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/images/${encodeURIComponent(img.id)}`);
+                      }}
+                      title={t("images.scan.start")}
+                      className="p-1.5 rounded hover:bg-slate-800"
+                    >
+                      <ShieldCheck className="w-4 h-4 text-sky-400" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRunTarget(img);
+                      }}
                       title={t("images.run")}
                       className="p-1.5 rounded hover:bg-slate-800"
                     >
                       <Play className="w-4 h-4 text-emerald-400" />
                     </button>
                     <button
-                      onClick={() => remove.mutate(img.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        remove.mutate(img.id);
+                      }}
                       className="p-1.5 rounded hover:bg-slate-800"
                     >
                       <Trash2 className="w-4 h-4 text-rose-400" />
