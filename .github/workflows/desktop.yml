@@ -51,6 +51,7 @@ jobs:
           CSC_IDENTITY_AUTODISCOVERY: "false"
 
       - name: Upload installers
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: rihtim-${{ matrix.artifact }}
