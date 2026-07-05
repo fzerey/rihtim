@@ -36,7 +36,9 @@
     "builds": "Builds",
     "volumes": "Volumes",
     "networks": "Netzwerke",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "compose": "Compose",
+    "diagnostics": "Diagnose"
   },
   "topbar": {
     "noContext": "Kein Kontext",
@@ -277,13 +279,13 @@
       "dockerHub": "Docker Hub (Official)"
     },
     "pullFromRegistry": {
-      "section": "Pull from Registry",
-      "selectRegistry": "Select a registry",
-      "imageName": "Image name",
-      "imageNamePlaceholder": "e.g. nginx, postgres, node",
+      "section": "Aus Registry ziehen",
+      "selectRegistry": "Registry auswahlen",
+      "imageName": "Image-Name",
+      "imageNamePlaceholder": "z. B. nginx, postgres, node",
       "imageTag": "Tag",
-      "pull": "Pull Image",
-      "pulling": "Pulling..."
+      "pull": "Image ziehen",
+      "pulling": "Wird gezogen..."
     },
     "detail": {
       "tabDetails": "Details",
@@ -315,6 +317,17 @@
       "clean": "Keine bekannten Schwachstellen gefunden.",
       "noneForFilter": "Keine Schwachstellen für die gewählte Stufe.",
       "fixedIn": "behoben in {version}"
+    },
+    "pushToRegistry": {
+      "section": "In private Registry pushen",
+      "selectRegistry": "Registry auswahlen",
+      "sourceImage": "Quell-Image",
+      "selectSourceImage": "Lokalen Image-Tag auswahlen",
+      "targetImage": "Ziel-Repository",
+      "targetImagePlaceholder": "z. B. team/app",
+      "targetTag": "Ziel-Tag",
+      "push": "Image pushen",
+      "pushing": "Wird gepusht..."
     }
   },
   "volumes": {
@@ -482,5 +495,43 @@
   },
   "errors": {
     "dockerUnreachable": "Der aktive Docker-Kontext ist nicht erreichbar. Stellen Sie sicher, dass die Engine läuft, oder wählen Sie in den Einstellungen einen anderen Kontext."
+  },
+  "diagnostics": {
+    "copy": {
+      "button": "Diagnose kopieren",
+      "copied": "Kopiert"
+    },
+    "quickFix": {
+      "running": "Fix wird angewendet..."
+    },
+    "title": "Fehlerbehebung",
+    "subtitle": "Schnellchecks fur Docker-Verbindung und Laufzeitgesundheit der App ausfuhren.",
+    "run": "Checks ausfuhren",
+    "status": {
+      "ok": "Alle Checks erfolgreich",
+      "warn": "Einige Checks sind fehlgeschlagen"
+    }
+  },
+  "compose": {
+    "title": "Compose-Projekte",
+    "subtitle": "Projekte verwalten, die uber Docker-Compose-Labels erkannt wurden.",
+    "summary": "{running}/{total} laufen",
+    "empty": "Kein Compose-Projekt im aktuellen Docker-Kontext gefunden.",
+    "emptyProject": "Keine Container in diesem Projekt.",
+    "fileRunner": {
+      "title": "Aus Compose-Datei starten",
+      "subtitle": "docker compose up/down mit lokalem Compose-Dateipfad ausfuhren.",
+      "filePathPlaceholder": "Compose-Dateipfad (z. B. C:\\work\\app\\docker-compose.yml)",
+      "projectNamePlaceholder": "Projektname (optional)",
+      "browse": "Durchsuchen",
+      "up": "Compose Up",
+      "down": "Compose Down"
+    },
+    "actions": {
+      "start": "Projekt starten",
+      "stop": "Projekt stoppen",
+      "restart": "Projekt neu starten",
+      "down": "Down (Container entfernen)"
+    }
   }
 }

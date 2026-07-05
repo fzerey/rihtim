@@ -36,7 +36,9 @@
     "builds": "Build",
     "volumes": "Volumi",
     "networks": "Reti",
-    "settings": "Impostazioni"
+    "settings": "Impostazioni",
+    "compose": "Compose",
+    "diagnostics": "Diagnostica"
   },
   "topbar": {
     "noContext": "Nessun contesto",
@@ -277,13 +279,13 @@
       "dockerHub": "Docker Hub (Official)"
     },
     "pullFromRegistry": {
-      "section": "Pull from Registry",
-      "selectRegistry": "Select a registry",
-      "imageName": "Image name",
-      "imageNamePlaceholder": "e.g. nginx, postgres, node",
+      "section": "Pull dal registry",
+      "selectRegistry": "Seleziona un registry",
+      "imageName": "Nome immagine",
+      "imageNamePlaceholder": "es. nginx, postgres, node",
       "imageTag": "Tag",
-      "pull": "Pull Image",
-      "pulling": "Pulling..."
+      "pull": "Pull immagine",
+      "pulling": "Pull in corso..."
     },
     "detail": {
       "tabDetails": "Dettagli",
@@ -315,6 +317,17 @@
       "clean": "Nessuna vulnerabilità nota trovata.",
       "noneForFilter": "Nessuna vulnerabilità per la gravità selezionata.",
       "fixedIn": "risolto in {version}"
+    },
+    "pushToRegistry": {
+      "section": "Push su registry privato",
+      "selectRegistry": "Seleziona un registry",
+      "sourceImage": "Immagine sorgente",
+      "selectSourceImage": "Seleziona tag immagine locale",
+      "targetImage": "Repository di destinazione",
+      "targetImagePlaceholder": "es. team/app",
+      "targetTag": "Tag di destinazione",
+      "push": "Push immagine",
+      "pushing": "Push in corso..."
     }
   },
   "volumes": {
@@ -482,5 +495,43 @@
   },
   "errors": {
     "dockerUnreachable": "Impossibile raggiungere il contesto Docker attivo. Verifica che il motore sia in esecuzione o scegli un altro contesto in Impostazioni."
+  },
+  "diagnostics": {
+    "copy": {
+      "button": "Copia diagnostica",
+      "copied": "Copiato"
+    },
+    "quickFix": {
+      "running": "Applicazione correzione..."
+    },
+    "title": "Risoluzione problemi",
+    "subtitle": "Esegui controlli rapidi su connettivita Docker e stato runtime dell'app.",
+    "run": "Esegui controlli",
+    "status": {
+      "ok": "Tutti i controlli superati",
+      "warn": "Alcuni controlli non sono riusciti"
+    }
+  },
+  "compose": {
+    "title": "Progetti Compose",
+    "subtitle": "Gestisci i progetti rilevati dalle etichette Docker Compose.",
+    "summary": "{running}/{total} in esecuzione",
+    "empty": "Nessun progetto Compose trovato nel contesto Docker corrente.",
+    "emptyProject": "Nessun container in questo progetto.",
+    "fileRunner": {
+      "title": "Esegui da file compose",
+      "subtitle": "Esegui docker compose up/down usando un percorso locale del file compose.",
+      "filePathPlaceholder": "Percorso file compose (es. C:\\work\\app\\docker-compose.yml)",
+      "projectNamePlaceholder": "Nome progetto (opzionale)",
+      "browse": "Sfoglia",
+      "up": "Compose Up",
+      "down": "Compose Down"
+    },
+    "actions": {
+      "start": "Avvia progetto",
+      "stop": "Ferma progetto",
+      "restart": "Riavvia progetto",
+      "down": "Down (rimuovi container)"
+    }
   }
 }

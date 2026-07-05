@@ -36,7 +36,9 @@
     "builds": "构建",
     "volumes": "卷",
     "networks": "网络",
-    "settings": "设置"
+    "settings": "设置",
+    "compose": "Compose",
+    "diagnostics": "诊断"
   },
   "topbar": {
     "noContext": "无上下文",
@@ -277,13 +279,13 @@
       "dockerHub": "Docker Hub (Official)"
     },
     "pullFromRegistry": {
-      "section": "Pull from Registry",
-      "selectRegistry": "Select a registry",
-      "imageName": "Image name",
-      "imageNamePlaceholder": "e.g. nginx, postgres, node",
-      "imageTag": "Tag",
-      "pull": "Pull Image",
-      "pulling": "Pulling..."
+      "section": "从镜像仓库拉取",
+      "selectRegistry": "选择镜像仓库",
+      "imageName": "镜像名称",
+      "imageNamePlaceholder": "例如 nginx、postgres、node",
+      "imageTag": "标签",
+      "pull": "拉取镜像",
+      "pulling": "拉取中..."
     },
     "detail": {
       "tabDetails": "详情",
@@ -315,6 +317,17 @@
       "clean": "未发现已知漏洞。",
       "noneForFilter": "所选严重级别没有漏洞。",
       "fixedIn": "已在 {version} 修复"
+    },
+    "pushToRegistry": {
+      "section": "推送到私有仓库",
+      "selectRegistry": "选择镜像仓库",
+      "sourceImage": "源镜像",
+      "selectSourceImage": "选择本地镜像标签",
+      "targetImage": "目标仓库",
+      "targetImagePlaceholder": "例如 team/app",
+      "targetTag": "目标标签",
+      "push": "推送镜像",
+      "pushing": "推送中..."
     }
   },
   "volumes": {
@@ -482,5 +495,43 @@
   },
   "errors": {
     "dockerUnreachable": "无法访问当前 Docker 上下文。请确保引擎正在运行，或在设置中选择其他上下文。"
+  },
+  "diagnostics": {
+    "copy": {
+      "button": "复制诊断信息",
+      "copied": "已复制"
+    },
+    "quickFix": {
+      "running": "正在应用修复..."
+    },
+    "title": "故障排查",
+    "subtitle": "运行 Docker 连接和应用运行状态的快速检查。",
+    "run": "运行检查",
+    "status": {
+      "ok": "所有检查均通过",
+      "warn": "部分检查失败"
+    }
+  },
+  "compose": {
+    "title": "Compose 项目",
+    "subtitle": "管理通过 Docker Compose 标签发现的项目。",
+    "summary": "{running}/{total} 运行中",
+    "empty": "当前 Docker 上下文中未找到 Compose 项目。",
+    "emptyProject": "此项目中没有容器。",
+    "fileRunner": {
+      "title": "从 compose 文件运行",
+      "subtitle": "使用本地 compose 文件路径执行 docker compose up/down。",
+      "filePathPlaceholder": "Compose 文件路径（例如 C:\\work\\app\\docker-compose.yml）",
+      "projectNamePlaceholder": "项目名称（可选）",
+      "browse": "浏览",
+      "up": "Compose Up",
+      "down": "Compose Down"
+    },
+    "actions": {
+      "start": "启动项目",
+      "stop": "停止项目",
+      "restart": "重启项目",
+      "down": "Down（移除容器）"
+    }
   }
 }

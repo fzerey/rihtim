@@ -52,6 +52,17 @@ export default function ImagesPage() {
     return set;
   })();
 
+  const pushableImageTags = (() => {
+    const tags: string[] = [];
+    for (const img of data ?? []) {
+      for (const tag of img.repoTags ?? []) {
+        if (!tag || tag === "<none>:<none>") continue;
+        tags.push(tag);
+      }
+    }
+    return tags.sort((a, b) => a.localeCompare(b));
+  })();
+
   const [pulling, setPulling] = useState(false);
   const [pullLogs, setPullLogs] = useState<string[]>([]);
   const [showPullTerminal, setShowPullTerminal] = useState(false);
@@ -60,6 +71,14 @@ export default function ImagesPage() {
   const [registryForPull, setRegistryForPull] = useState<string>("");
   const [imageNameToPull, setImageNameToPull] = useState("");
   const [imageTagToPull, setImageTagToPull] = useState("latest");
+  const [registryForPush, setRegistryForPush] = useState<string>("");
+  const [sourceImageToPush, setSourceImageToPush] = useState("");
+  const [targetImageToPush, setTargetImageToPush] = useState("");
+  const [targetTagToPush, setTargetTagToPush] = useState("latest");
+  const [pushing, setPushing] = useState(false);
+  const [pushLogs, setPushLogs] = useState<string[]>([]);
+  const [showPushTerminal, setShowPushTerminal] = useState(false);
+  const pushTerminalTimeoutRef = useRef<NodeJS.Timeout>();
 
   const [hubTerm, setHubTerm] = useState("");
   const [hubQuery, setHubQuery] = useState("");
@@ -178,6 +197,50 @@ export default function ImagesPage() {
       pullTerminalTimeoutRef.current = setTimeout(() => {
         setShowPullTerminal(false);
         setPullLogs([]);
+      }, 2000);
+    }
+  }
+
+  async function doPush() {
+    if (!registryForPush || !sourceImageToPush || !targetImageToPush.trim()) return;
+    setPushing(true);
+    setPushLogs([]);
+    setShowPushTerminal(true);
+    if (pushTerminalTimeoutRef.current) clearTimeout(pushTerminalTimeoutRef.current);
+
+    try {
+      const res = await fetch("/api/images/push", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sourceImage: sourceImageToPush,
+          targetImage: targetImageToPush.trim(),
+          targetTag: targetTagToPush || "latest",
+          registryId: registryForPush,
+        }),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        setPushLogs([text || "Push failed"]);
+        return;
+      }
+
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      while (reader) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const text = decoder.decode(value);
+        const lines = text.split("\n").filter((l) => l.trim());
+        setPushLogs((prev) => [...prev, ...lines]);
+      }
+    } finally {
+      setPushing(false);
+      qc.invalidateQueries({ queryKey: ["images"] });
+      pushTerminalTimeoutRef.current = setTimeout(() => {
+        setShowPushTerminal(false);
+        setPushLogs([]);
       }, 2000);
     }
   }
@@ -318,6 +381,77 @@ export default function ImagesPage() {
           >
             <Download className="w-4 h-4" />
             {pulling ? t("images.pullFromRegistry.pulling") : t("images.pullFromRegistry.pull")}
+          </button>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+        <div className="text-sm text-slate-400 mb-2">{t("images.pushToRegistry.section")}</div>
+        <div className="space-y-2">
+          <select
+            value={registryForPush}
+            onChange={(e) => setRegistryForPush(e.target.value)}
+            className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm text-slate-200"
+          >
+            <option value="">{t("images.pushToRegistry.selectRegistry")}</option>
+            {registries?.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
+          </select>
+
+          <div>
+            <div className="text-xs text-slate-400 mb-1">{t("images.pushToRegistry.sourceImage")}</div>
+            <select
+              value={sourceImageToPush}
+              onChange={(e) => setSourceImageToPush(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm text-slate-200"
+            >
+              <option value="">{t("images.pushToRegistry.selectSourceImage")}</option>
+              {pushableImageTags.map((tag) => (
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            <div className="col-span-2">
+              <div className="text-xs text-slate-400 mb-1">{t("images.pushToRegistry.targetImage")}</div>
+              <input
+                className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm"
+                placeholder={t("images.pushToRegistry.targetImagePlaceholder")}
+                value={targetImageToPush}
+                onChange={(e) => setTargetImageToPush(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+            <div>
+              <div className="text-xs text-slate-400 mb-1">{t("images.pushToRegistry.targetTag")}</div>
+              <input
+                className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm"
+                placeholder="latest"
+                value={targetTagToPush}
+                onChange={(e) => setTargetTagToPush(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={() => void doPush()}
+            disabled={
+              pushing ||
+              !registryForPush ||
+              !sourceImageToPush ||
+              !targetImageToPush.trim()
+            }
+            className="w-full px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            <ArrowUp className="w-4 h-4" />
+            {pushing ? t("images.pushToRegistry.pushing") : t("images.pushToRegistry.push")}
           </button>
         </div>
       </div>
@@ -486,11 +620,27 @@ export default function ImagesPage() {
         <PullTerminalBanner
           logs={pullLogs}
           isRunning={pulling}
+          title={t("images.pullFromRegistry.pulling")}
           onClose={() => {
             setShowPullTerminal(false);
             setPullLogs([]);
             if (pullTerminalTimeoutRef.current) {
               clearTimeout(pullTerminalTimeoutRef.current);
+            }
+          }}
+        />
+      )}
+
+      {showPushTerminal && (
+        <PullTerminalBanner
+          logs={pushLogs}
+          isRunning={pushing}
+          title={t("images.pushToRegistry.pushing")}
+          onClose={() => {
+            setShowPushTerminal(false);
+            setPushLogs([]);
+            if (pushTerminalTimeoutRef.current) {
+              clearTimeout(pushTerminalTimeoutRef.current);
             }
           }}
         />
@@ -905,13 +1055,14 @@ function RunImageModal({
 function PullTerminalBanner({
   logs,
   isRunning,
+  title,
   onClose,
 }: {
   logs: string[];
   isRunning: boolean;
+  title: string;
   onClose: () => void;
 }) {
-  const { t } = useT();
   const terminalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -924,7 +1075,7 @@ function PullTerminalBanner({
     <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="text-sm font-medium text-slate-200">{t("images.pullFromRegistry.pulling")}</div>
+          <div className="text-sm font-medium text-slate-200">{title}</div>
           {isRunning && (
             <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
           )}
@@ -944,7 +1095,7 @@ function PullTerminalBanner({
         className="h-48 overflow-auto p-3 bg-slate-950 font-mono text-xs space-y-0 text-slate-300 rounded-md border border-slate-800"
       >
         {logs.length === 0 ? (
-          <div className="text-slate-500">{t("images.pullFromRegistry.pulling")}...</div>
+          <div className="text-slate-500">{title}...</div>
         ) : (
           logs.map((log, idx) => {
             try {

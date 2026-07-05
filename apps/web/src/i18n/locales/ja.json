@@ -36,7 +36,9 @@
     "builds": "ビルド",
     "volumes": "ボリューム",
     "networks": "ネットワーク",
-    "settings": "設定"
+    "settings": "設定",
+    "compose": "Compose",
+    "diagnostics": "トラブルシュート"
   },
   "topbar": {
     "noContext": "コンテキストなし",
@@ -277,13 +279,13 @@
       "run": "Run"
     },
     "pullFromRegistry": {
-      "section": "Pull from Registry",
-      "selectRegistry": "Select a registry",
-      "imageName": "Image name",
-      "imageNamePlaceholder": "e.g. nginx, postgres, node",
-      "imageTag": "Tag",
-      "pull": "Pull Image",
-      "pulling": "Pulling..."
+      "section": "レジストリからプル",
+      "selectRegistry": "レジストリを選択",
+      "imageName": "イメージ名",
+      "imageNamePlaceholder": "例: nginx, postgres, node",
+      "imageTag": "タグ",
+      "pull": "イメージをプル",
+      "pulling": "プル中..."
     },
     "detail": {
       "tabDetails": "詳細",
@@ -315,6 +317,17 @@
       "clean": "既知の脆弱性は見つかりませんでした。",
       "noneForFilter": "選択した重大度の脆弱性はありません。",
       "fixedIn": "{version} で修正"
+    },
+    "pushToRegistry": {
+      "section": "プライベートレジストリへプッシュ",
+      "selectRegistry": "レジストリを選択",
+      "sourceImage": "元イメージ",
+      "selectSourceImage": "ローカルイメージタグを選択",
+      "targetImage": "対象リポジトリ",
+      "targetImagePlaceholder": "例: team/app",
+      "targetTag": "対象タグ",
+      "push": "イメージをプッシュ",
+      "pushing": "プッシュ中..."
     }
   },
   "volumes": {
@@ -482,5 +495,43 @@
   },
   "errors": {
     "dockerUnreachable": "アクティブな Docker コンテキストに接続できません。エンジンが実行中か確認するか、設定で別のコンテキストを選択してください。"
+  },
+  "diagnostics": {
+    "copy": {
+      "button": "診断結果をコピー",
+      "copied": "コピーしました"
+    },
+    "quickFix": {
+      "running": "修正を適用中..."
+    },
+    "title": "トラブルシュート",
+    "subtitle": "Docker接続とアプリ実行状態のクイックチェックを実行します。",
+    "run": "チェックを実行",
+    "status": {
+      "ok": "すべてのチェックが成功しました",
+      "warn": "一部のチェックが失敗しました"
+    }
+  },
+  "compose": {
+    "title": "Composeプロジェクト",
+    "subtitle": "Docker Composeラベルから検出されたプロジェクトを管理します。",
+    "summary": "{running}/{total} 実行中",
+    "empty": "現在のDockerコンテキストにComposeプロジェクトが見つかりません。",
+    "emptyProject": "このプロジェクトにコンテナはありません。",
+    "fileRunner": {
+      "title": "composeファイルから実行",
+      "subtitle": "ローカルのcomposeファイルパスを使って docker compose up/down を実行します。",
+      "filePathPlaceholder": "Composeファイルパス (例: C:\\work\\app\\docker-compose.yml)",
+      "projectNamePlaceholder": "プロジェクト名 (任意)",
+      "browse": "参照",
+      "up": "Compose Up",
+      "down": "Compose Down"
+    },
+    "actions": {
+      "start": "プロジェクト開始",
+      "stop": "プロジェクト停止",
+      "restart": "プロジェクト再起動",
+      "down": "Down (コンテナ削除)"
+    }
   }
 }

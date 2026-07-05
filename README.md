@@ -9,9 +9,12 @@ Docker as well as **Docker running inside WSL** — with no extra port to expose
 
 - 📊 **Dashboard**: engine info, container/image/CPU/memory summaries
 - 📦 **Containers**: list, start/stop/restart/pause/kill, delete, prune
-- 🖼️ **Images**: list, `docker pull` (live stream), delete
+- 🖼️ **Images**: list, `docker pull`/`docker push` (live stream), Docker Hub search, private registry pull/push, delete
+- 🧱 **Compose**: discover Compose projects, start/stop/restart/down, run up/down from compose files
+- 🩺 **Troubleshoot**: runtime and Docker health checks, one-click fix suggestions, copy diagnostics JSON
 - 💾 **Volumes**: list, create, delete, prune, size & ref-count reporting
 - 🌐 **Networks**: list, create, delete, prune, detail drawer with connected containers
+- 🔐 **Registries**: manage private registries with optional credentials and connectivity test
 - 📡 **Live logs** (WebSocket)
 - 🔌 **Multiple contexts**: Windows npipe, Unix socket, TCP, SSH, **WSL distro**
 

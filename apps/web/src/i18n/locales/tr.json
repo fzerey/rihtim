@@ -34,9 +34,49 @@
     "containers": "Konteynerler",
     "images": "İmajlar",
     "builds": "Derlemeler",
+    "compose": "Compose",
     "volumes": "Birimler",
     "networks": "Ağlar",
+    "diagnostics": "Tanı",
     "settings": "Ayarlar"
+  },
+  "diagnostics": {
+    "title": "Sorun Gider",
+    "subtitle": "Docker bağlantısı ve uygulama çalışma sağlığı için hızlı kontroller çalıştırın.",
+    "run": "Kontrolleri çalıştır",
+    "copy": {
+      "button": "Tanı çıktısını kopyala",
+      "copied": "Kopyalandı"
+    },
+    "quickFix": {
+      "running": "Düzeltme uygulanıyor..."
+    },
+    "status": {
+      "ok": "Tüm kontroller başarılı",
+      "warn": "Bazı kontroller başarısız"
+    }
+  },
+  "compose": {
+    "title": "Compose Projeleri",
+    "subtitle": "Docker Compose etiketlerinden bulunan projeleri yönetin.",
+    "summary": "{running}/{total} çalışıyor",
+    "empty": "Geçerli Docker bağlamında Compose projesi bulunamadı.",
+    "emptyProject": "Bu projede konteyner yok.",
+    "fileRunner": {
+      "title": "Compose dosyasından çalıştır",
+      "subtitle": "Yerel compose dosya yoluyla docker compose up/down çalıştırın.",
+      "filePathPlaceholder": "Compose dosya yolu (örn. C:\\work\\app\\docker-compose.yml)",
+      "projectNamePlaceholder": "Proje adı (isteğe bağlı)",
+      "browse": "Gözat",
+      "up": "Compose Up",
+      "down": "Compose Down"
+    },
+    "actions": {
+      "start": "Projeyi başlat",
+      "stop": "Projeyi durdur",
+      "restart": "Projeyi yeniden başlat",
+      "down": "Down (konteynerleri sil)"
+    }
   },
   "topbar": {
     "noContext": "Bağlam yok",
@@ -284,6 +324,17 @@
       "imageTag": "Etiket",
       "pull": "İmaj Çek",
       "pulling": "Çekiliyor..."
+    },
+    "pushToRegistry": {
+      "section": "Private Registry'ye İmaj Gönder",
+      "selectRegistry": "Depo seçin",
+      "sourceImage": "Kaynak imaj",
+      "selectSourceImage": "Yerel imaj etiketi seçin",
+      "targetImage": "Hedef repository",
+      "targetImagePlaceholder": "ör: team/app",
+      "targetTag": "Hedef etiket",
+      "push": "İmaj Gönder",
+      "pushing": "Gönderiliyor..."
     },
     "detail": {
       "tabDetails": "Ayrıntılar",

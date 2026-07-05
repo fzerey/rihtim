@@ -34,9 +34,49 @@
     "containers": "Containers",
     "images": "Images",
     "builds": "Builds",
+    "compose": "Compose",
     "volumes": "Volumes",
     "networks": "Networks",
+    "diagnostics": "Diagnostics",
     "settings": "Settings"
+  },
+  "diagnostics": {
+    "title": "Troubleshoot",
+    "subtitle": "Run quick checks for Docker connectivity and app runtime health.",
+    "run": "Run checks",
+    "copy": {
+      "button": "Copy diagnostics",
+      "copied": "Copied"
+    },
+    "quickFix": {
+      "running": "Applying fix..."
+    },
+    "status": {
+      "ok": "All checks passed",
+      "warn": "Some checks failed"
+    }
+  },
+  "compose": {
+    "title": "Compose Projects",
+    "subtitle": "Manage projects discovered from Docker Compose labels.",
+    "summary": "{running}/{total} running",
+    "empty": "No Compose project found in current Docker context.",
+    "emptyProject": "No container in this project.",
+    "fileRunner": {
+      "title": "Run from compose file",
+      "subtitle": "Execute docker compose up/down using a local compose file path.",
+      "filePathPlaceholder": "Compose file path (e.g. C:\\work\\app\\docker-compose.yml)",
+      "projectNamePlaceholder": "Project name (optional)",
+      "browse": "Browse",
+      "up": "Compose Up",
+      "down": "Compose Down"
+    },
+    "actions": {
+      "start": "Start project",
+      "stop": "Stop project",
+      "restart": "Restart project",
+      "down": "Down (remove containers)"
+    }
   },
   "topbar": {
     "noContext": "No context",
@@ -284,6 +324,17 @@
       "imageTag": "Tag",
       "pull": "Pull Image",
       "pulling": "Pulling..."
+    },
+    "pushToRegistry": {
+      "section": "Push to Private Registry",
+      "selectRegistry": "Select a registry",
+      "sourceImage": "Source image",
+      "selectSourceImage": "Select local image tag",
+      "targetImage": "Target repository",
+      "targetImagePlaceholder": "e.g. team/app",
+      "targetTag": "Target tag",
+      "push": "Push Image",
+      "pushing": "Pushing..."
     },
     "detail": {
       "tabDetails": "Details",

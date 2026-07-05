@@ -1,4 +1,15 @@
-import { app, BrowserWindow, Menu, Tray, nativeImage, shell, utilityProcess } from "electron";
+import {
+  app,
+  BrowserWindow,
+  Menu,
+  Tray,
+  nativeImage,
+  dialog,
+  ipcMain,
+  shell,
+  utilityProcess,
+  type OpenDialogOptions,
+} from "electron";
 import path from "node:path";
 import net from "node:net";
 import fs from "node:fs";
@@ -139,6 +150,24 @@ function stopBackends(): void {
   webProc = null;
 }
 
+function registerIpcHandlers(): void {
+  ipcMain.handle("rihtim:select-compose-file", async () => {
+    const options: OpenDialogOptions = {
+      title: "Select Docker Compose file",
+      properties: ["openFile"],
+      filters: [
+        { name: "Compose files", extensions: ["yml", "yaml"] },
+        { name: "All files", extensions: ["*"] },
+      ],
+    };
+    const result = mainWindow
+      ? await dialog.showOpenDialog(mainWindow, options)
+      : await dialog.showOpenDialog(options);
+    if (result.canceled || result.filePaths.length === 0) return null;
+    return result.filePaths[0];
+  });
+}
+
 /** Minimal HTML shown when the bundled web server fails to come up. */
 function errorPage(message: string): string {
   const body = `
@@ -273,6 +302,7 @@ async function createWindow(webReady: boolean): Promise<void> {
 async function bootstrap(): Promise<void> {
   initLogger();
   Menu.setApplicationMenu(null);
+  registerIpcHandlers();
 
   // When packaged we launch the bundled servers ourselves. In development we
   // assume `pnpm dev` is already serving the web (3030) and API (5170) apps.

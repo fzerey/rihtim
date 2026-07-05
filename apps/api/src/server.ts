@@ -6,6 +6,7 @@ import { contextRoutes } from "./routes/contexts.js";
 import { registryRoutes } from "./routes/registries.js";
 import {
   containerRoutes,
+  composeRoutes,
   imageRoutes,
   volumeRoutes,
   networkRoutes,
@@ -57,6 +58,7 @@ app.get("/health", async () => ({ ok: true, name: "rihtim-api" }));
 await app.register(contextRoutes, { prefix: "/api" });
 await app.register(registryRoutes, { prefix: "/api" });
 await app.register(containerRoutes, { prefix: "/api" });
+await app.register(composeRoutes, { prefix: "/api" });
 await app.register(imageRoutes, { prefix: "/api" });
 await app.register(volumeRoutes, { prefix: "/api" });
 await app.register(networkRoutes, { prefix: "/api" });

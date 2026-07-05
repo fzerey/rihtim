@@ -9,6 +9,8 @@ import {
   Network,
   Settings,
   Hammer,
+  Layers,
+  Stethoscope,
 } from "lucide-react";
 import clsx from "clsx";
 import { useT } from "@/i18n/provider";
@@ -19,8 +21,10 @@ const items = [
   { href: "/containers", key: "nav.containers", icon: Boxes },
   { href: "/images", key: "nav.images", icon: ImageIcon },
   { href: "/builds", key: "nav.builds", icon: Hammer },
+  { href: "/compose", key: "nav.compose", icon: Layers },
   { href: "/volumes", key: "nav.volumes", icon: Database },
   { href: "/networks", key: "nav.networks", icon: Network },
+  { href: "/diagnostics", key: "nav.diagnostics", icon: Stethoscope },
   { href: "/settings", key: "nav.settings", icon: Settings },
 ];
 

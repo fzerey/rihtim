@@ -1,6 +1,8 @@
 import type { FastifyPluginAsync } from "fastify";
 import { PassThrough } from "node:stream";
+import { spawn } from "node:child_process";
 import * as fs from "node:fs/promises";
+import * as os from "node:os";
 import * as path from "node:path";
 import type Docker from "dockerode";
 import { currentDocker } from "../contexts/docker-client.js";
@@ -13,8 +15,11 @@ import {
   readArchiveFile,
   writeArchiveFile,
 } from "../util/archive-fs.js";
+import { contextStore } from "../contexts/store.js";
+import { config } from "../config.js";
 import type {
   ContainerSummary,
+  DockerContext,
   ImageSummary,
   ImageHistoryEntry,
   ImageScanResult,
@@ -54,6 +59,129 @@ function buildRegistryImageReference(registryUrl: string, image: string): string
   const basePath = url.pathname.replace(/^\/+|\/+$/g, "");
   const registryRoot = [url.host, basePath].filter(Boolean).join("/");
   return `${registryRoot}/${image}`;
+}
+
+function splitImageTag(ref: string): { repo: string; tag?: string } {
+  const trimmed = ref.trim();
+  const slash = trimmed.lastIndexOf("/");
+  const colon = trimmed.lastIndexOf(":");
+  if (colon > slash) {
+    return {
+      repo: trimmed.slice(0, colon),
+      tag: trimmed.slice(colon + 1),
+    };
+  }
+  return { repo: trimmed };
+}
+
+const COMPOSE_PROJECT_LABEL = "com.docker.compose.project";
+const COMPOSE_SERVICE_LABEL = "com.docker.compose.service";
+
+type ComposeContainerInfo = {
+  id: string;
+  name: string;
+  image: string;
+  state: string;
+  status: string;
+  service?: string;
+};
+
+type ComposeProjectInfo = {
+  name: string;
+  total: number;
+  running: number;
+  services: string[];
+  containers: ComposeContainerInfo[];
+};
+
+async function resolveComposeFile(rawPath: string): Promise<string> {
+  const file = path.resolve(rawPath);
+  await fs.access(file);
+  return file;
+}
+
+function sanitizeComposeFileName(name?: string): string {
+  const base = (name ?? "docker-compose.yml").trim() || "docker-compose.yml";
+  const onlyName = path.basename(base);
+  const safe = onlyName.replace(/[^a-zA-Z0-9._-]/g, "_");
+  if (safe.endsWith(".yml") || safe.endsWith(".yaml")) return safe;
+  return `${safe}.yml`;
+}
+
+async function prepareComposeInput(input: {
+  filePath?: string;
+  composeContent?: string;
+  fileName?: string;
+}): Promise<{ composeFile: string; cwd: string; cleanup: () => Promise<void> }> {
+  if (input.filePath) {
+    const composeFile = await resolveComposeFile(input.filePath);
+    return {
+      composeFile,
+      cwd: path.dirname(composeFile),
+      cleanup: async () => {},
+    };
+  }
+
+  const content = input.composeContent;
+  if (typeof content !== "string" || content.trim().length === 0) {
+    throw new Error("filePath or composeContent required");
+  }
+
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "rihtim-compose-"));
+  const fileName = sanitizeComposeFileName(input.fileName);
+  const composeFile = path.join(tempDir, fileName);
+  await fs.writeFile(composeFile, content, "utf8");
+
+  return {
+    composeFile,
+    cwd: tempDir,
+    cleanup: async () => {
+      await fs.rm(tempDir, { recursive: true, force: true });
+    },
+  };
+}
+
+async function runDockerCompose(args: string[], cwd: string): Promise<{
+  ok: boolean;
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+  command: string;
+}> {
+  return new Promise((resolve) => {
+    const child = spawn("docker", args, {
+      cwd,
+      env: process.env,
+      windowsHide: true,
+    });
+
+    const stdoutChunks: Buffer[] = [];
+    const stderrChunks: Buffer[] = [];
+
+    child.stdout?.on("data", (d: Buffer) => stdoutChunks.push(d));
+    child.stderr?.on("data", (d: Buffer) => stderrChunks.push(d));
+
+    child.on("error", (err) => {
+      resolve({
+        ok: false,
+        exitCode: 1,
+        stdout: "",
+        stderr: err.message,
+        command: ["docker", ...args].join(" "),
+      });
+    });
+
+    child.on("close", (code) => {
+      const exitCode = code ?? 1;
+      resolve({
+        ok: exitCode === 0,
+        exitCode,
+        stdout: Buffer.concat(stdoutChunks).toString("utf8"),
+        stderr: Buffer.concat(stderrChunks).toString("utf8"),
+        command: ["docker", ...args].join(" "),
+      });
+    });
+  });
 }
 
 export const containerRoutes: FastifyPluginAsync = async (app) => {
@@ -273,6 +401,190 @@ export const containerRoutes: FastifyPluginAsync = async (app) => {
       throw err;
     }
   });
+};
+
+export const composeRoutes: FastifyPluginAsync = async (app) => {
+  app.get("/compose/projects", async () => {
+    const docker = await currentDocker();
+    const containers = await docker.listContainers({ all: true });
+    const byProject = new Map<string, ComposeProjectInfo>();
+
+    for (const c of containers) {
+      const project = c.Labels?.[COMPOSE_PROJECT_LABEL];
+      if (!project) continue;
+      const service = c.Labels?.[COMPOSE_SERVICE_LABEL];
+      let entry = byProject.get(project);
+      if (!entry) {
+        entry = {
+          name: project,
+          total: 0,
+          running: 0,
+          services: [],
+          containers: [],
+        };
+        byProject.set(project, entry);
+      }
+      entry.total += 1;
+      if (c.State === "running") entry.running += 1;
+      if (service && !entry.services.includes(service)) entry.services.push(service);
+      entry.containers.push({
+        id: c.Id,
+        name: (c.Names?.[0] ?? "").replace(/^\//, ""),
+        image: c.Image,
+        state: c.State,
+        status: c.Status,
+        service,
+      });
+    }
+
+    return Array.from(byProject.values()).sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  app.post<{ Params: { name: string } }>("/compose/projects/:name/start", async (req) => {
+    const docker = await currentDocker();
+    const containers = await docker.listContainers({ all: true });
+    const targets = containers.filter((c) => c.Labels?.[COMPOSE_PROJECT_LABEL] === req.params.name);
+    const changed: string[] = [];
+    const failed: Array<{ id: string; error: string }> = [];
+    for (const c of targets) {
+      if (c.State === "running" || c.State === "restarting" || c.State === "paused") continue;
+      try {
+        await docker.getContainer(c.Id).start();
+        changed.push(c.Id);
+      } catch (err) {
+        failed.push({ id: c.Id, error: err instanceof Error ? err.message : String(err) });
+      }
+    }
+    return { ok: failed.length === 0, changed, failed };
+  });
+
+  app.post<{ Params: { name: string } }>("/compose/projects/:name/stop", async (req) => {
+    const docker = await currentDocker();
+    const containers = await docker.listContainers({ all: true });
+    const targets = containers.filter((c) => c.Labels?.[COMPOSE_PROJECT_LABEL] === req.params.name);
+    const changed: string[] = [];
+    const failed: Array<{ id: string; error: string }> = [];
+    for (const c of targets) {
+      if (c.State !== "running") continue;
+      try {
+        await docker.getContainer(c.Id).stop();
+        changed.push(c.Id);
+      } catch (err) {
+        failed.push({ id: c.Id, error: err instanceof Error ? err.message : String(err) });
+      }
+    }
+    return { ok: failed.length === 0, changed, failed };
+  });
+
+  app.post<{ Params: { name: string } }>("/compose/projects/:name/restart", async (req) => {
+    const docker = await currentDocker();
+    const containers = await docker.listContainers({ all: true });
+    const targets = containers.filter((c) => c.Labels?.[COMPOSE_PROJECT_LABEL] === req.params.name);
+    const changed: string[] = [];
+    const failed: Array<{ id: string; error: string }> = [];
+    for (const c of targets) {
+      if (c.State !== "running") continue;
+      try {
+        await docker.getContainer(c.Id).restart();
+        changed.push(c.Id);
+      } catch (err) {
+        failed.push({ id: c.Id, error: err instanceof Error ? err.message : String(err) });
+      }
+    }
+    return { ok: failed.length === 0, changed, failed };
+  });
+
+  app.delete<{ Params: { name: string }; Querystring: { volumes?: string } }>(
+    "/compose/projects/:name",
+    async (req) => {
+      const docker = await currentDocker();
+      const containers = await docker.listContainers({ all: true });
+      const targets = containers.filter((c) => c.Labels?.[COMPOSE_PROJECT_LABEL] === req.params.name);
+      const changed: string[] = [];
+      const failed: Array<{ id: string; error: string }> = [];
+      const removeVolumes = req.query.volumes === "true";
+
+      for (const c of targets) {
+        try {
+          await docker.getContainer(c.Id).remove({ force: true, v: removeVolumes });
+          changed.push(c.Id);
+        } catch (err) {
+          failed.push({ id: c.Id, error: err instanceof Error ? err.message : String(err) });
+        }
+      }
+      return { ok: failed.length === 0, changed, failed };
+    },
+  );
+
+  app.post<{
+    Body: {
+      filePath?: string;
+      composeContent?: string;
+      fileName?: string;
+      projectName?: string;
+      detach?: boolean;
+    };
+  }>(
+    "/compose/cli/up",
+    async (req, reply) => {
+      let prepared: Awaited<ReturnType<typeof prepareComposeInput>>;
+      try {
+        prepared = await prepareComposeInput(req.body ?? {});
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "invalid compose input";
+        return reply.code(400).send({ error: message });
+      }
+
+      const args = ["compose", "-f", prepared.composeFile];
+      if (req.body.projectName) args.push("-p", req.body.projectName);
+      args.push("up");
+      if (req.body.detach !== false) args.push("-d");
+
+      try {
+        const result = await runDockerCompose(args, prepared.cwd);
+        if (!result.ok) return reply.code(400).send(result);
+        return result;
+      } finally {
+        await prepared.cleanup();
+      }
+    },
+  );
+
+  app.post<{
+    Body: {
+      filePath?: string;
+      composeContent?: string;
+      fileName?: string;
+      projectName?: string;
+      volumes?: boolean;
+      removeOrphans?: boolean;
+    };
+  }>(
+    "/compose/cli/down",
+    async (req, reply) => {
+      let prepared: Awaited<ReturnType<typeof prepareComposeInput>>;
+      try {
+        prepared = await prepareComposeInput(req.body ?? {});
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "invalid compose input";
+        return reply.code(400).send({ error: message });
+      }
+
+      const args = ["compose", "-f", prepared.composeFile];
+      if (req.body.projectName) args.push("-p", req.body.projectName);
+      args.push("down");
+      if (req.body.volumes) args.push("-v");
+      if (req.body.removeOrphans) args.push("--remove-orphans");
+
+      try {
+        const result = await runDockerCompose(args, prepared.cwd);
+        if (!result.ok) return reply.code(400).send(result);
+        return result;
+      } finally {
+        await prepared.cleanup();
+      }
+    },
+  );
 };
 
 export const imageRoutes: FastifyPluginAsync = async (app) => {
@@ -525,6 +837,66 @@ export const imageRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const stream = await docker.pull(tag ? `${imageRef}:${tag}` : imageRef, authconfig ? { authconfig } : undefined);
+    reply.raw.setHeader("Content-Type", "application/x-ndjson");
+    stream.pipe(reply.raw);
+    return reply;
+  });
+
+  app.post<{
+    Body: {
+      sourceImage: string;
+      targetImage: string;
+      targetTag?: string;
+      registryId: string;
+    };
+  }>("/images/push", async (req, reply) => {
+    const docker = await currentDocker();
+    const { sourceImage, targetImage, targetTag, registryId } = req.body ?? ({} as any);
+    if (!sourceImage) return reply.code(400).send({ error: "sourceImage required" });
+    if (!targetImage) return reply.code(400).send({ error: "targetImage required" });
+    if (!registryId) return reply.code(400).send({ error: "registryId required" });
+
+    const registry = await registryStore.get(registryId);
+    if (!registry) return reply.code(404).send({ error: "registry not found" });
+
+    const remoteRef = buildRegistryImageReference(registry.url, targetImage);
+    const parsed = splitImageTag(remoteRef);
+    const finalTag = (targetTag && targetTag.trim()) || parsed.tag || "latest";
+
+    try {
+      await docker.getImage(sourceImage).tag({ repo: parsed.repo, tag: finalTag });
+    } catch (err) {
+      return reply.code(400).send({
+        error: err instanceof Error ? err.message : "failed to tag source image",
+      });
+    }
+
+    const imageRef = `${parsed.repo}:${finalTag}`;
+    const pushOpts =
+      registry.username || registry.password
+        ? {
+            authconfig: {
+              username: registry.username,
+              password: registry.password,
+              serveraddress: registry.url,
+            },
+          }
+        : undefined;
+
+    let stream: NodeJS.ReadableStream;
+    try {
+      stream = await new Promise<NodeJS.ReadableStream>((resolve, reject) => {
+        (docker.getImage(imageRef) as any).push(pushOpts ?? {}, (err: Error | null, s: NodeJS.ReadableStream) => {
+          if (err) return reject(err);
+          resolve(s);
+        });
+      });
+    } catch (err) {
+      return reply.code(400).send({
+        error: err instanceof Error ? err.message : "push start failed",
+      });
+    }
+
     reply.raw.setHeader("Content-Type", "application/x-ndjson");
     stream.pipe(reply.raw);
     return reply;
@@ -851,6 +1223,201 @@ export const networkRoutes: FastifyPluginAsync = async (app) => {
 };
 
 export const systemRoutes: FastifyPluginAsync = async (app) => {
+  type DiagnosticFix = {
+    id: string;
+    kind: "auto" | "command";
+    label: string;
+    description: string;
+    command?: string;
+  };
+
+  type DiagnosticCheck = {
+    id: string;
+    label: string;
+    ok: boolean;
+    message: string;
+    fixes?: DiagnosticFix[];
+  };
+
+  function recommendedDockerStartCommand(): string | null {
+    if (process.platform === "win32") return "Start-Service com.docker.service";
+    if (process.platform === "darwin") return "open -a Docker";
+    if (process.platform === "linux") return "sudo systemctl start docker";
+    return null;
+  }
+
+  function defaultContextDraft(): Omit<DockerContext, "id"> {
+    if (process.platform === "win32") {
+      return {
+        name: "local (npipe)",
+        kind: "npipe",
+        socketPath: "//./pipe/docker_engine",
+        current: true,
+      };
+    }
+    return {
+      name: "local (socket)",
+      kind: "socket",
+      socketPath: "/var/run/docker.sock",
+      current: true,
+    };
+  }
+
+  async function collectDiagnostics(): Promise<DiagnosticCheck[]> {
+    const checks: DiagnosticCheck[] = [];
+
+    try {
+      const contexts = await contextStore.list();
+      const current = contexts.find((c) => c.current) ?? contexts[0];
+      const hasContexts = contexts.length > 0;
+      checks.push({
+        id: "contexts",
+        label: "Context store",
+        ok: hasContexts,
+        message: hasContexts
+          ? `${contexts.length} context(s), active: ${current?.name ?? "unknown"}`
+          : "No Docker context configured",
+        fixes: hasContexts
+          ? undefined
+          : [
+              {
+                id: "diag-contexts-bootstrap",
+                kind: "auto",
+                label: "Create default context",
+                description: "Add a local Docker context and mark it as active.",
+              },
+            ],
+      });
+    } catch (err) {
+      checks.push({
+        id: "contexts",
+        label: "Context store",
+        ok: false,
+        message: err instanceof Error ? err.message : String(err),
+        fixes: [
+          {
+            id: "diag-contexts-bootstrap",
+            kind: "auto",
+            label: "Create default context",
+            description: "Attempt to rebuild the local context store file.",
+          },
+        ],
+      });
+    }
+
+    try {
+      await fs.mkdir(config.dataDir, { recursive: true });
+      const p = path.join(config.dataDir, ".rihtim-diag.tmp");
+      await fs.writeFile(p, "ok", "utf8");
+      await fs.unlink(p);
+      checks.push({
+        id: "fs",
+        label: "Filesystem",
+        ok: true,
+        message: "Read/write access is available",
+      });
+    } catch (err) {
+      checks.push({
+        id: "fs",
+        label: "Filesystem",
+        ok: false,
+        message: err instanceof Error ? err.message : String(err),
+        fixes: [
+          {
+            id: "diag-fs-ensure-data-dir",
+            kind: "auto",
+            label: "Recreate app data directory",
+            description: `Ensure ${config.dataDir} exists and is writable.`,
+          },
+        ],
+      });
+    }
+
+    try {
+      const docker = await currentDocker();
+      await docker.ping();
+      const version = await docker.version();
+      checks.push({
+        id: "docker",
+        label: "Docker daemon",
+        ok: true,
+        message: `Reachable (Docker ${version.Version ?? "unknown"}, API ${version.ApiVersion ?? "?"})`,
+      });
+
+      const containers = await docker.listContainers({ all: true });
+      const composeProjects = new Set(
+        containers
+          .map((c) => c.Labels?.[COMPOSE_PROJECT_LABEL])
+          .filter((v): v is string => Boolean(v)),
+      );
+      checks.push({
+        id: "compose-discovery",
+        label: "Compose discovery",
+        ok: true,
+        message: `${composeProjects.size} Compose project(s) detected`,
+      });
+    } catch (err) {
+      const startCmd = recommendedDockerStartCommand();
+      checks.push({
+        id: "docker",
+        label: "Docker daemon",
+        ok: false,
+        message: err instanceof Error ? err.message : String(err),
+        fixes: startCmd
+          ? [
+              {
+                id: "diag-docker-start-command",
+                kind: "command",
+                label: "Start Docker daemon",
+                description: "Run the suggested system command, then rerun checks.",
+                command: startCmd,
+              },
+            ]
+          : undefined,
+      });
+      checks.push({
+        id: "compose-discovery",
+        label: "Compose discovery",
+        ok: false,
+        message: "Skipped because Docker is unreachable",
+      });
+    }
+
+    checks.push({
+      id: "runtime",
+      label: "Runtime",
+      ok: true,
+      message: `${process.platform} / Node ${process.version}`,
+    });
+
+    return checks;
+  }
+
+  async function runDiagnosticFix(fixId: string): Promise<string> {
+    switch (fixId) {
+      case "diag-contexts-bootstrap": {
+        const contexts = await contextStore.list();
+        if (contexts.length === 0) {
+          await contextStore.add(defaultContextDraft());
+          return "Default Docker context created.";
+        }
+        const current = contexts.find((c) => c.current);
+        if (!current && contexts[0]) {
+          await contextStore.setCurrent(contexts[0].id);
+          return "Current Docker context restored.";
+        }
+        return "Context store is already healthy.";
+      }
+      case "diag-fs-ensure-data-dir":
+        await fs.mkdir(config.dataDir, { recursive: true });
+        return `Data directory ensured at ${config.dataDir}.`;
+      case "diag-docker-start-command":
+        throw new Error("This fix is command-only. Copy and run the suggested command.");
+      default:
+        throw new Error("Unknown fix id");
+    }
+  }
+
   app.get("/system/info", async () => {
     const docker = await currentDocker();
     const info = await docker.info();
@@ -1011,6 +1578,29 @@ export const systemRoutes: FastifyPluginAsync = async (app) => {
       return normalized;
     },
   );
+
+  app.get("/system/diagnostics", async () => {
+    const checks = await collectDiagnostics();
+
+    return {
+      ok: checks.every((c) => c.ok),
+      generatedAt: new Date().toISOString(),
+      checks,
+    };
+  });
+
+  app.post<{ Body: { fixId?: string } }>("/system/diagnostics/fix", async (req, reply) => {
+    const fixId = req.body?.fixId;
+    if (!fixId) return reply.code(400).send({ error: "fixId required" });
+    try {
+      const message = await runDiagnosticFix(fixId);
+      return { ok: true, fixId, message };
+    } catch (err) {
+      return reply
+        .code(400)
+        .send({ ok: false, fixId, error: err instanceof Error ? err.message : String(err) });
+    }
+  });
 };
 
 const IGNORED_DIRS = new Set([

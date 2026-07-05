@@ -36,7 +36,9 @@
     "builds": "Сборки",
     "volumes": "Тома",
     "networks": "Сети",
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "compose": "Compose",
+    "diagnostics": "Диагностика"
   },
   "topbar": {
     "noContext": "Нет контекста",
@@ -277,13 +279,13 @@
       "dockerHub": "Docker Hub (Official)"
     },
     "pullFromRegistry": {
-      "section": "Pull from Registry",
-      "selectRegistry": "Select a registry",
-      "imageName": "Image name",
-      "imageNamePlaceholder": "e.g. nginx, postgres, node",
-      "imageTag": "Tag",
-      "pull": "Pull Image",
-      "pulling": "Pulling..."
+      "section": "Загрузка из registry",
+      "selectRegistry": "Выберите registry",
+      "imageName": "Имя образа",
+      "imageNamePlaceholder": "например, nginx, postgres, node",
+      "imageTag": "Тег",
+      "pull": "Загрузить образ",
+      "pulling": "Загрузка..."
     },
     "detail": {
       "tabDetails": "Сведения",
@@ -315,6 +317,17 @@
       "clean": "Известных уязвимостей не найдено.",
       "noneForFilter": "Нет уязвимостей для выбранного уровня.",
       "fixedIn": "исправлено в {version}"
+    },
+    "pushToRegistry": {
+      "section": "Отправка в приватный registry",
+      "selectRegistry": "Выберите registry",
+      "sourceImage": "Исходный образ",
+      "selectSourceImage": "Выберите локальный тег образа",
+      "targetImage": "Целевой репозиторий",
+      "targetImagePlaceholder": "например, team/app",
+      "targetTag": "Целевой тег",
+      "push": "Отправить образ",
+      "pushing": "Отправка..."
     }
   },
   "volumes": {
@@ -482,5 +495,43 @@
   },
   "errors": {
     "dockerUnreachable": "Не удалось подключиться к активному контексту Docker. Убедитесь, что движок запущен, или выберите другой в Настройках."
+  },
+  "diagnostics": {
+    "copy": {
+      "button": "Копировать диагностику",
+      "copied": "Скопировано"
+    },
+    "quickFix": {
+      "running": "Применение исправления..."
+    },
+    "title": "Устранение неполадок",
+    "subtitle": "Запустите быстрые проверки подключения Docker и состояния приложения.",
+    "run": "Запустить проверки",
+    "status": {
+      "ok": "Все проверки пройдены",
+      "warn": "Некоторые проверки не пройдены"
+    }
+  },
+  "compose": {
+    "title": "Проекты Compose",
+    "subtitle": "Управляйте проектами, обнаруженными по меткам Docker Compose.",
+    "summary": "{running}/{total} запущено",
+    "empty": "В текущем Docker-контексте проекты Compose не найдены.",
+    "emptyProject": "В этом проекте нет контейнеров.",
+    "fileRunner": {
+      "title": "Запуск из compose-файла",
+      "subtitle": "Выполняйте docker compose up/down, используя локальный путь к compose-файлу.",
+      "filePathPlaceholder": "Путь к compose-файлу (например, C:\\work\\app\\docker-compose.yml)",
+      "projectNamePlaceholder": "Имя проекта (необязательно)",
+      "browse": "Обзор",
+      "up": "Compose Up",
+      "down": "Compose Down"
+    },
+    "actions": {
+      "start": "Запустить проект",
+      "stop": "Остановить проект",
+      "restart": "Перезапустить проект",
+      "down": "Down (удалить контейнеры)"
+    }
   }
 }
