@@ -17,6 +17,7 @@ import {
 } from "../util/archive-fs.js";
 import { contextStore } from "../contexts/store.js";
 import { config } from "../config.js";
+import { checkRate } from "../util/rate-limit.js";
 import type {
   ContainerSummary,
   DockerContext,
@@ -96,8 +97,43 @@ type ComposeProjectInfo = {
 
 async function resolveComposeFile(rawPath: string): Promise<string> {
   const file = path.resolve(rawPath);
+  // Ensure the resolved path exists and is within an allowed root to avoid
+  // exposing arbitrary files on the host via user-provided paths.
   await fs.access(file);
-  return file;
+  const realFile = await fs.realpath(file);
+  const allowedRoots = [config.dataDir, process.cwd()];
+  const ok = await Promise.all(
+    allowedRoots.map(async (r) => {
+      try {
+        const realRoot = await fs.realpath(r);
+        const rel = path.relative(realRoot, realFile);
+        return !rel.startsWith("..") && !path.isAbsolute(rel);
+      } catch {
+        return false;
+      }
+    }),
+  );
+  if (!ok.some(Boolean)) throw new Error("compose file path not allowed");
+  return realFile;
+}
+
+async function isAllowedChildPath(targetPath: string): Promise<boolean> {
+  try {
+    const realTarget = await fs.realpath(path.resolve(targetPath));
+    const allowedRoots = [config.dataDir, process.cwd()];
+    for (const r of allowedRoots) {
+      try {
+        const realRoot = await fs.realpath(r);
+        const rel = path.relative(realRoot, realTarget);
+        if (!rel.startsWith("..") && !path.isAbsolute(rel)) return true;
+      } catch {
+        // ignore
+      }
+    }
+  } catch {
+    return false;
+  }
+  return false;
 }
 
 function sanitizeComposeFileName(name?: string): string {
@@ -404,6 +440,9 @@ export const containerRoutes: FastifyPluginAsync = async (app) => {
 };
 
 export const composeRoutes: FastifyPluginAsync = async (app) => {
+  app.addHook("preHandler", async (req, reply) => {
+    if (!checkRate(req, 6, 60_000)) return reply.code(429).send({ error: "rate_limited" });
+  });
   app.get("/compose/projects", async () => {
     const docker = await currentDocker();
     const containers = await docker.listContainers({ all: true });
@@ -588,6 +627,9 @@ export const composeRoutes: FastifyPluginAsync = async (app) => {
 };
 
 export const imageRoutes: FastifyPluginAsync = async (app) => {
+  app.addHook("preHandler", async (req, reply) => {
+    if (!checkRate(req, 8, 60_000)) return reply.code(429).send({ error: "rate_limited" });
+  });
   app.get("/images", async () => {
     const docker = await currentDocker();
     const list = await docker.listImages();
@@ -997,6 +1039,10 @@ async function ensureVolumeHelper(
   docker: Docker,
   volumeName: string,
 ): Promise<Docker.Container> {
+  // Validate volume name to prevent injection into Docker host paths/labels.
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(volumeName)) {
+    throw new Error("invalid volume name");
+  }
   const existing = await docker.listContainers({
     all: true,
     filters: { label: [`${VOLUME_HELPER_LABEL}=${volumeName}`] } as any,
@@ -1053,6 +1099,7 @@ async function removeVolumeHelper(docker: Docker, volumeName: string): Promise<v
 }
 
 export const volumeRoutes: FastifyPluginAsync = async (app) => {
+  const validVolumeName = (n: string) => /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(n);
   app.get("/volumes", async () => {
     const docker = await currentDocker();
     const [res, df] = await Promise.all([
@@ -1089,6 +1136,7 @@ export const volumeRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.get<{ Params: { name: string } }>("/volumes/:name", async (req) => {
+    if (!validVolumeName(req.params.name)) return { error: "invalid volume name" } as any;
     const docker = await currentDocker();
     return docker.getVolume(req.params.name).inspect();
   });
@@ -1098,6 +1146,7 @@ export const volumeRoutes: FastifyPluginAsync = async (app) => {
     Params: { name: string };
     Querystring: { path?: string; limit?: string };
   }>("/volumes/:name/fs", async (req, reply) => {
+    if (!validVolumeName(req.params.name)) return reply.code(400).send({ error: "invalid volume name" });
     const volPath = req.query.path && req.query.path.length > 0 ? req.query.path : "/";
     const limit = Math.max(1, Math.min(Number(req.query.limit ?? 2000), 20000));
     const docker = await currentDocker();
@@ -1122,6 +1171,7 @@ export const volumeRoutes: FastifyPluginAsync = async (app) => {
     Params: { name: string };
     Querystring: { path?: string; max?: string };
   }>("/volumes/:name/file", async (req, reply) => {
+    if (!validVolumeName(req.params.name)) return reply.code(400).send({ error: "invalid volume name" });
     const volPath = req.query.path;
     if (!volPath) return reply.code(400).send({ error: "path required" });
     const maxBytes = Math.max(1024, Math.min(Number(req.query.max ?? 1_048_576), 16_777_216));
@@ -1147,6 +1197,7 @@ export const volumeRoutes: FastifyPluginAsync = async (app) => {
     Params: { name: string };
     Body: { path?: string; content?: string; encoding?: "utf-8" | "base64" };
   }>("/volumes/:name/file", async (req, reply) => {
+    if (!validVolumeName(req.params.name)) return reply.code(400).send({ error: "invalid volume name" });
     const { path: volPath, content, encoding } = req.body ?? {};
     if (!volPath) return reply.code(400).send({ error: "path required" });
     if (typeof content !== "string") return reply.code(400).send({ error: "content required" });
@@ -1170,6 +1221,7 @@ export const volumeRoutes: FastifyPluginAsync = async (app) => {
 
   // Tear down the volume's helper container (called when the browser closes).
   app.delete<{ Params: { name: string } }>("/volumes/:name/helper", async (req, reply) => {
+    if (!validVolumeName(req.params.name)) return reply.code(400).send({ error: "invalid volume name" });
     const docker = await currentDocker();
     await removeVolumeHelper(docker, req.params.name);
     return reply.code(204).send();
@@ -1178,6 +1230,7 @@ export const volumeRoutes: FastifyPluginAsync = async (app) => {
   app.delete<{ Params: { name: string }; Querystring: { force?: string } }>(
     "/volumes/:name",
     async (req, reply) => {
+      if (!validVolumeName(req.params.name)) return reply.code(400).send({ error: "invalid volume name" });
       const docker = await currentDocker();
       await removeVolumeHelper(docker, req.params.name).catch(() => undefined);
       await docker.getVolume(req.params.name).remove({ force: req.query.force === "true" });
@@ -1658,6 +1711,9 @@ async function collectContextFiles(root: string): Promise<string[]> {
 }
 
 export const buildRoutes: FastifyPluginAsync = async (app) => {
+  app.addHook("preHandler", async (req, reply) => {
+    if (!checkRate(req, 6, 60_000)) return reply.code(429).send({ error: "rate_limited" });
+  });
   app.get("/build/cache", async () => {
     const docker = await currentDocker();
     const df: any = await cachedDf(docker);
@@ -1714,6 +1770,10 @@ export const buildRoutes: FastifyPluginAsync = async (app) => {
     if (!contextPath || !tag) {
       return reply.code(400).send({ error: "contextPath and tag are required" });
     }
+    // Validate the provided context path is an allowed child path.
+    if (!(await isAllowedChildPath(contextPath))) {
+      return reply.code(400).send({ error: "context_path_not_allowed" });
+    }
     let stat;
     try {
       stat = await fs.stat(contextPath);
@@ -1724,6 +1784,10 @@ export const buildRoutes: FastifyPluginAsync = async (app) => {
       return reply.code(400).send({ error: "context_not_directory" });
     }
     const dfName = dockerfile && dockerfile.length > 0 ? dockerfile : "Dockerfile";
+    // dockerfile must be a simple filename (no directories) to avoid path traversal.
+    if (dfName.includes("/") || dfName.includes("\\")) {
+      return reply.code(400).send({ error: "invalid_dockerfile" });
+    }
     try {
       await fs.access(path.join(contextPath, dfName));
     } catch {
