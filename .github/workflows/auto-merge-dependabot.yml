@@ -1,0 +1,21 @@
+steps:
+  - name: Get pull request labels
+    uses: actions/github-script@v7
+    id: check_labels
+    with:
+      script: |
+        const pr = await github.rest.pulls.get({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          pull_number: context.payload.pull_request.number
+        });
+        const labels = pr.data.labels.map(l => l.name);
+        const isMajor = labels.includes('version-update:semver-major');
+        return JSON.stringify({ can_merge: !isMajor });
+
+  - name: Enable GitHub auto-merge
+    if: fromJson(steps.check_labels.outputs.result).can_merge == true
+    uses: peter-evans/enable-pull-request-automerge@v2
+    with:
+      pull-number: ${{ github.event.pull_request.number }}
+      merge-method: squash
