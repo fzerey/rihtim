@@ -44,14 +44,16 @@ export interface FileResult {
 }
 
 export function basename(p: string): string {
-  const trimmed = p.replace(/\/+$/, "");
+  let trimmed = p;
+  while (trimmed.length > 1 && trimmed.endsWith("/")) trimmed = trimmed.slice(0, -1);
   if (trimmed === "" || trimmed === "/") return "/";
   const idx = trimmed.lastIndexOf("/");
   return idx === -1 ? trimmed : trimmed.slice(idx + 1);
 }
 
 export function dirname(p: string): string {
-  const trimmed = p.replace(/\/+$/, "");
+  let trimmed = p;
+  while (trimmed.length > 1 && trimmed.endsWith("/")) trimmed = trimmed.slice(0, -1);
   const idx = trimmed.lastIndexOf("/");
   if (idx <= 0) return "/";
   return trimmed.slice(0, idx);
@@ -97,7 +99,8 @@ export async function listArchiveDir(
         return;
       }
 
-      let raw = header.name.replace(/\/$/, "");
+      let raw = header.name;
+      if (raw.endsWith("/")) raw = raw.slice(0, -1);
       if (raw.startsWith("./")) raw = raw.slice(2);
       if (raw.startsWith("/")) raw = raw.slice(1);
 

@@ -1,6 +1,7 @@
 import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { registryStore } from "../registries/store.js";
+import { checkRate } from "../util/rate-limit.js";
 
 const registrySchema = z.object({
   name: z.string().min(1, "Registry name is required"),
@@ -29,6 +30,9 @@ const registrySchema = z.object({
 });
 
 export const registryRoutes: FastifyPluginAsync = async (app) => {
+  app.addHook("preHandler", async (req, reply) => {
+    if (!checkRate(req, 6, 60_000)) return reply.code(429).send({ error: "rate_limited" });
+  });
   app.get("/registries", async () => registryStore.list());
 
   app.post("/registries", async (req, reply) => {
