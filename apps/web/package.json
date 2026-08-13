@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@rihtim/shared": "workspace:*",
-    "@tanstack/react-query": "^5.51.5",
+    "@tanstack/react-query": "^5.101.4",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/xterm": "^6.0.0",
     "clsx": "^2.1.1",
