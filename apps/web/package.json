@@ -26,7 +26,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^19.2.4",
     "autoprefixer": "^10.4.19",
-    "postcss": "^8.4.40",
+    "postcss": "^8.5.23",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2"
   }
