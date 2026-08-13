@@ -96,6 +96,8 @@ type ComposeProjectInfo = {
 };
 
 async function resolveComposeFile(rawPath: string): Promise<string> {
+  if (typeof rawPath !== "string" || rawPath.length === 0) throw new Error("invalid path");
+  if (rawPath.includes("\0") || rawPath.includes("://")) throw new Error("invalid path");
   const file = path.resolve(rawPath);
   // Ensure the resolved path exists and is within an allowed root to avoid
   // exposing arbitrary files on the host via user-provided paths.
