@@ -923,11 +923,28 @@ export const imageRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.get<{ Params: { name: string } }>("/images/hub/:name/tags", async (req, reply) => {
-    const name = decodeURIComponent(req.params.name);
+    const rawName = decodeURIComponent(req.params.name ?? "").trim();
+
+    // Strict validation: only allow a single optional namespace and a repository
+    // component. Prevents protocol/host injection and other unexpected input.
+    const validNameRegex = /^[a-z0-9]+(?:[._-][a-z0-9]+)*(?:\/[a-z0-9]+(?:[._-][a-z0-9]+)*)?$/i;
+    if (!rawName || !validNameRegex.test(rawName)) {
+      return reply.code(400).send({ error: "invalid image name" });
+    }
+
+    // Normalize and safely encode each path segment to avoid accidental
+    // injection of characters that could change the request target.
+    const name = rawName.toLowerCase();
     const repo = name.includes("/") ? name : `library/${name}`;
-    const url = `https://hub.docker.com/v2/repositories/${repo}/tags?page_size=50&ordering=last_updated`;
+    const encodedRepo = repo.split("/").map(encodeURIComponent).join("/");
+
+    // Build URL using the known good host and encoded path segments.
+    const safeUrl = new URL(`/v2/repositories/${encodedRepo}/tags`, "https://hub.docker.com");
+    safeUrl.searchParams.set("page_size", "50");
+    safeUrl.searchParams.set("ordering", "last_updated");
+
     try {
-      const resp = await fetch(url);
+      const resp = await fetch(safeUrl.toString());
       if (!resp.ok) return reply.code(resp.status).send({ error: `hub responded ${resp.status}` });
       const json = (await resp.json()) as any;
       const tags = (json.results ?? []).map((t: any) => ({
