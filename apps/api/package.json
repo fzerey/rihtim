@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@types/dockerode": "^4.0.1",
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.5.0",
     "@types/tar-stream": "^3.1.4",
     "tsx": "^4.23.12",
     "typescript": "^7.0.2"
