@@ -131,3 +131,10 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* Keep Lucide icons crisp and visually balanced across light/dark themes. */
+svg.lucide {
+  stroke-width: 1.9;
+  vector-effect: non-scaling-stroke;
+  flex-shrink: 0;
+}
