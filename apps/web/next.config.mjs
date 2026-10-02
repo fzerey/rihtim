@@ -11,6 +11,8 @@ const nextConfig = {
   output: "standalone",
   // Monorepo: trace files from the repo root so workspace deps are included.
   outputFileTracingRoot: path.join(__dirname, "../.."),
+  // The Electron shell loads the dev server via 127.0.0.1, which Next treats as a separate origin.
+  allowedDevOrigins: ["127.0.0.1"],
   async rewrites() {
     const api = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5170";
     return [

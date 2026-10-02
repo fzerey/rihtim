@@ -10,6 +10,7 @@ declare global {
         node: string;
       };
       selectComposeFile?: () => Promise<string | null>;
+      setTitleBarTheme?: (theme: "dark" | "light") => void;
     };
   }
 }

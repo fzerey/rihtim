@@ -38,6 +38,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    window.rihtim?.setTitleBarTheme?.(resolved);
+  }, [resolved]);
+
+  useEffect(() => {
     if (mode !== "system") return;
     const mq = window.matchMedia("(prefers-color-scheme: light)");
     const onChange = () => {

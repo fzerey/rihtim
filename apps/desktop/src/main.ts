@@ -19,6 +19,14 @@ const API_PORT = Number(process.env.RIHTIM_API_PORT ?? 5170);
 const HOST = "127.0.0.1";
 const WEB_URL = `http://${HOST}:${WEB_PORT}`;
 
+// Web Topbar is h-16 (64px); stop 1px short so its bottom border runs under the controls.
+const TITLE_BAR_HEIGHT = 63;
+const TITLE_BAR_THEMES = {
+  dark: { color: "#0f1115", symbolColor: "#c9ced6", height: TITLE_BAR_HEIGHT },
+  light: { color: "#f5f7fa", symbolColor: "#303845", height: TITLE_BAR_HEIGHT },
+} as const;
+const useCustomTitleBar = process.platform === "win32" || process.platform === "linux";
+
 type ForkedProcess = ReturnType<typeof utilityProcess.fork>;
 
 let apiProc: ForkedProcess | null = null;
@@ -166,6 +174,13 @@ function registerIpcHandlers(): void {
     if (result.canceled || result.filePaths.length === 0) return null;
     return result.filePaths[0];
   });
+
+  ipcMain.on("rihtim:title-bar-theme", (event, theme: unknown) => {
+    if (!useCustomTitleBar || (theme !== "dark" && theme !== "light")) return;
+    const win = BrowserWindow.fromWebContents(event.sender);
+    win?.setTitleBarOverlay(TITLE_BAR_THEMES[theme]);
+    win?.setBackgroundColor(TITLE_BAR_THEMES[theme].color);
+  });
 }
 
 /** Minimal HTML shown when the bundled web server fails to come up. */
@@ -248,7 +263,12 @@ async function createWindow(webReady: boolean): Promise<void> {
     minHeight: 680,
     show: false,
     autoHideMenuBar: true,
-    backgroundColor: "#0b0f14",
+    icon: path.join(__dirname, "icon.png"),
+    backgroundColor: TITLE_BAR_THEMES.dark.color,
+    ...(useCustomTitleBar && {
+      titleBarStyle: "hidden" as const,
+      titleBarOverlay: TITLE_BAR_THEMES.dark,
+    }),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -301,6 +321,8 @@ async function createWindow(webReady: boolean): Promise<void> {
 
 async function bootstrap(): Promise<void> {
   initLogger();
+  // Without an explicit AppUserModelId, Windows groups the dev window under electron.exe's icon.
+  if (process.platform === "win32") app.setAppUserModelId("com.rihtim.desktop");
   Menu.setApplicationMenu(null);
   registerIpcHandlers();
 

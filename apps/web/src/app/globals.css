@@ -188,6 +188,21 @@ body {
   box-sizing: border-box;
 }
 
+/* Desktop (Electron) custom title bar: the Topbar doubles as the window drag area, and
+   reserves room for the native window controls via the Window Controls Overlay env vars.
+   In a regular browser the env() fallbacks collapse the extra padding to zero. */
+.app-drag {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+.app-drag :is(button, a, input, select, textarea, [role="button"]) {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+.titlebar-pad-right {
+  padding-right: calc(1.5rem + 100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw));
+}
+
 /* Keep Lucide icons crisp and visually balanced across light/dark themes. */
 svg.lucide {
   stroke-width: 1.9;

@@ -10,21 +10,26 @@ export function RihtimLogo(props: SVGProps<SVGSVGElement>) {
         </linearGradient>
       </defs>
       <rect width="64" height="64" rx="14" fill="url(#rihtim-logo-bg)" />
-      <g fill="#eaf3ff">
-        <rect x="12" y="15" width="16" height="10" rx="1.5" />
-        <rect x="30" y="15" width="16" height="10" rx="1.5" />
-        <rect x="21" y="27" width="16" height="10" rx="1.5" />
-        <rect x="39" y="27" width="7" height="10" rx="1.5" />
+      <rect x="17" y="16" width="30" height="16" rx="2.2" fill="#eaf3ff" />
+      <path
+        d="M23.5 20v8M29.5 20v8M35.5 20v8M41.5 20v8"
+        stroke="#2f73d9"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <rect x="8" y="34" width="48" height="5" rx="1.6" fill="#eaf3ff" />
+      <g fill="#89caff">
+        <rect x="12.5" y="39" width="5" height="11" rx="1" />
+        <rect x="29.5" y="39" width="5" height="11" rx="1" />
+        <rect x="46.5" y="39" width="5" height="11" rx="1" />
       </g>
-      <g fill="none" strokeLinecap="round">
-        <path d="M8 46 Q16 42 24 46 T40 46 T56 46" stroke="#89caff" strokeWidth="3" />
-        <path
-          d="M8 54 Q16 50 24 54 T40 54 T56 54"
-          stroke="#52aeff"
-          strokeWidth="3"
-          opacity="0.75"
-        />
-      </g>
+      <path
+        d="M7 50 Q13.5 46.5 20 50 T33 50 T46 50 T57 49.5"
+        fill="none"
+        stroke="#52aeff"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
