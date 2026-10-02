@@ -1,24 +1,74 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-slate-50: rgb(var(--slate-50));
+  --color-slate-100: rgb(var(--slate-100));
+  --color-slate-200: rgb(var(--slate-200));
+  --color-slate-300: rgb(var(--slate-300));
+  --color-slate-400: rgb(var(--slate-400));
+  --color-slate-500: rgb(var(--slate-500));
+  --color-slate-600: rgb(var(--slate-600));
+  --color-slate-700: rgb(var(--slate-700));
+  --color-slate-800: rgb(var(--slate-800));
+  --color-slate-900: rgb(var(--slate-900));
+  --color-slate-950: rgb(var(--slate-950));
+
+  --color-brand-50: rgb(var(--brand-50));
+  --color-brand-100: rgb(var(--brand-100));
+  --color-brand-200: rgb(var(--brand-200));
+  --color-brand-300: rgb(var(--brand-300));
+  --color-brand-400: rgb(var(--brand-400));
+  --color-brand-500: rgb(var(--brand-500));
+  --color-brand-600: rgb(var(--brand-600));
+  --color-brand-700: rgb(var(--brand-700));
+  --color-brand-800: rgb(var(--brand-800));
+  --color-brand-900: rgb(var(--brand-900));
+
+  --color-emerald-200: rgb(var(--emerald-200));
+  --color-emerald-300: rgb(var(--emerald-300));
+  --color-emerald-400: rgb(var(--emerald-400));
+  --color-emerald-500: rgb(var(--emerald-500));
+  --color-emerald-600: rgb(var(--emerald-600));
+  --color-emerald-700: rgb(var(--emerald-700));
+
+  --color-rose-200: rgb(var(--rose-200));
+  --color-rose-300: rgb(var(--rose-300));
+  --color-rose-400: rgb(var(--rose-400));
+  --color-rose-500: rgb(var(--rose-500));
+  --color-rose-600: rgb(var(--rose-600));
+  --color-rose-700: rgb(var(--rose-700));
+  --color-rose-950: rgb(var(--rose-950));
+
+  --color-amber-200: rgb(var(--amber-200));
+  --color-amber-300: rgb(var(--amber-300));
+  --color-amber-400: rgb(var(--amber-400));
+  --color-amber-500: rgb(var(--amber-500));
+  --color-amber-600: rgb(var(--amber-600));
+  --color-amber-700: rgb(var(--amber-700));
+  --color-amber-800: rgb(var(--amber-800));
+  --color-amber-900: rgb(var(--amber-900));
+}
 
 :root {
   color-scheme: light;
-  /* Light theme: blue-tinted slate scale. Page uses a soft blue gradient, panels resolve
-     to white, borders/hovers use a cool blue-gray, and text scales invert so dark utilities
-     read as strong navy. Colored scales flip so text-emerald-300 / text-brand-300 read as
-     saturated dark tones instead of pastel-on-pastel. */
-  --slate-50: 8 20 42;
-  --slate-100: 15 30 60;
-  --slate-200: 25 45 85;
-  --slate-300: 45 70 115;
-  --slate-400: 70 100 145;
-  --slate-500: 100 125 165;
-  --slate-600: 130 155 190;
-  --slate-700: 168 190 220;
-  --slate-800: 198 215 238;
+  /* Light theme scales are inverted (50 = darkest) so the same utilities read correctly in
+     both themes: bg-slate-900 resolves to a white panel, text-brand-300 to a deep accent. */
+  --slate-50: 15 20 28;
+  --slate-100: 30 37 48;
+  --slate-200: 48 56 69;
+  --slate-300: 60 69 83;
+  --slate-400: 71 81 97;
+  --slate-500: 95 105 120;
+  --slate-600: 148 157 171;
+  --slate-700: 199 205 214;
+  --slate-800: 222 227 234;
   --slate-900: 255 255 255;
-  --slate-950: 240 246 254;
+  --slate-950: 245 247 250;
 
   --brand-50: 23 63 136;
   --brand-100: 21 74 174;
@@ -55,22 +105,22 @@
   --amber-800: 254 230 138;
   --amber-900: 254 243 199;
 
-  --page-fg: #0b1a33;
+  --page-fg: #11161f;
 }
 
 .dark {
   color-scheme: dark;
-  --slate-50: 248 250 252;
-  --slate-100: 241 245 249;
-  --slate-200: 226 232 240;
-  --slate-300: 203 213 225;
-  --slate-400: 148 163 184;
-  --slate-500: 100 116 139;
-  --slate-600: 71 85 105;
-  --slate-700: 51 65 85;
-  --slate-800: 30 41 59;
-  --slate-900: 15 23 42;
-  --slate-950: 2 6 23;
+  --slate-50: 246 247 248;
+  --slate-100: 236 238 241;
+  --slate-200: 214 217 222;
+  --slate-300: 186 191 199;
+  --slate-400: 154 162 175;
+  --slate-500: 107 114 128;
+  --slate-600: 80 87 99;
+  --slate-700: 56 62 72;
+  --slate-800: 39 44 53;
+  --slate-900: 21 24 30;
+  --slate-950: 15 17 21;
 
   --brand-50: 238 247 255;
   --brand-100: 216 236 255;
@@ -107,7 +157,7 @@
   --amber-800: 146 64 14;
   --amber-900: 120 53 15;
 
-  --page-fg: #e5e7eb;
+  --page-fg: #eceef1;
 }
 
 html,
@@ -117,15 +167,21 @@ body {
 }
 
 body {
-  background:
-    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(59, 130, 246, 0.18), transparent 60%),
-    radial-gradient(ellipse 900px 500px at 90% 100%, rgba(96, 165, 250, 0.16), transparent 60%),
-    linear-gradient(180deg, #e6efff 0%, #cfdcf3 100%);
-  background-attachment: fixed;
+  background: rgb(var(--slate-950));
+  -webkit-font-smoothing: antialiased;
 }
 
-.dark body {
-  background: #0b1220;
+/* Tailwind v4 defaults borders to currentColor and drops pointer cursors on buttons. */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: rgb(var(--slate-800));
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 * {

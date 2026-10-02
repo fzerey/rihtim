@@ -38,7 +38,12 @@
     "volumes": "Birimler",
     "networks": "Ağlar",
     "diagnostics": "Tanı",
-    "settings": "Ayarlar"
+    "settings": "Ayarlar",
+    "section": {
+      "overview": "Genel",
+      "resources": "Kaynaklar",
+      "system": "Sistem"
+    }
   },
   "diagnostics": {
     "title": "Sorun Gider",

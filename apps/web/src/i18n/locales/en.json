@@ -38,7 +38,12 @@
     "volumes": "Volumes",
     "networks": "Networks",
     "diagnostics": "Diagnostics",
-    "settings": "Settings"
+    "settings": "Settings",
+    "section": {
+      "overview": "Overview",
+      "resources": "Resources",
+      "system": "System"
+    }
   },
   "diagnostics": {
     "title": "Troubleshoot",
