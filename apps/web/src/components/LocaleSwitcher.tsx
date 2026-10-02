@@ -21,13 +21,13 @@ export function LocaleSwitcher() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-slate-800/70 hover:bg-slate-700/70 text-xs"
+        className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 text-xs text-slate-300 transition-colors"
       >
         <Globe className="w-3.5 h-3.5" />
-        <span className="uppercase">{locale}</span>
+        <span className="uppercase font-mono">{locale}</span>
       </button>
       {open && (
-        <div className="absolute right-0 mt-1 z-20 w-40 rounded-md border border-slate-700 bg-slate-900 shadow-xl">
+        <div className="absolute right-0 mt-2 z-20 w-44 rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-xl shadow-black/20">
           {LOCALES.map((l: Locale) => (
             <button
               key={l}
@@ -35,8 +35,8 @@ export function LocaleSwitcher() {
                 setLocale(l);
                 setOpen(false);
               }}
-              className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-800 ${
-                l === locale ? "text-brand-300" : ""
+              className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-slate-800 ${
+                l === locale ? "text-brand-300 font-medium" : "text-slate-300"
               }`}
             >
               {LOCALE_LABELS[l]}

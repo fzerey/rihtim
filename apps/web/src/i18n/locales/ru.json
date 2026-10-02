@@ -38,7 +38,12 @@
     "networks": "Сети",
     "settings": "Настройки",
     "compose": "Compose",
-    "diagnostics": "Диагностика"
+    "diagnostics": "Диагностика",
+    "section": {
+      "overview": "Обзор",
+      "resources": "Ресурсы",
+      "system": "Система"
+    }
   },
   "topbar": {
     "noContext": "Нет контекста",

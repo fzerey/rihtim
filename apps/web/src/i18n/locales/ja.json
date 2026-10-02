@@ -38,7 +38,12 @@
     "networks": "ネットワーク",
     "settings": "設定",
     "compose": "Compose",
-    "diagnostics": "トラブルシュート"
+    "diagnostics": "トラブルシュート",
+    "section": {
+      "overview": "概要",
+      "resources": "リソース",
+      "system": "システム"
+    }
   },
   "topbar": {
     "noContext": "コンテキストなし",

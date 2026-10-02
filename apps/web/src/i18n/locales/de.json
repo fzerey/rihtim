@@ -38,7 +38,12 @@
     "networks": "Netzwerke",
     "settings": "Einstellungen",
     "compose": "Compose",
-    "diagnostics": "Diagnose"
+    "diagnostics": "Diagnose",
+    "section": {
+      "overview": "Übersicht",
+      "resources": "Ressourcen",
+      "system": "System"
+    }
   },
   "topbar": {
     "noContext": "Kein Kontext",

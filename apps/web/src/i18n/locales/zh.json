@@ -38,7 +38,12 @@
     "networks": "网络",
     "settings": "设置",
     "compose": "Compose",
-    "diagnostics": "诊断"
+    "diagnostics": "诊断",
+    "section": {
+      "overview": "概览",
+      "resources": "资源",
+      "system": "系统"
+    }
   },
   "topbar": {
     "noContext": "无上下文",

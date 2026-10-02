@@ -589,8 +589,8 @@ function StateBadge({ state, pending }: { state?: string; pending?: string | nul
   const { t, tf } = useT();
   if (pending) {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-sky-500/20 text-sky-300 animate-pulse">
-        <span className="w-1.5 h-1.5 rounded-full bg-sky-300" />
+      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-brand-500/15 text-brand-300 animate-pulse">
+        <span className="w-1.5 h-1.5 rounded-full bg-brand-400" />
         {t(`containers.pending.${pending}`)}
       </span>
     );

@@ -44,18 +44,22 @@ export function Topbar() {
   }, []);
 
   return (
-    <header className="h-14 border-b border-slate-800 bg-slate-950/60 flex items-center px-4 gap-3">
+    <header className="h-16 shrink-0 border-b border-slate-800 bg-slate-950 flex items-center px-6 gap-3">
       <div className="relative" ref={ref}>
         <button
           onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-800/70 hover:bg-slate-700/70 text-sm"
+          className="flex items-center gap-2 h-9 pl-3 pr-2.5 rounded-full border border-slate-800 bg-slate-900 hover:bg-slate-800 text-[13px] transition-colors"
         >
-          <span className="w-2 h-2 rounded-full bg-emerald-400" />
-          <span>{current?.name ?? t("topbar.noContext")}</span>
-          <ChevronDown className="w-4 h-4 opacity-70" />
+          <span
+            className={
+              current ? "w-2 h-2 rounded-full bg-emerald-500" : "w-2 h-2 rounded-full bg-slate-500"
+            }
+          />
+          <span className="font-mono text-slate-200">{current?.name ?? t("topbar.noContext")}</span>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
         </button>
         {open && (
-          <div className="absolute mt-1 z-20 w-64 rounded-md border border-slate-700 bg-slate-900 shadow-xl">
+          <div className="absolute mt-2 z-20 w-72 rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-xl shadow-black/20">
             {contexts?.map((c) => (
               <button
                 key={c.id}
@@ -63,29 +67,33 @@ export function Topbar() {
                   select.mutate(c.id);
                   setOpen(false);
                 }}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-slate-800 flex items-center justify-between"
+                className="w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-slate-800 flex items-center justify-between"
               >
                 <span>
-                  <span className="block">{c.name}</span>
-                  <span className="block text-xs text-slate-500 uppercase">{c.kind}</span>
+                  <span className="block font-mono text-slate-200">{c.name}</span>
+                  <span className="block text-[11px] text-slate-500 uppercase tracking-wider">
+                    {c.kind}
+                  </span>
                 </span>
                 {c.current && <Check className="w-4 h-4 text-emerald-400" />}
               </button>
             ))}
+            <div className="my-1 border-t border-slate-800" />
             <Link
               href="/settings"
-              className="block px-3 py-2 text-sm border-t border-slate-800 text-brand-300 hover:bg-slate-800"
+              className="block px-3 py-2 rounded-lg text-sm text-brand-300 hover:bg-slate-800"
             >
               {t("topbar.manageContexts")}
             </Link>
           </div>
         )}
       </div>
-      <div className="ml-auto flex items-center gap-4">
-        <div className="text-xs text-slate-400 flex items-center gap-4">
+      <div className="ml-auto flex items-center gap-2">
+        <div className="hidden md:flex text-xs text-slate-500 items-center gap-3 mr-2">
           {info?.serverVersion && (
             <span>
-              {t("topbar.docker")} <span className="text-slate-200">{info.serverVersion}</span>
+              {t("topbar.docker")}{" "}
+              <span className="font-mono text-slate-300">{info.serverVersion}</span>
             </span>
           )}
           {info?.operatingSystem && <span>{info.operatingSystem}</span>}
@@ -123,16 +131,16 @@ function ThemeSwitcher() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-slate-800/70 hover:bg-slate-700/70 text-xs"
+        className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 text-xs text-slate-300 transition-colors"
         aria-label={t("topbar.theme.label")}
         title={t("topbar.theme.label")}
       >
         <ActiveIcon className="w-3.5 h-3.5" />
         <span>{active.label}</span>
-        <ChevronDown className="w-3 h-3 opacity-70" />
+        <ChevronDown className="w-3 h-3 text-slate-500" />
       </button>
       {open && (
-        <div className="absolute right-0 mt-1 z-20 w-40 rounded-md border border-slate-700 bg-slate-900 shadow-xl">
+        <div className="absolute right-0 mt-2 z-20 w-44 rounded-xl border border-slate-800 bg-slate-900 p-1 shadow-xl shadow-black/20">
           {items.map((i) => {
             const Icon = i.icon;
             return (
@@ -142,7 +150,7 @@ function ThemeSwitcher() {
                   setMode(i.value);
                   setOpen(false);
                 }}
-                className="w-full text-left px-3 py-2 text-xs hover:bg-slate-800 flex items-center gap-2"
+                className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-800 flex items-center gap-2"
               >
                 <Icon className="w-3.5 h-3.5" />
                 <span className="flex-1">{i.label}</span>

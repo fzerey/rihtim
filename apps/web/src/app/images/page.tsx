@@ -66,7 +66,7 @@ export default function ImagesPage() {
   const [pulling, setPulling] = useState(false);
   const [pullLogs, setPullLogs] = useState<string[]>([]);
   const [showPullTerminal, setShowPullTerminal] = useState(false);
-  const pullTerminalTimeoutRef = useRef<NodeJS.Timeout>();
+  const pullTerminalTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const [registryForPull, setRegistryForPull] = useState<string>("");
   const [imageNameToPull, setImageNameToPull] = useState("");
@@ -78,7 +78,7 @@ export default function ImagesPage() {
   const [pushing, setPushing] = useState(false);
   const [pushLogs, setPushLogs] = useState<string[]>([]);
   const [showPushTerminal, setShowPushTerminal] = useState(false);
-  const pushTerminalTimeoutRef = useRef<NodeJS.Timeout>();
+  const pushTerminalTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const [hubTerm, setHubTerm] = useState("");
   const [hubQuery, setHubQuery] = useState("");
