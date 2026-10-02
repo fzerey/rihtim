@@ -7,6 +7,7 @@ import { ArrowLeft, Copy, Trash2 } from "lucide-react";
 import { api, humanBytes } from "@/lib/api";
 import { useT } from "@/i18n/provider";
 import { FileBrowser } from "@/components/FileBrowser";
+import { CardSkeleton } from "@/components/ui";
 import type { VolumeSummary } from "@rihtim/shared";
 
 interface VolumeInspect {
@@ -64,12 +65,12 @@ export function VolumeDetailView({ volumeName }: { volumeName: string }) {
       <div className="flex items-center gap-3">
         <Link
           href="/volumes"
-          className="p-1.5 rounded hover:bg-slate-800 text-slate-400"
+          className="btn btn-ghost btn-icon btn-sm"
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-semibold truncate">{volumeName}</h1>
+          <h1 className="text-[22px] font-bold tracking-tight truncate">{volumeName}</h1>
           <div className="text-xs text-slate-500 font-mono truncate">
             {[driver, scope].filter(Boolean).join(" · ")}
           </div>
@@ -78,7 +79,7 @@ export function VolumeDetailView({ volumeName }: { volumeName: string }) {
           onClick={() => remove.mutate()}
           disabled={remove.isPending || inUse}
           title={inUse ? t("volumes.inUseHint") : undefined}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-rose-600/90 hover:bg-rose-600 text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn btn-danger"
         >
           <Trash2 className="w-4 h-4" />
           {t("volumes.detail.remove")}
@@ -100,7 +101,7 @@ export function VolumeDetailView({ volumeName }: { volumeName: string }) {
 
       {tab === "details" && (
         <div className="space-y-6">
-          {isLoading && <div className="text-sm text-slate-400">{t("common.loading")}</div>}
+          {isLoading && <CardSkeleton lines={4} />}
           {error && <div className="text-sm text-rose-400">{(error as Error).message}</div>}
 
           <Section title={t("volumes.detail.general")}>

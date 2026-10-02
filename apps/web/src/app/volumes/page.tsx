@@ -3,7 +3,8 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import type { VolumeSummary } from "@rihtim/shared";
-import { Plus, Search, Trash2, Sparkles } from "lucide-react";
+import { Plus, Search, Trash2, Sparkles, HardDrive } from "lucide-react";
+import { EmptyRow, SkeletonRows } from "@/components/ui";
 import { api, humanBytes } from "@/lib/api";
 import { QueryErrorBanner } from "@/components/QueryErrorBanner";
 import { useT } from "@/i18n/provider";
@@ -12,7 +13,7 @@ export default function VolumesPage() {
   const qc = useQueryClient();
   const router = useRouter();
   const { t } = useT();
-  const { data, error, isFetching, refetch } = useQuery({
+  const { data, error, isFetching, isLoading, refetch } = useQuery({
     queryKey: ["volumes"],
     queryFn: () => api<VolumeSummary[]>("/volumes"),
   });
@@ -71,7 +72,7 @@ export default function VolumesPage() {
       <QueryErrorBanner error={error} isFetching={isFetching} onRetry={() => refetch()} />
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div>
-          <h1 className="text-xl font-semibold">{t("volumes.title")}</h1>
+          <h1 className="text-[22px] font-bold tracking-tight">{t("volumes.title")}</h1>
           <div className="text-xs text-slate-400 mt-1">
             {t("volumes.summary", {
               count: totals.count,
@@ -82,21 +83,21 @@ export default function VolumesPage() {
         </div>
         <div className="flex gap-2 items-center flex-wrap">
           <input
-            className="bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm"
+            className="input w-auto"
             placeholder={t("volumes.newPlaceholder")}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <button
             onClick={() => name && create.mutate()}
-            className="px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-sm flex items-center gap-1"
+            className="btn btn-primary"
           >
             <Plus className="w-4 h-4" /> {t("common.create")}
           </button>
           <button
             onClick={onPrune}
             disabled={prune.isPending || totals.unused === 0}
-            className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center gap-1"
+            className="btn btn-secondary"
             title={t("volumes.pruneHint")}
           >
             <Sparkles className="w-4 h-4" /> {t("volumes.prune")}
@@ -104,15 +105,15 @@ export default function VolumesPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-800 overflow-hidden">
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-800 bg-slate-900/40">
+      <div className="card overflow-hidden">
+        <div className="flex items-center gap-2 px-3 py-2.5 border-b border-slate-800">
           <div className="relative flex-1 max-w-xs">
             <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
             <input
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               placeholder={t("common.filter")}
-              className="w-full bg-slate-950 border border-slate-800 rounded pl-7 pr-2 py-1 text-xs"
+              className="input input-sm pl-7"
             />
           </div>
           <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer select-none">
@@ -137,38 +138,39 @@ export default function VolumesPage() {
           )}
         </div>
         <table className="w-full text-sm">
-          <thead className="bg-slate-900/70 text-slate-400">
+          <thead className="text-slate-500">
             <tr className="text-left">
-              <th className="px-4 py-2">{t("volumes.columns.name")}</th>
-              <th className="px-4 py-2">{t("volumes.columns.driver")}</th>
-              <th className="px-4 py-2">{t("volumes.columns.mount")}</th>
-              <th className="px-4 py-2 text-right">{t("volumes.columns.size")}</th>
-              <th className="px-4 py-2 text-right">{t("volumes.columns.usedBy")}</th>
-              <th className="px-4 py-2 text-right">{t("volumes.columns.actions")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("volumes.columns.name")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("volumes.columns.driver")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("volumes.columns.mount")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-right">{t("volumes.columns.size")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-right">{t("volumes.columns.usedBy")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-right">{t("volumes.columns.actions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800 bg-slate-950/40">
+          <tbody className="divide-y divide-slate-800">
+            {isLoading && <SkeletonRows cols={6} />}
             {rows.map((v) => {
               const inUse = (v.refCount ?? 0) > 0;
               return (
                 <tr
                   key={v.name}
                   onClick={() => router.push(`/volumes/${encodeURIComponent(v.name)}`)}
-                  className="hover:bg-slate-900/40 cursor-pointer"
+                  className="hover:bg-slate-800/40 cursor-pointer transition-colors"
                 >
-                  <td className="px-4 py-2 font-medium">
+                  <td className="px-4 py-3 font-medium">
                     <span className="text-brand-300 hover:underline">{v.name}</span>
                   </td>
-                  <td className="px-4 py-2">{v.driver}</td>
-                  <td className="px-4 py-2 font-mono text-xs text-slate-400">{v.mountpoint}</td>
-                  <td className="px-4 py-2 text-right tabular-nums">
+                  <td className="px-4 py-3">{v.driver}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-slate-400">{v.mountpoint}</td>
+                  <td className="px-4 py-3 text-right tabular-nums">
                     {typeof v.size === "number" && v.size >= 0 ? (
                       humanBytes(v.size)
                     ) : (
                       <span className="text-slate-600">—</span>
                     )}
                   </td>
-                  <td className="px-4 py-2 text-right">
+                  <td className="px-4 py-3 text-right">
                     <span
                       className={
                         inUse
@@ -179,7 +181,7 @@ export default function VolumesPage() {
                       {v.refCount ?? 0}
                     </span>
                   </td>
-                  <td className="px-4 py-2 text-right">
+                  <td className="px-4 py-3 text-right">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -187,7 +189,7 @@ export default function VolumesPage() {
                       }}
                       disabled={inUse}
                       title={inUse ? t("volumes.inUseHint") : undefined}
-                      className="p-1.5 rounded hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="btn btn-ghost btn-icon btn-sm"
                     >
                       <Trash2 className="w-4 h-4 text-rose-400" />
                     </button>
@@ -195,12 +197,13 @@ export default function VolumesPage() {
                 </tr>
               );
             })}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-slate-500 text-sm">
-                  {t("volumes.empty")}
-                </td>
-              </tr>
+            {!isLoading && rows.length === 0 && (
+              <EmptyRow
+                colSpan={6}
+                icon={HardDrive}
+                title={filter || onlyUnused ? t("common.noMatches") : t("volumes.empty")}
+                description={filter || onlyUnused ? t("common.noMatchesHint") : t("volumes.emptyHint")}
+              />
             )}
           </tbody>
         </table>

@@ -27,7 +27,9 @@
       "rowsPerPage": "每页行数",
       "pageOf": "第 {page} / {total} 页",
       "range": "{from}-{to} / 共 {total}"
-    }
+    },
+    "noMatches": "无匹配结果",
+    "noMatchesHint": "请尝试其他搜索或清除筛选条件。"
   },
   "nav": {
     "dashboard": "仪表盘",
@@ -54,7 +56,8 @@
       "light": "浅色",
       "dark": "深色",
       "system": "跟随系统"
-    }
+    },
+    "search": "搜索…"
   },
   "dashboard": {
     "title": "仪表盘",
@@ -227,6 +230,20 @@
       "empty": "Select a file",
       "rootDir": "Root",
       "upDir": "Parent directory"
+    },
+    "empty": {
+      "title": "还没有容器",
+      "description": "从镜像运行容器后会显示在这里。",
+      "action": "浏览镜像"
+    },
+    "lastRun": {
+      "upFor": "已运行 {duration}",
+      "exitCode": "退出码 {code}"
+    },
+    "health": {
+      "healthy": "健康",
+      "unhealthy": "不健康",
+      "starting": "启动中"
     }
   },
   "images": {
@@ -333,6 +350,15 @@
       "targetTag": "目标标签",
       "push": "推送镜像",
       "pushing": "推送中..."
+    },
+    "summary": "{count} 个镜像 · {size}",
+    "actions": {
+      "pull": "从仓库拉取",
+      "push": "推送"
+    },
+    "empty": {
+      "title": "还没有镜像",
+      "description": "在 Docker Hub 中搜索并拉取第一个镜像。"
     }
   },
   "volumes": {
@@ -364,7 +390,8 @@
       "labels": "标签",
       "rawJson": "原始 JSON",
       "filesHint": "通过挂载此卷的临时辅助容器浏览文件。"
-    }
+    },
+    "emptyHint": "卷用于保存比容器生命周期更长的数据。可在上方创建。"
   },
   "files": {
     "edit": "编辑",
@@ -400,7 +427,8 @@
       "options": "驱动选项",
       "labels": "标签",
       "rawJson": "原始 JSON"
-    }
+    },
+    "emptyHint": "创建网络以便容器之间相互通信。"
   },
   "builds": {
     "title": "构建",
@@ -441,7 +469,8 @@
       "building": "构建中…",
       "done": "完成",
       "build": "构建"
-    }
+    },
+    "emptyHint": "构建镜像后，构建缓存会显示在这里。"
   },
   "settings": {
     "title": "设置",
@@ -496,7 +525,8 @@
       "line3": "socat must be installed: sudo apt-get install -y socat",
       "line4": "Rihtim bridges via wsl -d <distro> -u root socat over stdio. No extra ports or TCP required."
     },
-    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}",
+    "registryAdded": "已添加镜像仓库。"
   },
   "errors": {
     "dockerUnreachable": "无法访问当前 Docker 上下文。请确保引擎正在运行，或在设置中选择其他上下文。"
@@ -537,6 +567,21 @@
       "stop": "停止项目",
       "restart": "重启项目",
       "down": "Down（移除容器）"
-    }
+    },
+    "emptyHint": "在上方运行 Compose 文件以启动项目。"
+  },
+  "palette": {
+    "title": "命令面板",
+    "placeholder": "搜索页面、容器、镜像…",
+    "groups": {
+      "pages": "页面",
+      "containers": "容器",
+      "actions": "操作",
+      "images": "镜像"
+    },
+    "start": "启动 {name}",
+    "stop": "停止 {name}",
+    "navigate": "导航",
+    "select": "打开"
   }
 }

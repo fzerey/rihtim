@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import type { FileEntry, FileListResponse, FileResponse } from "@/types/files";
+import { Skeleton } from "@/components/ui";
 
 export function FileBrowser({
   apiBase,
@@ -133,7 +134,7 @@ export function FileBrowser({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-[400px]">
-      <div className="rounded-xl border border-slate-800 bg-slate-950/40 overflow-hidden flex flex-col">
+      <div className="card overflow-hidden flex flex-col">
         <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-800 text-xs">
           <button
             onClick={() => load("/")}
@@ -166,7 +167,14 @@ export function FileBrowser({
           </button>
         </div>
         <div className="flex-1 overflow-auto text-sm">
-          {loading && <div className="p-4 text-slate-500">{t("common.loading")}</div>}
+          {loading && (
+            <div className="p-4 space-y-3" aria-busy="true">
+              <Skeleton className="h-3.5 w-1/2" />
+              <Skeleton className="h-3.5 w-2/3" />
+              <Skeleton className="h-3.5 w-1/3" />
+              <Skeleton className="h-3.5 w-3/5" />
+            </div>
+          )}
           {error && (
             <div className="p-4 text-rose-300 text-xs whitespace-pre-wrap">{error}</div>
           )}
@@ -203,7 +211,7 @@ export function FileBrowser({
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-800 bg-slate-950/40 overflow-hidden flex flex-col">
+      <div className="card overflow-hidden flex flex-col">
         <div className="px-3 py-2 border-b border-slate-800 text-xs font-mono truncate flex items-center gap-2">
           <span className="flex-1 truncate">
             {viewFile?.name ?? t("containers.files.empty")}

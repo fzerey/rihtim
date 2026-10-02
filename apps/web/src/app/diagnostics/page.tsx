@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AlertTriangle, CheckCircle2, ClipboardCopy, RefreshCw, Wrench, XCircle } from "lucide-react";
 import { api } from "@/lib/api";
 import { QueryErrorBanner } from "@/components/QueryErrorBanner";
+import { CardSkeleton } from "@/components/ui";
 import { useT } from "@/i18n/provider";
 
 type DiagnosticFix = {
@@ -82,13 +83,13 @@ export default function DiagnosticsPage() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">{t("diagnostics.title")}</h1>
+          <h1 className="text-[22px] font-bold tracking-tight">{t("diagnostics.title")}</h1>
           <p className="text-sm text-slate-400">{t("diagnostics.subtitle")}</p>
         </div>
         <button
           onClick={() => void runChecks()}
           disabled={isRunningChecks || isFetching}
-          className="px-3 py-1.5 rounded-md text-sm bg-slate-800 hover:bg-slate-700 inline-flex items-center gap-2 disabled:opacity-50"
+          className="btn btn-secondary"
         >
           <RefreshCw className={(isRunningChecks || isFetching) ? "w-4 h-4 animate-spin" : "w-4 h-4"} />
           {t("diagnostics.run")}
@@ -99,7 +100,7 @@ export default function DiagnosticsPage() {
         <button
           onClick={() => void copyDiagnostics()}
           disabled={!data}
-          className="px-3 py-1.5 rounded-md text-sm bg-slate-800 hover:bg-slate-700 inline-flex items-center gap-2 disabled:opacity-50"
+          className="btn btn-secondary"
         >
           <ClipboardCopy className="w-4 h-4" />
           {copied ? t("diagnostics.copy.copied") : t("diagnostics.copy.button")}
@@ -108,8 +109,9 @@ export default function DiagnosticsPage() {
       </div>
 
       {isLoading && (
-        <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-6 text-slate-500 text-sm">
-          {t("common.loading")}
+        <div className="space-y-4">
+          <CardSkeleton lines={4} />
+          <CardSkeleton lines={3} />
         </div>
       )}
 
@@ -157,7 +159,7 @@ export default function DiagnosticsPage() {
                             <button
                               onClick={() => fix.mutate(f.id)}
                               disabled={fix.isPending}
-                              className="px-2.5 py-1.5 rounded text-xs bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 inline-flex items-center gap-1"
+                              className="btn btn-primary btn-sm"
                             >
                               <Wrench className="w-3.5 h-3.5" />
                               {fix.isPending ? t("diagnostics.quickFix.running") : f.label}
@@ -165,7 +167,7 @@ export default function DiagnosticsPage() {
                           ) : (
                             <button
                               onClick={() => void copyCommand(f.command)}
-                              className="px-2.5 py-1.5 rounded text-xs bg-slate-800 hover:bg-slate-700 inline-flex items-center gap-1"
+                              className="btn btn-secondary btn-sm"
                             >
                               <ClipboardCopy className="w-3.5 h-3.5" />
                               {f.label}

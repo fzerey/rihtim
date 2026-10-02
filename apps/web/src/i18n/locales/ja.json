@@ -27,7 +27,9 @@
       "rowsPerPage": "1 ページの行数",
       "pageOf": "ページ {page} / {total}",
       "range": "{from}-{to} / 合計 {total}"
-    }
+    },
+    "noMatches": "一致なし",
+    "noMatchesHint": "別の検索語を試すか、フィルターをクリアしてください。"
   },
   "nav": {
     "dashboard": "ダッシュボード",
@@ -54,7 +56,8 @@
       "light": "ライト",
       "dark": "ダーク",
       "system": "システム"
-    }
+    },
+    "search": "検索…"
   },
   "dashboard": {
     "title": "ダッシュボード",
@@ -227,6 +230,20 @@
       "empty": "Select a file",
       "rootDir": "Root",
       "upDir": "Parent directory"
+    },
+    "empty": {
+      "title": "コンテナはまだありません",
+      "description": "イメージからコンテナを実行するとここに表示されます。",
+      "action": "イメージを見る"
+    },
+    "lastRun": {
+      "upFor": "{duration}稼働中",
+      "exitCode": "終了コード {code}"
+    },
+    "health": {
+      "healthy": "正常",
+      "unhealthy": "異常",
+      "starting": "起動中"
     }
   },
   "images": {
@@ -333,6 +350,15 @@
       "targetTag": "対象タグ",
       "push": "イメージをプッシュ",
       "pushing": "プッシュ中..."
+    },
+    "summary": "{count} 個のイメージ · {size}",
+    "actions": {
+      "pull": "レジストリからプル",
+      "push": "プッシュ"
+    },
+    "empty": {
+      "title": "イメージはまだありません",
+      "description": "Docker Hub を検索して最初のイメージをプルしましょう。"
     }
   },
   "volumes": {
@@ -364,7 +390,8 @@
       "labels": "ラベル",
       "rawJson": "生 JSON",
       "filesHint": "このボリュームをマウントする一時的なヘルパーコンテナ経由でファイルを閲覧しています。"
-    }
+    },
+    "emptyHint": "ボリュームはコンテナより長くデータを保持します。上で作成できます。"
   },
   "files": {
     "edit": "編集",
@@ -400,7 +427,8 @@
       "options": "ドライバオプション",
       "labels": "ラベル",
       "rawJson": "生 JSON"
-    }
+    },
+    "emptyHint": "コンテナ同士が通信できるようにネットワークを作成します。"
   },
   "builds": {
     "title": "ビルド",
@@ -441,7 +469,8 @@
       "building": "ビルド中…",
       "done": "完了",
       "build": "ビルド"
-    }
+    },
+    "emptyHint": "イメージをビルドするとビルドキャッシュがここに表示されます。"
   },
   "settings": {
     "title": "設定",
@@ -496,7 +525,8 @@
       "line3": "socat must be installed: sudo apt-get install -y socat",
       "line4": "Rihtim bridges via wsl -d <distro> -u root socat over stdio. No extra ports or TCP required."
     },
-    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}",
+    "registryAdded": "レジストリを追加しました。"
   },
   "errors": {
     "dockerUnreachable": "アクティブな Docker コンテキストに接続できません。エンジンが実行中か確認するか、設定で別のコンテキストを選択してください。"
@@ -537,6 +567,21 @@
       "stop": "プロジェクト停止",
       "restart": "プロジェクト再起動",
       "down": "Down (コンテナ削除)"
-    }
+    },
+    "emptyHint": "上で Compose ファイルを実行してプロジェクトを開始します。"
+  },
+  "palette": {
+    "title": "コマンドパレット",
+    "placeholder": "ページ、コンテナ、イメージを検索…",
+    "groups": {
+      "pages": "ページ",
+      "containers": "コンテナ",
+      "actions": "アクション",
+      "images": "イメージ"
+    },
+    "start": "{name} を開始",
+    "stop": "{name} を停止",
+    "navigate": "移動",
+    "select": "開く"
   }
 }

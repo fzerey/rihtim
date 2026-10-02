@@ -24,7 +24,7 @@ export function QueryErrorBanner({
       <button
         onClick={onRetry}
         disabled={isFetching}
-        className="inline-flex items-center gap-1 rounded-md border border-rose-500/40 bg-rose-500/20 px-2 py-1 text-xs text-rose-100 hover:bg-rose-500/30 disabled:opacity-50"
+        className="btn btn-danger btn-sm"
       >
         <RefreshCw className={`w-3 h-3 ${isFetching ? "animate-spin" : ""}`} />
         {t("common.retry")}

@@ -4,12 +4,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, humanBytes, timeAgo } from "@/lib/api";
 import type { BuildCacheEntry } from "@rihtim/shared";
 import { Hammer, Trash2, Play, X, Loader2, Package } from "lucide-react";
+import { EmptyRow, SkeletonRows } from "@/components/ui";
 import { useT } from "@/i18n/provider";
 
 export default function BuildsPage() {
   const { t, locale } = useT();
   const qc = useQueryClient();
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["build-cache"],
     queryFn: () => api<BuildCacheEntry[]>("/build/cache"),
     refetchInterval: 10_000,
@@ -33,14 +34,14 @@ export default function BuildsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold flex items-center gap-2">
+        <h1 className="text-[22px] font-bold tracking-tight flex items-center gap-2">
           <Hammer className="w-5 h-5 text-brand-400" />
           {t("builds.title")}
         </h1>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowBuild(true)}
-            className="px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-sm flex items-center gap-1.5"
+            className="btn btn-primary"
           >
             <Play className="w-3.5 h-3.5" />
             {t("builds.newBuild")}
@@ -48,7 +49,7 @@ export default function BuildsPage() {
           <button
             onClick={() => prune.mutate(false)}
             disabled={prune.isPending}
-            className="px-3 py-1.5 rounded-md border border-slate-700 hover:bg-slate-800 text-sm flex items-center gap-1.5 disabled:opacity-50"
+            className="btn btn-secondary"
           >
             <Trash2 className="w-3.5 h-3.5" />
             {t("builds.prune")}
@@ -58,7 +59,7 @@ export default function BuildsPage() {
               if (confirm(t("builds.pruneAllConfirm"))) prune.mutate(true);
             }}
             disabled={prune.isPending}
-            className="px-3 py-1.5 rounded-md border border-rose-800/60 text-rose-300 hover:bg-rose-950/40 text-sm flex items-center gap-1.5 disabled:opacity-50"
+            className="btn btn-danger"
           >
             <Trash2 className="w-3.5 h-3.5" />
             {t("builds.pruneAll")}
@@ -72,48 +73,50 @@ export default function BuildsPage() {
         <SummaryCard label={t("builds.summary.reclaimable")} value={humanBytes(reclaimable)} />
       </div>
 
-      <div className="rounded-xl border border-slate-800 overflow-hidden">
+      <div className="card overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-slate-900/70 text-slate-400">
+          <thead className="text-slate-500">
             <tr className="text-left">
-              <th className="px-4 py-2">{t("builds.columns.id")}</th>
-              <th className="px-4 py-2">{t("builds.columns.type")}</th>
-              <th className="px-4 py-2">{t("builds.columns.description")}</th>
-              <th className="px-4 py-2">{t("builds.columns.size")}</th>
-              <th className="px-4 py-2">{t("builds.columns.usage")}</th>
-              <th className="px-4 py-2">{t("builds.columns.lastUsed")}</th>
-              <th className="px-4 py-2">{t("builds.columns.status")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("builds.columns.id")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("builds.columns.type")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("builds.columns.description")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("builds.columns.size")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("builds.columns.usage")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("builds.columns.lastUsed")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("builds.columns.status")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800 bg-slate-950/40">
-            {entries.length === 0 && (
-              <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
-                  {t("builds.empty")}
-                </td>
-              </tr>
+          <tbody className="divide-y divide-slate-800">
+            {isLoading && <SkeletonRows cols={7} />}
+            {!isLoading && entries.length === 0 && (
+              <EmptyRow
+                colSpan={7}
+                icon={Package}
+                title={t("builds.empty")}
+                description={t("builds.emptyHint")}
+              />
             )}
             {entries.map((b) => (
-              <tr key={b.id} className="hover:bg-slate-900/40">
-                <td className="px-4 py-2 font-mono text-xs text-slate-400">
+              <tr key={b.id} className="hover:bg-slate-800/40 transition-colors">
+                <td className="px-4 py-3 font-mono text-xs text-slate-400">
                   {b.id.slice(0, 12)}
                 </td>
-                <td className="px-4 py-2 text-xs">
+                <td className="px-4 py-3 text-xs">
                   <span className="inline-block px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
                     {b.type || "—"}
                   </span>
                 </td>
-                <td className="px-4 py-2 text-xs text-slate-300 max-w-[420px] truncate">
+                <td className="px-4 py-3 text-xs text-slate-300 max-w-[420px] truncate">
                   {b.description || "—"}
                 </td>
-                <td className="px-4 py-2">{humanBytes(b.size)}</td>
-                <td className="px-4 py-2 text-slate-400">{b.usageCount}</td>
-                <td className="px-4 py-2 text-slate-400">
+                <td className="px-4 py-3">{humanBytes(b.size)}</td>
+                <td className="px-4 py-3 text-slate-400">{b.usageCount}</td>
+                <td className="px-4 py-3 text-slate-400">
                   {b.lastUsedAt
                     ? t("containers.ago", { value: timeAgo(b.lastUsedAt, locale) })
                     : "—"}
                 </td>
-                <td className="px-4 py-2">
+                <td className="px-4 py-3">
                   {b.inUse ? (
                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300">
                       {t("builds.status.inUse")}
@@ -137,7 +140,7 @@ export default function BuildsPage() {
 
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+    <div className="card p-4">
       <div className="text-xs text-slate-400">{label}</div>
       <div className="text-lg font-semibold mt-1">{value}</div>
     </div>
@@ -287,7 +290,7 @@ function BuildModal({ onClose }: { onClose: () => void }) {
               onChange={(e) => setContextPath(e.target.value)}
               placeholder={t("builds.modal.contextPathPlaceholder")}
               disabled={running}
-              className="w-full bg-slate-950 border border-slate-800 rounded-md px-2 py-1.5 text-sm font-mono disabled:opacity-60"
+              className="input font-mono"
             />
             <div className="text-[10px] text-slate-500 mt-1">
               {t("builds.modal.contextPathHint")}
@@ -302,7 +305,7 @@ function BuildModal({ onClose }: { onClose: () => void }) {
                 value={dockerfile}
                 onChange={(e) => setDockerfile(e.target.value)}
                 disabled={running}
-                className="w-full bg-slate-950 border border-slate-800 rounded-md px-2 py-1.5 text-sm font-mono disabled:opacity-60"
+                className="input font-mono"
               />
             </div>
             <div>
@@ -314,7 +317,7 @@ function BuildModal({ onClose }: { onClose: () => void }) {
                 onChange={(e) => setTag(e.target.value)}
                 placeholder="myapp:latest"
                 disabled={running}
-                className="w-full bg-slate-950 border border-slate-800 rounded-md px-2 py-1.5 text-sm font-mono disabled:opacity-60"
+                className="input font-mono"
               />
             </div>
           </div>
@@ -328,7 +331,7 @@ function BuildModal({ onClose }: { onClose: () => void }) {
               placeholder="KEY=VALUE"
               disabled={running}
               rows={3}
-              className="w-full bg-slate-950 border border-slate-800 rounded-md px-2 py-1.5 text-sm font-mono disabled:opacity-60"
+              className="textarea font-mono"
             />
           </div>
           <div className="flex items-center gap-4 text-sm">
@@ -384,14 +387,14 @@ function BuildModal({ onClose }: { onClose: () => void }) {
           {running ? (
             <button
               onClick={() => abortRef.current?.abort()}
-              className="px-3 py-1.5 rounded-md border border-slate-700 hover:bg-slate-800 text-sm"
+              className="btn btn-secondary"
             >
               {t("common.cancel")}
             </button>
           ) : (
             <button
               onClick={onClose}
-              className="px-3 py-1.5 rounded-md border border-slate-700 hover:bg-slate-800 text-sm"
+              className="btn btn-secondary"
             >
               {t("common.close")}
             </button>
@@ -399,7 +402,7 @@ function BuildModal({ onClose }: { onClose: () => void }) {
           <button
             onClick={runBuild}
             disabled={!canRun}
-            className="px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-sm flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary"
           >
             {running ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />

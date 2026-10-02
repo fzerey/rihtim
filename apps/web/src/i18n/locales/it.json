@@ -27,7 +27,9 @@
       "rowsPerPage": "Righe per pagina",
       "pageOf": "Pagina {page} / {total}",
       "range": "{from}-{to} di {total}"
-    }
+    },
+    "noMatches": "Nessun risultato",
+    "noMatchesHint": "Prova un'altra ricerca o cancella i filtri."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -54,7 +56,8 @@
       "light": "Chiaro",
       "dark": "Scuro",
       "system": "Sistema"
-    }
+    },
+    "search": "Cerca…"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -227,6 +230,20 @@
       "empty": "Select a file",
       "rootDir": "Root",
       "upDir": "Parent directory"
+    },
+    "empty": {
+      "title": "Ancora nessun container",
+      "description": "Avvia un container da un'immagine per vederlo qui.",
+      "action": "Sfoglia immagini"
+    },
+    "lastRun": {
+      "upFor": "Attivo da {duration}",
+      "exitCode": "uscita {code}"
+    },
+    "health": {
+      "healthy": "integro",
+      "unhealthy": "non integro",
+      "starting": "avvio"
     }
   },
   "images": {
@@ -333,6 +350,15 @@
       "targetTag": "Tag di destinazione",
       "push": "Push immagine",
       "pushing": "Push in corso..."
+    },
+    "summary": "{count} immagini · {size}",
+    "actions": {
+      "pull": "Scarica da registry",
+      "push": "Invia"
+    },
+    "empty": {
+      "title": "Ancora nessuna immagine",
+      "description": "Cerca su Docker Hub per scaricare la tua prima immagine."
     }
   },
   "volumes": {
@@ -364,7 +390,8 @@
       "labels": "Etichette",
       "rawJson": "JSON grezzo",
       "filesHint": "Esplorazione dei file tramite un container di supporto temporaneo che monta questo volume."
-    }
+    },
+    "emptyHint": "I volumi conservano dati oltre la vita dei container. Creane uno qui sopra."
   },
   "files": {
     "edit": "Modifica",
@@ -400,7 +427,8 @@
       "options": "Opzioni driver",
       "labels": "Etichette",
       "rawJson": "JSON grezzo"
-    }
+    },
+    "emptyHint": "Crea una rete per far comunicare i container tra loro."
   },
   "builds": {
     "title": "Build",
@@ -441,7 +469,8 @@
       "building": "Costruzione…",
       "done": "Fatto",
       "build": "Costruisci"
-    }
+    },
+    "emptyHint": "La cache di build apparirà qui dopo aver costruito un'immagine."
   },
   "settings": {
     "title": "Impostazioni",
@@ -496,7 +525,8 @@
       "line3": "socat must be installed: sudo apt-get install -y socat",
       "line4": "Rihtim bridges via wsl -d <distro> -u root socat over stdio. No extra ports or TCP required."
     },
-    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}",
+    "registryAdded": "Registry aggiunto."
   },
   "errors": {
     "dockerUnreachable": "Impossibile raggiungere il contesto Docker attivo. Verifica che il motore sia in esecuzione o scegli un altro contesto in Impostazioni."
@@ -537,6 +567,21 @@
       "stop": "Ferma progetto",
       "restart": "Riavvia progetto",
       "down": "Down (rimuovi container)"
-    }
+    },
+    "emptyHint": "Esegui un file Compose qui sopra per avviare un progetto."
+  },
+  "palette": {
+    "title": "Tavolozza comandi",
+    "placeholder": "Cerca pagine, container, immagini…",
+    "groups": {
+      "pages": "Pagine",
+      "containers": "Container",
+      "actions": "Azioni",
+      "images": "Immagini"
+    },
+    "start": "Avvia {name}",
+    "stop": "Arresta {name}",
+    "navigate": "naviga",
+    "select": "apri"
   }
 }

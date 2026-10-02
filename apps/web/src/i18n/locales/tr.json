@@ -27,7 +27,9 @@
       "rowsPerPage": "Sayfa başına",
       "pageOf": "Sayfa {page} / {total}",
       "range": "{from}-{to} / {total}"
-    }
+    },
+    "noMatches": "Eşleşme yok",
+    "noMatchesHint": "Farklı bir arama deneyin veya filtreleri temizleyin."
   },
   "nav": {
     "dashboard": "Panel",
@@ -81,7 +83,8 @@
       "stop": "Projeyi durdur",
       "restart": "Projeyi yeniden başlat",
       "down": "Down (konteynerleri sil)"
-    }
+    },
+    "emptyHint": "Bir proje başlatmak için yukarıdan bir Compose dosyası çalıştır."
   },
   "topbar": {
     "noContext": "Bağlam yok",
@@ -92,7 +95,8 @@
       "light": "Açık",
       "dark": "Koyu",
       "system": "Sistem"
-    }
+    },
+    "search": "Ara…"
   },
   "dashboard": {
     "title": "Panel",
@@ -265,6 +269,20 @@
       "restartAll": "Tümünü yeniden başlat",
       "removeAll": "Tümünü sil",
       "projectLabel": "Compose projesi"
+    },
+    "empty": {
+      "title": "Henüz konteyner yok",
+      "description": "Burada görmek için bir imajdan konteyner çalıştır.",
+      "action": "İmajlara göz at"
+    },
+    "lastRun": {
+      "upFor": "{duration} çalışıyor",
+      "exitCode": "çıkış {code}"
+    },
+    "health": {
+      "healthy": "sağlıklı",
+      "unhealthy": "sağlıksız",
+      "starting": "başlatılıyor"
     }
   },
   "images": {
@@ -372,6 +390,15 @@
       "clean": "Bilinen güvenlik açığı bulunamadı.",
       "noneForFilter": "Seçilen önem derecesi için açık yok.",
       "fixedIn": "{version} sürümünde düzeltildi"
+    },
+    "summary": "{count} imaj · {size}",
+    "actions": {
+      "pull": "Registry'den çek",
+      "push": "Gönder"
+    },
+    "empty": {
+      "title": "Henüz imaj yok",
+      "description": "İlk imajını çekmek için Docker Hub'da ara."
     }
   },
   "volumes": {
@@ -404,7 +431,8 @@
       "rawJson": "Ham JSON",
       "filesHint": "Dosyalar, bu birimi bağlayan geçici bir yardımcı container üzerinden gösteriliyor.",
       "remove": "Birimi sil"
-    }
+    },
+    "emptyHint": "Birimler, konteynerlerden bağımsız kalıcı veri tutar. Yukarıdan bir tane oluştur."
   },
   "files": {
     "edit": "Düzenle",
@@ -441,7 +469,8 @@
       "labels": "Etiketler",
       "rawJson": "Ham JSON",
       "remove": "Ağı sil"
-    }
+    },
+    "emptyHint": "Konteynerlerin birbiriyle konuşabilmesi için bir ağ oluştur."
   },
   "builds": {
     "title": "Derlemeler",
@@ -482,7 +511,8 @@
       "building": "Derleniyor…",
       "done": "Tamamlandı",
       "build": "Derle"
-    }
+    },
+    "emptyHint": "Bir imaj derlediğinde derleme önbelleği burada görünür."
   },
   "settings": {
     "title": "Ayarlar",
@@ -537,9 +567,24 @@
       "line3": "socat kurulu olmalı: sudo apt-get install -y socat",
       "line4": "Rihtim, wsl -d <dağıtım> -u root socat ile stdio üzerinden köprü kurar. Ekstra port veya TCP açmanıza gerek yoktur."
     },
-    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}",
+    "registryAdded": "Registry eklendi."
   },
   "errors": {
     "dockerUnreachable": "Aktif Docker bağlamına ulaşılamıyor. Motorun çalıştığını doğrulayın ya da Ayarlar'dan başka bir bağlam seçin."
+  },
+  "palette": {
+    "title": "Komut paleti",
+    "placeholder": "Sayfa, konteyner, imaj ara…",
+    "groups": {
+      "pages": "Sayfalar",
+      "containers": "Konteynerler",
+      "actions": "Eylemler",
+      "images": "İmajlar"
+    },
+    "start": "Başlat: {name}",
+    "stop": "Durdur: {name}",
+    "navigate": "gezin",
+    "select": "aç"
   }
 }

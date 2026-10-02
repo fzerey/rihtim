@@ -27,7 +27,9 @@
       "rowsPerPage": "Lignes par page",
       "pageOf": "Page {page} / {total}",
       "range": "{from}-{to} sur {total}"
-    }
+    },
+    "noMatches": "Aucun résultat",
+    "noMatchesHint": "Essayez une autre recherche ou effacez les filtres."
   },
   "nav": {
     "dashboard": "Tableau de bord",
@@ -54,7 +56,8 @@
       "light": "Clair",
       "dark": "Sombre",
       "system": "Système"
-    }
+    },
+    "search": "Rechercher…"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -227,6 +230,20 @@
       "empty": "Select a file",
       "rootDir": "Root",
       "upDir": "Parent directory"
+    },
+    "empty": {
+      "title": "Aucun conteneur pour l'instant",
+      "description": "Lancez un conteneur depuis une image pour le voir ici.",
+      "action": "Parcourir les images"
+    },
+    "lastRun": {
+      "upFor": "Actif depuis {duration}",
+      "exitCode": "sortie {code}"
+    },
+    "health": {
+      "healthy": "sain",
+      "unhealthy": "défaillant",
+      "starting": "démarrage"
     }
   },
   "images": {
@@ -333,6 +350,15 @@
       "targetTag": "Tag cible",
       "push": "Push l'image",
       "pushing": "Push en cours..."
+    },
+    "summary": "{count} images · {size}",
+    "actions": {
+      "pull": "Récupérer d'un registre",
+      "push": "Envoyer"
+    },
+    "empty": {
+      "title": "Aucune image pour l'instant",
+      "description": "Recherchez sur Docker Hub pour récupérer votre première image."
     }
   },
   "volumes": {
@@ -364,7 +390,8 @@
       "labels": "Labels",
       "rawJson": "JSON brut",
       "filesHint": "Exploration des fichiers via un conteneur auxiliaire temporaire qui monte ce volume."
-    }
+    },
+    "emptyHint": "Les volumes conservent des données au-delà de la vie des conteneurs. Créez-en un ci-dessus."
   },
   "files": {
     "edit": "Modifier",
@@ -400,7 +427,8 @@
       "options": "Options du driver",
       "labels": "Étiquettes",
       "rawJson": "JSON brut"
-    }
+    },
+    "emptyHint": "Créez un réseau pour permettre aux conteneurs de communiquer."
   },
   "builds": {
     "title": "Builds",
@@ -441,7 +469,8 @@
       "building": "Compilation…",
       "done": "Terminé",
       "build": "Construire"
-    }
+    },
+    "emptyHint": "Le cache de build apparaîtra ici après la construction d'une image."
   },
   "settings": {
     "title": "Paramètres",
@@ -496,7 +525,8 @@
       "line3": "socat must be installed: sudo apt-get install -y socat",
       "line4": "Rihtim bridges via wsl -d <distro> -u root socat over stdio. No extra ports or TCP required."
     },
-    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}",
+    "registryAdded": "Registre ajouté."
   },
   "errors": {
     "dockerUnreachable": "Le contexte Docker actif est injoignable. Assurez-vous que le moteur est démarré ou choisissez un autre contexte dans Paramètres."
@@ -537,6 +567,21 @@
       "stop": "Arreter le projet",
       "restart": "Redemarrer le projet",
       "down": "Down (supprimer les conteneurs)"
-    }
+    },
+    "emptyHint": "Exécutez un fichier Compose ci-dessus pour démarrer un projet."
+  },
+  "palette": {
+    "title": "Palette de commandes",
+    "placeholder": "Rechercher des pages, conteneurs, images…",
+    "groups": {
+      "pages": "Pages",
+      "containers": "Conteneurs",
+      "actions": "Actions",
+      "images": "Images"
+    },
+    "start": "Démarrer {name}",
+    "stop": "Arrêter {name}",
+    "navigate": "naviguer",
+    "select": "ouvrir"
   }
 }

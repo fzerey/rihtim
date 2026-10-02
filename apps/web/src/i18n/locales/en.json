@@ -27,7 +27,9 @@
       "rowsPerPage": "Rows per page",
       "pageOf": "Page {page} / {total}",
       "range": "{from}-{to} of {total}"
-    }
+    },
+    "noMatches": "No matches",
+    "noMatchesHint": "Try a different search or clear the filters."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -81,7 +83,8 @@
       "stop": "Stop project",
       "restart": "Restart project",
       "down": "Down (remove containers)"
-    }
+    },
+    "emptyHint": "Run a Compose file above to start a project."
   },
   "topbar": {
     "noContext": "No context",
@@ -92,7 +95,8 @@
       "light": "Light",
       "dark": "Dark",
       "system": "System"
-    }
+    },
+    "search": "Search…"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -265,6 +269,20 @@
       "restartAll": "Restart all",
       "removeAll": "Remove all",
       "projectLabel": "Compose project"
+    },
+    "empty": {
+      "title": "No containers yet",
+      "description": "Run a container from an image to see it here.",
+      "action": "Browse images"
+    },
+    "lastRun": {
+      "upFor": "Up {duration}",
+      "exitCode": "exit {code}"
+    },
+    "health": {
+      "healthy": "healthy",
+      "unhealthy": "unhealthy",
+      "starting": "starting"
     }
   },
   "images": {
@@ -372,6 +390,15 @@
       "clean": "No known vulnerabilities found.",
       "noneForFilter": "No vulnerabilities for the selected severity.",
       "fixedIn": "fixed in {version}"
+    },
+    "summary": "{count} images · {size}",
+    "actions": {
+      "pull": "Pull from registry",
+      "push": "Push"
+    },
+    "empty": {
+      "title": "No images yet",
+      "description": "Search Docker Hub to pull your first image."
     }
   },
   "volumes": {
@@ -404,7 +431,8 @@
       "rawJson": "Raw JSON",
       "filesHint": "Browsing files via a temporary helper container that mounts this volume.",
       "remove": "Delete volume"
-    }
+    },
+    "emptyHint": "Volumes keep data that outlives containers. Create one above."
   },
   "files": {
     "edit": "Edit",
@@ -441,7 +469,8 @@
       "labels": "Labels",
       "rawJson": "Raw JSON",
       "remove": "Delete network"
-    }
+    },
+    "emptyHint": "Create a network to let containers talk to each other."
   },
   "builds": {
     "title": "Builds",
@@ -482,7 +511,8 @@
       "building": "Building…",
       "done": "Done",
       "build": "Build"
-    }
+    },
+    "emptyHint": "Build cache shows up here once you build an image."
   },
   "settings": {
     "title": "Settings",
@@ -537,9 +567,24 @@
       "line3": "socat must be installed: sudo apt-get install -y socat",
       "line4": "Rihtim bridges via wsl -d <distro> -u root socat over stdio. No extra ports or TCP required."
     },
-    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}",
+    "registryAdded": "Registry added."
   },
   "errors": {
     "dockerUnreachable": "Cannot reach the active Docker context. Make sure the engine is running or pick another context in Settings."
+  },
+  "palette": {
+    "title": "Command palette",
+    "placeholder": "Search pages, containers, images…",
+    "groups": {
+      "pages": "Pages",
+      "containers": "Containers",
+      "actions": "Actions",
+      "images": "Images"
+    },
+    "start": "Start {name}",
+    "stop": "Stop {name}",
+    "navigate": "navigate",
+    "select": "open"
   }
 }

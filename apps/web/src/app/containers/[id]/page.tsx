@@ -8,6 +8,7 @@ import { LogsPanel } from "@/components/LogsPanel";
 import { StatsPanel } from "@/components/StatsPanel";
 import { FileBrowser } from "@/components/FileBrowser";
 import { TerminalPanel } from "@/components/TerminalPanel";
+import { CardSkeleton, Skeleton } from "@/components/ui";
 import { useT } from "@/i18n/provider";
 import {
   ArrowLeft,
@@ -63,7 +64,14 @@ export default function ContainerDetailPage() {
     onSuccess: () => router.push("/containers"),
   });
 
-  if (isLoading) return <div className="text-slate-400">{t("common.loading")}</div>;
+  if (isLoading)
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-7 w-64" />
+        <CardSkeleton lines={4} />
+        <CardSkeleton lines={6} />
+      </div>
+    );
   if (error) return <div className="text-rose-300">{(error as Error).message}</div>;
   if (!data) return null;
 
@@ -78,13 +86,13 @@ export default function ContainerDetailPage() {
       <div className="flex items-center gap-3">
         <Link
           href="/containers"
-          className="p-1.5 rounded hover:bg-slate-800 text-slate-400"
+          className="btn btn-ghost btn-icon btn-sm"
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold truncate">{name}</h1>
+            <h1 className="text-[22px] font-bold tracking-tight truncate">{name}</h1>
             <StateBadge state={state.Status} pending={pending} />
           </div>
           <div className="text-xs text-slate-500 font-mono truncate">
@@ -291,13 +299,13 @@ function InspectPanel({ data }: { data: ContainerInspect }) {
         />
         <button
           onClick={toggleAll}
-          className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md px-3 py-1 text-sm"
+          className="btn btn-secondary btn-sm"
         >
           {allOpen ? t("containers.detail.inspect.collapseAll") : t("containers.detail.inspect.expandAll")}
         </button>
         <button
           onClick={copyAll}
-          className="bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md px-3 py-1 text-sm"
+          className="btn btn-secondary btn-sm"
         >
           {copied ? t("containers.detail.inspect.copied") : t("containers.detail.inspect.copy")}
         </button>
@@ -569,7 +577,7 @@ function Overview({
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+    <div className="card p-4">
       <div className="text-sm font-medium mb-3 text-slate-200">{title}</div>
       <div className="space-y-1 text-sm">{children}</div>
     </div>

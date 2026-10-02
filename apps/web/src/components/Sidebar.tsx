@@ -16,7 +16,7 @@ import clsx from "clsx";
 import { useT } from "@/i18n/provider";
 import { RihtimLogo } from "./RihtimLogo";
 
-const sections = [
+export const navSections = [
   {
     key: "nav.section.overview",
     items: [{ href: "/", key: "nav.dashboard", icon: LayoutDashboard }],
@@ -54,7 +54,7 @@ export function Sidebar() {
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto px-3 pb-3">
-        {sections.map((section) => (
+        {navSections.map((section) => (
           <div key={section.key}>
             <div className="px-3 pt-4 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
               {t(section.key)}

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { api, humanBytes, timeAgo } from "@/lib/api";
 import { useT } from "@/i18n/provider";
+import { CardSkeleton } from "@/components/ui";
 import type {
   ImageHistoryEntry,
   ImageScanResult,
@@ -95,12 +96,12 @@ export function ImageDetailView({ imageId }: { imageId: string }) {
       <div className="flex items-center gap-3">
         <Link
           href="/images"
-          className="p-1.5 rounded hover:bg-slate-800 text-slate-400"
+          className="btn btn-ghost btn-icon btn-sm"
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-semibold truncate">{title}</h1>
+          <h1 className="text-[22px] font-bold tracking-tight truncate">{title}</h1>
           <div className="text-xs text-slate-500 font-mono truncate">
             {imageId.replace("sha256:", "").slice(0, 19)}
           </div>
@@ -108,7 +109,7 @@ export function ImageDetailView({ imageId }: { imageId: string }) {
         <button
           onClick={() => remove.mutate()}
           disabled={remove.isPending}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-rose-600/90 hover:bg-rose-600 text-white text-sm disabled:opacity-50"
+          className="btn btn-danger"
         >
           <Trash2 className="w-4 h-4" />
           {t("images.detail.remove")}
@@ -128,7 +129,7 @@ export function ImageDetailView({ imageId }: { imageId: string }) {
         />
       </div>
 
-      {isLoading && <div className="text-sm text-slate-400">{t("common.loading")}</div>}
+      {isLoading && <CardSkeleton lines={4} />}
       {error && <div className="text-sm text-rose-400">{(error as Error).message}</div>}
 
       {data && tab === "details" && (
@@ -326,7 +327,7 @@ function ScanTab({ imageId, imageRef }: { imageId: string; imageRef: string }) {
         <button
           onClick={() => scan.mutate()}
           disabled={scan.isPending}
-          className="shrink-0 px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-sm inline-flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="btn btn-primary shrink-0"
         >
           {scan.isPending ? (
             <Loader2 className="w-4 h-4 animate-spin" />
