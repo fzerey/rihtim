@@ -27,7 +27,9 @@
       "rowsPerPage": "Строк на странице",
       "pageOf": "Стр. {page} / {total}",
       "range": "{from}-{to} из {total}"
-    }
+    },
+    "noMatches": "Ничего не найдено",
+    "noMatchesHint": "Попробуйте другой запрос или сбросьте фильтры."
   },
   "nav": {
     "dashboard": "Панель",
@@ -54,7 +56,8 @@
       "light": "Светлая",
       "dark": "Тёмная",
       "system": "Системная"
-    }
+    },
+    "search": "Поиск…"
   },
   "dashboard": {
     "title": "Панель",
@@ -227,6 +230,20 @@
       "empty": "Select a file",
       "rootDir": "Root",
       "upDir": "Parent directory"
+    },
+    "empty": {
+      "title": "Контейнеров пока нет",
+      "description": "Запустите контейнер из образа, чтобы увидеть его здесь.",
+      "action": "Перейти к образам"
+    },
+    "lastRun": {
+      "upFor": "Работает {duration}",
+      "exitCode": "код {code}"
+    },
+    "health": {
+      "healthy": "исправен",
+      "unhealthy": "неисправен",
+      "starting": "запускается"
     }
   },
   "images": {
@@ -333,6 +350,15 @@
       "targetTag": "Целевой тег",
       "push": "Отправить образ",
       "pushing": "Отправка..."
+    },
+    "summary": "Образов: {count} · {size}",
+    "actions": {
+      "pull": "Загрузить из реестра",
+      "push": "Отправить"
+    },
+    "empty": {
+      "title": "Образов пока нет",
+      "description": "Найдите образ в Docker Hub, чтобы загрузить первый."
     }
   },
   "volumes": {
@@ -364,7 +390,8 @@
       "labels": "Метки",
       "rawJson": "Сырой JSON",
       "filesHint": "Просмотр файлов через временный вспомогательный контейнер, монтирующий этот том."
-    }
+    },
+    "emptyHint": "Тома хранят данные дольше, чем живут контейнеры. Создайте том выше."
   },
   "files": {
     "edit": "Изменить",
@@ -400,7 +427,8 @@
       "options": "Опции драйвера",
       "labels": "Метки",
       "rawJson": "Сырой JSON"
-    }
+    },
+    "emptyHint": "Создайте сеть, чтобы контейнеры могли общаться друг с другом."
   },
   "builds": {
     "title": "Сборки",
@@ -441,7 +469,8 @@
       "building": "Сборка…",
       "done": "Готово",
       "build": "Собрать"
-    }
+    },
+    "emptyHint": "Кэш сборки появится здесь после сборки образа."
   },
   "settings": {
     "title": "Настройки",
@@ -496,7 +525,8 @@
       "line3": "socat must be installed: sudo apt-get install -y socat",
       "line4": "Rihtim bridges via wsl -d <distro> -u root socat over stdio. No extra ports or TCP required."
     },
-    "versionInfo": "Docker {version} • API {api} • {os}/{arch}"
+    "versionInfo": "Docker {version} • API {api} • {os}/{arch}",
+    "registryAdded": "Реестр добавлен."
   },
   "errors": {
     "dockerUnreachable": "Не удалось подключиться к активному контексту Docker. Убедитесь, что движок запущен, или выберите другой в Настройках."
@@ -537,6 +567,21 @@
       "stop": "Остановить проект",
       "restart": "Перезапустить проект",
       "down": "Down (удалить контейнеры)"
-    }
+    },
+    "emptyHint": "Запустите Compose-файл выше, чтобы начать проект."
+  },
+  "palette": {
+    "title": "Палитра команд",
+    "placeholder": "Поиск страниц, контейнеров, образов…",
+    "groups": {
+      "pages": "Страницы",
+      "containers": "Контейнеры",
+      "actions": "Действия",
+      "images": "Образы"
+    },
+    "start": "Запустить {name}",
+    "stop": "Остановить {name}",
+    "navigate": "навигация",
+    "select": "открыть"
   }
 }

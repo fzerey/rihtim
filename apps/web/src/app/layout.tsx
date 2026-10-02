@@ -4,6 +4,7 @@ import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
 import { Providers } from "@/components/Providers";
+import { CommandPalette } from "@/components/CommandPalette";
 import { themeInitScript } from "@/components/ThemeProvider";
 
 const plexSans = IBM_Plex_Sans({
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <main className="flex-1 overflow-auto px-8 py-7">{children}</main>
             </div>
           </div>
+          <CommandPalette />
         </Providers>
       </body>
     </html>

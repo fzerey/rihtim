@@ -17,8 +17,11 @@ import {
   Layers,
   Box,
   Search,
+  Boxes,
 } from "lucide-react";
 import { LogsDrawer } from "@/components/LogsDrawer";
+import { EmptyState, TableSkeleton } from "@/components/ui";
+import { formatAgo, formatDuration, parseDockerStatus } from "@/lib/dockerStatus";
 import { useT } from "@/i18n/provider";
 import clsx from "clsx";
 
@@ -163,10 +166,28 @@ export default function ContainersPage() {
         </div>
       </div>
 
-      {isLoading && (
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 text-slate-500 text-sm">
-          {t("common.loading")}
-        </div>
+      {isLoading && <TableSkeleton rows={5} cols={6} />}
+
+      {data && data.length === 0 && (
+        <EmptyState
+          icon={Boxes}
+          title={t("containers.empty.title")}
+          description={t("containers.empty.description")}
+          action={
+            <Link href="/images" className="btn btn-primary">
+              <Layers className="w-4 h-4" />
+              {t("containers.empty.action")}
+            </Link>
+          }
+        />
+      )}
+
+      {data && data.length > 0 && groups.length === 0 && (
+        <EmptyState
+          icon={Search}
+          title={t("common.noMatches")}
+          description={t("common.noMatchesHint")}
+        />
       )}
 
       <div className="space-y-3">
@@ -286,16 +307,24 @@ export default function ContainersPage() {
                           <td className="px-4 py-3 font-medium">
                             <Link
                               href={`/containers/${c.id}`}
-                              className="hover:text-brand-300 transition-colors"
+                              title={service ?? displayName}
+                              className="block max-w-[16rem] truncate hover:text-brand-300 transition-colors"
                             >
                               {service ?? displayName}
                             </Link>
-                            <div className="text-xs text-slate-500 font-mono">
+                            <div
+                              className="max-w-[16rem] truncate text-xs text-slate-500 font-mono"
+                              title={(service ? displayName + " • " : "") + c.id.slice(0, 12)}
+                            >
                               {service ? displayName + " • " : ""}
                               {c.id.slice(0, 12)}
                             </div>
                           </td>
-                          <td className="px-4 py-3 font-mono text-xs text-slate-300">{c.image}</td>
+                          <td className="px-4 py-3 font-mono text-xs text-slate-300">
+                            <span className="block max-w-[14rem] truncate" title={c.image}>
+                              {c.image}
+                            </span>
+                          </td>
                           <td className="px-4 py-3">
                             <StateCell state={c.state} pending={pending[c.id]} />
                           </td>
@@ -306,7 +335,7 @@ export default function ContainersPage() {
                             {t("containers.ago", { value: timeAgo(c.createdAt, locale) })}
                           </td>
                           <td className="px-4 py-3 text-slate-400">
-                            <LastRunCell status={c.status} state={c.state} />
+                            <LastRunCell status={c.status} />
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex gap-1 justify-end">
@@ -391,15 +420,53 @@ function IconBtn({
   );
 }
 
-function LastRunCell({ status, state }: { status: string; state: string }) {
+function LastRunCell({ status }: { status: string }) {
+  const { t, tf, locale } = useT();
   if (!status) return <span className="text-slate-500">—</span>;
+  const p = parseDockerStatus(status);
+  if (p.kind === "up") {
+    return (
+      <span className="inline-flex items-center gap-1.5 flex-wrap" title={status}>
+        <span className="text-slate-300">
+          {p.duration
+            ? t("containers.lastRun.upFor", { duration: formatDuration(p.duration, locale) })
+            : status}
+        </span>
+        {p.health && <HealthBadge health={p.health} />}
+      </span>
+    );
+  }
+  if (p.kind === "exited" || p.kind === "restarting") {
+    return (
+      <span className="inline-flex items-center gap-1.5 flex-wrap" title={status}>
+        <span
+          className={clsx(
+            "px-1.5 py-0.5 rounded font-mono text-[11px]",
+            p.exitCode === 0 ? "bg-slate-800 text-slate-300" : "bg-rose-500/15 text-rose-300",
+          )}
+        >
+          {t("containers.lastRun.exitCode", { code: p.exitCode ?? 0 })}
+        </span>
+        {p.duration && <span>{formatAgo(p.duration, locale)}</span>}
+      </span>
+    );
+  }
+  return <span title={status}>{tf(`containers.state.${p.kind}`, status)}</span>;
+}
+
+function HealthBadge({ health }: { health: "healthy" | "unhealthy" | "starting" }) {
+  const { t } = useT();
   const cls =
-    state === "running"
-      ? "text-emerald-300/90"
-      : state === "paused"
-        ? "text-amber-300/90"
-        : "text-slate-400";
-  return <span className={cls}>{status}</span>;
+    health === "healthy"
+      ? "bg-emerald-500/15 text-emerald-300"
+      : health === "unhealthy"
+        ? "bg-rose-500/15 text-rose-300"
+        : "bg-amber-500/15 text-amber-300";
+  return (
+    <span className={clsx("px-1.5 py-0.5 rounded text-[11px] font-medium", cls)}>
+      {t(`containers.health.${health}`)}
+    </span>
+  );
 }
 
 function StateCell({ state, pending }: { state: string; pending?: string }) {

@@ -38,7 +38,7 @@ export function LogsPanel({ containerId }: { containerId: string }) {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder={t("common.filter")}
-          className="flex-1 bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm"
+          className="input flex-1"
         />
         <label className="text-xs text-slate-400 flex items-center gap-1">
           <input
@@ -50,7 +50,7 @@ export function LogsPanel({ containerId }: { containerId: string }) {
         </label>
         <button
           onClick={() => setLines([])}
-          className="text-xs px-2 py-1 rounded bg-slate-800 hover:bg-slate-700"
+          className="btn btn-secondary btn-sm"
         >
           {t("common.clear")}
         </button>

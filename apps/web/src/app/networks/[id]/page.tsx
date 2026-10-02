@@ -4,6 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Copy, Trash2 } from "lucide-react";
+import { CardSkeleton } from "@/components/ui";
 import { api } from "@/lib/api";
 import { useT } from "@/i18n/provider";
 
@@ -73,19 +74,19 @@ export default function NetworkDetailPage() {
       <div className="flex items-center gap-3">
         <Link
           href="/networks"
-          className="p-1.5 rounded hover:bg-slate-800 text-slate-400"
+          className="btn btn-ghost btn-icon btn-sm"
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-semibold truncate">{data?.Name ?? "…"}</h1>
+          <h1 className="text-[22px] font-bold tracking-tight truncate">{data?.Name ?? "…"}</h1>
           <div className="text-xs text-slate-500 font-mono truncate">{networkId}</div>
         </div>
         {data && !builtin && (
           <button
             onClick={() => remove.mutate()}
             disabled={remove.isPending}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-rose-600/90 hover:bg-rose-600 text-white text-sm disabled:opacity-50"
+            className="btn btn-danger"
           >
             <Trash2 className="w-4 h-4" />
             {t("networks.detail.remove")}
@@ -93,7 +94,7 @@ export default function NetworkDetailPage() {
         )}
       </div>
 
-      {isLoading && <div className="text-sm text-slate-400">{t("common.loading")}</div>}
+      {isLoading && <CardSkeleton lines={4} />}
       {error && <div className="text-sm text-rose-400">{(error as Error).message}</div>}
 
       {data && (

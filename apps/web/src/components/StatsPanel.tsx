@@ -126,7 +126,7 @@ function Metric({
     : `${localMax.toFixed(unit === "%" ? 0 : 1)}${unit ?? ""}`;
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+    <div className="card p-4">
       <div className="flex items-center justify-between">
         <div className="text-sm text-slate-400">{title}</div>
         <div className="text-sm font-medium">{value}</div>

@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Play, RotateCw, Square, Trash2 } from "lucide-react";
+import { Layers, Play, RotateCw, Square, Trash2 } from "lucide-react";
+import { CardSkeleton, EmptyState } from "@/components/ui";
 import { api } from "@/lib/api";
 import { QueryErrorBanner } from "@/components/QueryErrorBanner";
 import { useT } from "@/i18n/provider";
@@ -128,24 +129,20 @@ export default function ComposePage() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold">{t("compose.title")}</h1>
+          <h1 className="text-[22px] font-bold tracking-tight">{t("compose.title")}</h1>
           <p className="text-sm text-slate-400">{t("compose.subtitle")}</p>
         </div>
         <button
           onClick={() => refetch()}
-          className="px-3 py-1.5 rounded-md text-sm bg-slate-800 hover:bg-slate-700"
+          className="btn btn-secondary"
         >
           {t("common.refresh")}
         </button>
       </div>
 
-      {isLoading && (
-        <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-6 text-slate-500 text-sm">
-          {t("common.loading")}
-        </div>
-      )}
+      {isLoading && <CardSkeleton lines={3} />}
 
-      <section className="rounded-xl border border-slate-800 bg-slate-950/40 p-4 space-y-3">
+      <section className="card p-4 space-y-3">
         <h2 className="font-medium">{t("compose.fileRunner.title")}</h2>
         <p className="text-xs text-slate-500">{t("compose.fileRunner.subtitle")}</p>
         <div className="grid gap-2 md:grid-cols-2">
@@ -153,12 +150,12 @@ export default function ComposePage() {
             <input
               value={filePath}
               onChange={(e) => setFilePath(e.target.value)}
-              className="flex-1 bg-slate-950 border border-slate-800 rounded px-2 py-1.5 text-sm"
+              className="input flex-1"
               placeholder={t("compose.fileRunner.filePathPlaceholder")}
             />
             <button
               onClick={() => void browseComposeFile()}
-              className="px-3 py-1.5 rounded-md text-sm bg-slate-800 hover:bg-slate-700"
+              className="btn btn-secondary"
             >
               {t("compose.fileRunner.browse")}
             </button>
@@ -180,7 +177,7 @@ export default function ComposePage() {
           <input
             value={projectName}
             onChange={(e) => setProjectName(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded px-2 py-1.5 text-sm"
+            className="input"
             placeholder={t("compose.fileRunner.projectNamePlaceholder")}
           />
         </div>
@@ -188,14 +185,14 @@ export default function ComposePage() {
           <button
             disabled={!filePath || cliUp.isPending}
             onClick={() => cliUp.mutate()}
-            className="px-3 py-1.5 rounded-md text-sm bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50"
+            className="btn btn-primary"
           >
             {t("compose.fileRunner.up")}
           </button>
           <button
             disabled={!filePath || cliDown.isPending}
             onClick={() => cliDown.mutate()}
-            className="px-3 py-1.5 rounded-md text-sm bg-slate-800 hover:bg-slate-700 disabled:opacity-50"
+            className="btn btn-secondary"
           >
             {t("compose.fileRunner.down")}
           </button>
@@ -212,7 +209,7 @@ export default function ComposePage() {
           const anyRunning = p.running > 0;
           const anyStopped = p.running < p.total;
           return (
-            <section key={p.name} className="rounded-xl border border-slate-800 bg-slate-950/40">
+            <section key={p.name} className="card">
               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-800">
                 <div>
                   <h2 className="font-medium">{p.name}</h2>
@@ -272,10 +269,8 @@ export default function ComposePage() {
         })}
       </div>
 
-      {!isLoading && (data?.length ?? 0) === 0 && (
-        <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-6 text-slate-500 text-sm">
-          {t("compose.empty")}
-        </div>
+      {!isLoading && data && data.length === 0 && (
+        <EmptyState icon={Layers} title={t("compose.empty")} description={t("compose.emptyHint")} />
       )}
     </div>
   );
@@ -294,7 +289,7 @@ function IconBtn({
     <button
       onClick={onClick}
       title={title}
-      className="p-1.5 rounded-md border border-slate-700 text-slate-200 hover:bg-slate-800"
+      className="btn btn-secondary btn-icon btn-sm"
     >
       {children}
     </button>

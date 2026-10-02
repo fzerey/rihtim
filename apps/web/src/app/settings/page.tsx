@@ -34,12 +34,12 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <h1 className="text-xl font-semibold">{t("settings.title")}</h1>
-        <p className="text-sm text-slate-400">{t("settings.subtitle")}</p>
+        <h1 className="text-[22px] font-bold tracking-tight">{t("settings.title")}</h1>
+        <p className="text-sm text-slate-400 mt-0.5">{t("settings.subtitle")}</p>
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold mb-3">{t("settings.contexts")}</h2>
+        <h2 className="text-base font-semibold mb-3">{t("settings.contexts")}</h2>
         <div className="space-y-2">
           {data?.map((c) => (
             <ContextRow key={c.id} ctx={c} onRemove={() => remove.mutate(c.id)} />
@@ -60,7 +60,7 @@ export default function SettingsPage() {
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold mb-3">{t("settings.registries")}</h2>
+        <h2 className="text-base font-semibold mb-3">{t("settings.registries")}</h2>
         <div className="space-y-2">
           {registries?.map((r) => (
             <RegistryRow key={r.id} registry={r} onRemove={() => removeRegistry.mutate(r.id)} />
@@ -85,7 +85,7 @@ function ContextRow({ ctx, onRemove }: { ctx: DockerContext; onRemove: () => voi
   });
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 flex items-start gap-4">
+    <div className="card p-4 flex items-start gap-4">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <div className="font-medium">{ctx.name}</div>
@@ -133,21 +133,21 @@ function ContextRow({ ctx, onRemove }: { ctx: DockerContext; onRemove: () => voi
       <div className="flex gap-1">
         <button
           onClick={() => test.mutate()}
-          className="px-2 py-1 rounded-md text-xs bg-slate-800 hover:bg-slate-700 flex items-center gap-1"
+          className="btn btn-secondary btn-sm"
         >
           <PlugZap className="w-3.5 h-3.5" /> {t("settings.test")}
         </button>
         {!ctx.current && (
           <button
             onClick={() => select.mutate()}
-            className="px-2 py-1 rounded-md text-xs bg-brand-600 hover:bg-brand-500"
+            className="btn btn-primary btn-sm"
           >
             {t("settings.makeActive")}
           </button>
         )}
         <button
           onClick={onRemove}
-          className="p-1.5 rounded-md hover:bg-slate-800"
+          className="btn btn-ghost btn-icon btn-sm"
           title={t("common.remove")}
         >
           <Trash2 className="w-4 h-4 text-rose-400" />
@@ -187,7 +187,7 @@ function NewContextForm() {
   });
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 space-y-3">
+    <div className="card p-4 space-y-4 mt-3">
       <div className="font-medium flex items-center gap-2">
         <Plus className="w-4 h-4" /> {t("settings.newContext")}
       </div>
@@ -202,7 +202,7 @@ function NewContextForm() {
         </Field>
         <Field label={t("settings.fields.kind")}>
           <select
-            className="input"
+            className="select"
             value={kind}
             onChange={(e) => setKind(e.target.value as ConnectionKind)}
           >
@@ -269,21 +269,10 @@ function NewContextForm() {
       </div>
       <button
         onClick={() => create.mutate()}
-        className="px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-sm"
+        className="btn btn-primary"
       >
         {t("common.add")}
       </button>
-      <style jsx>{`
-        .input {
-          width: 100%;
-          background: #020617;
-          border: 1px solid #1f2937;
-          border-radius: 6px;
-          padding: 6px 10px;
-          font-size: 13px;
-          color: inherit;
-        }
-      `}</style>
     </div>
   );
 }
@@ -299,7 +288,7 @@ function Field({
 }) {
   return (
     <label className={full ? "col-span-2 block" : "block"}>
-      <div className="text-xs text-slate-400 mb-1">{label}</div>
+      <div className="text-xs font-medium text-slate-400 mb-1.5">{label}</div>
       {children}
     </label>
   );
@@ -312,12 +301,12 @@ function RegistryRow({ registry, onRemove }: { registry: Registry; onRemove: () 
   });
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 flex items-start gap-4">
+    <div className="card p-4 flex items-start gap-4">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <div className="font-medium">{registry.name}</div>
           {registry.isPublic && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-300">
               {t("settings.registryPublic")}
             </span>
           )}
@@ -347,14 +336,14 @@ function RegistryRow({ registry, onRemove }: { registry: Registry; onRemove: () 
       <div className="flex gap-1">
         <button
           onClick={() => test.mutate()}
-          className="px-2 py-1 rounded-md text-xs bg-slate-800 hover:bg-slate-700 flex items-center gap-1"
+          className="btn btn-secondary btn-sm"
           disabled={test.isPending}
         >
           <PlugZap className="w-3.5 h-3.5" /> {t("settings.test")}
         </button>
         <button
           onClick={onRemove}
-          className="p-1.5 rounded-md hover:bg-slate-800"
+          className="btn btn-ghost btn-icon btn-sm"
           title={t("common.remove")}
         >
           <Trash2 className="w-4 h-4 text-rose-400" />
@@ -398,7 +387,7 @@ function NewRegistryForm() {
   });
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 space-y-3">
+    <div className="card p-4 space-y-4 mt-3">
       <div className="font-medium flex items-center gap-2">
         <Plus className="w-4 h-4" /> {t("settings.newRegistry")}
       </div>
@@ -426,7 +415,7 @@ function NewRegistryForm() {
             type="checkbox"
             checked={isPublic}
             onChange={(e) => setIsPublic(e.target.checked)}
-            className="rounded"
+            className="w-4 h-4"
           />
           <span className="text-xs text-slate-400">{t("settings.registryIsPublic")}</span>
         </label>
@@ -478,7 +467,7 @@ function NewRegistryForm() {
       <button
         onClick={() => create.mutate()}
         disabled={!name.trim() || !url.trim() || create.isPending}
-        className="px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn btn-primary"
       >
         {create.isPending ? t("common.loading") : t("common.add")}
       </button>
@@ -489,20 +478,9 @@ function NewRegistryForm() {
       )}
       {create.isSuccess && (
         <div className="text-xs text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded px-2 py-1">
-          Registry added successfully!
+          {t("settings.registryAdded")}
         </div>
       )}
-      <style jsx>{`
-        .input {
-          width: 100%;
-          background: #020617;
-          border: 1px solid #1f2937;
-          border-radius: 6px;
-          padding: 6px 10px;
-          font-size: 13px;
-          color: inherit;
-        }
-      `}</style>
     </div>
   );
 }

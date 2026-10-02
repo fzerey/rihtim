@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, humanBytes, timeAgo } from "@/lib/api";
 import type { ImageSummary, ContainerSummary, Registry } from "@rihtim/shared";
 import { QueryErrorBanner } from "@/components/QueryErrorBanner";
-import { Trash2, Download, Search, Star, BadgeCheck, ExternalLink, ChevronDown, ArrowUp, ArrowDown, Play, X, ShieldCheck } from "lucide-react";
+import { Dialog, EmptyState, TableSkeleton } from "@/components/ui";
+import { Trash2, Download, Search, Star, BadgeCheck, ExternalLink, ChevronDown, ArrowUp, ArrowDown, Play, X, ShieldCheck, Layers } from "lucide-react";
 import { useT } from "@/i18n/provider";
 import type { HubResult, HubTag } from "@/types/hub";
 
@@ -13,7 +14,7 @@ export default function ImagesPage() {
   const qc = useQueryClient();
   const router = useRouter();
   const { t, locale } = useT();
-  const { data, error, isFetching, refetch } = useQuery({
+  const { data, error, isFetching, isLoading, refetch } = useQuery({
     queryKey: ["images"],
     queryFn: () => api<ImageSummary[]>("/images"),
   });
@@ -84,6 +85,9 @@ export default function ImagesPage() {
   const [hubQuery, setHubQuery] = useState("");
 
   const [filter, setFilter] = useState("");
+  const [panel, setPanel] = useState<null | "hub" | "pull" | "push">(null);
+  const closePanel = useCallback(() => setPanel(null), []);
+  const totalSize = (data ?? []).reduce((sum, img) => sum + img.size, 0);
 
   type SortKey = "tag" | "size" | "created" | "pulled" | "inUse";
   const [sortKey, setSortKey] = useState<SortKey>("pulled");
@@ -252,369 +256,28 @@ export default function ImagesPage() {
   return (
     <div className="space-y-4">
       <QueryErrorBanner error={error} isFetching={isFetching} onRetry={() => refetch()} />
-      <h1 className="text-xl font-semibold">{t("images.title")}</h1>
-
-      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
-        <div className="text-sm text-slate-400 mb-2">{t("images.hub.section")}</div>
-        <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
-          <input
-            className="w-full bg-slate-950 border border-slate-800 rounded-md pl-9 pr-3 py-1.5 text-sm"
-            placeholder={t("images.hub.placeholder")}
-            value={hubTerm}
-            onChange={(e) => setHubTerm(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") runHubSearch();
-            }}
-            autoComplete="off"
-          />
-          {hubSearch.isFetching && hubQuery && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-500">
-              {t("images.hub.loading")}
-            </div>
-          )}
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-[22px] font-bold tracking-tight">{t("images.title")}</h1>
+          <p className="text-sm text-slate-400 mt-0.5">
+            {t("images.summary", { count: data?.length ?? 0, size: humanBytes(totalSize) })}
+          </p>
         </div>
-
-        {hubTerm.trim().length === 0 && (
-          <div className="mt-3 text-xs text-slate-500">{t("images.hub.idle")}</div>
-        )}
-        {hubTerm.trim().length > 0 && hubTerm.trim().length < 2 && (
-          <div className="mt-3 text-xs text-slate-500">{t("images.hub.typeMore")}</div>
-        )}
-        {hubQuery !== "" && hubSearch.data && hubSearch.data.length === 0 && !hubSearch.isFetching && (
-          <div className="mt-3 text-xs text-slate-500">{t("images.hub.empty")}</div>
-        )}
-        {hubQuery !== "" && hubSearch.error && (
-          <div className="mt-3 text-xs text-rose-300">{(hubSearch.error as Error).message}</div>
-        )}
-        {hubSearch.data && hubSearch.data.length > 0 && (
-          <ul className="mt-3 divide-y divide-slate-800 border border-slate-800 rounded-md overflow-hidden max-h-[420px] overflow-y-auto">
-            {hubSearch.data.map((r) => (
-              <HubItem
-                key={r.name}
-                item={r}
-                onPull={doPull}
-                pulling={pulling}
-                pulledTags={pulledSet}
-              />
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
-        <div className="text-sm text-slate-400 mb-2">{t("images.pullFromRegistry.section")}</div>
-        <div className="space-y-2">
-          <select
-            value={registryForPull}
-            onChange={(e) => setRegistryForPull(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm text-slate-200"
-          >
-            <option value="">{t("images.pullFromRegistry.selectRegistry")}</option>
-            <option value="_docker_hub">{t("images.hub.dockerHub")}</option>
-            {registries?.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
-
-          <div className="grid grid-cols-3 gap-2">
-            <div className="col-span-2">
-              <div className="text-xs text-slate-400 mb-1">{t("images.pullFromRegistry.imageName")}</div>
-              <input
-                className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm"
-                placeholder={t("images.pullFromRegistry.imageNamePlaceholder")}
-                value={imageNameToPull}
-                onChange={(e) => setImageNameToPull(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && registryForPull && imageNameToPull.trim()) {
-                    doPull(
-                      imageNameToPull.trim(),
-                      imageTagToPull || "latest",
-                      registryForPull === "_docker_hub" ? undefined : registryForPull,
-                    );
-                    setImageNameToPull("");
-                    setImageTagToPull("latest");
-                  }
-                }}
-                autoComplete="off"
-              />
-            </div>
-            <div>
-              <div className="text-xs text-slate-400 mb-1">{t("images.pullFromRegistry.imageTag")}</div>
-              <input
-                className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm"
-                placeholder="latest"
-                value={imageTagToPull}
-                onChange={(e) => setImageTagToPull(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && registryForPull && imageNameToPull.trim()) {
-                    doPull(
-                      imageNameToPull.trim(),
-                      imageTagToPull || "latest",
-                      registryForPull === "_docker_hub" ? undefined : registryForPull,
-                    );
-                    setImageNameToPull("");
-                    setImageTagToPull("latest");
-                  }
-                }}
-                autoComplete="off"
-              />
-            </div>
-          </div>
-
-          <button
-            onClick={() => {
-              if (imageNameToPull.trim()) {
-                doPull(
-                  imageNameToPull.trim(),
-                  imageTagToPull || "latest",
-                  registryForPull === "_docker_hub" ? undefined : registryForPull,
-                );
-                setImageNameToPull("");
-                setImageTagToPull("latest");
-              }
-            }}
-            disabled={pulling || !registryForPull || !imageNameToPull.trim()}
-            className="w-full px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            {pulling ? t("images.pullFromRegistry.pulling") : t("images.pullFromRegistry.pull")}
-          </button>
-        </div>
-      </div>
-
-      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
-        <div className="text-sm text-slate-400 mb-2">{t("images.pushToRegistry.section")}</div>
-        <div className="space-y-2">
-          <select
-            value={registryForPush}
-            onChange={(e) => setRegistryForPush(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm text-slate-200"
-          >
-            <option value="">{t("images.pushToRegistry.selectRegistry")}</option>
-            {registries?.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
-
-          <div>
-            <div className="text-xs text-slate-400 mb-1">{t("images.pushToRegistry.sourceImage")}</div>
-            <select
-              value={sourceImageToPush}
-              onChange={(e) => setSourceImageToPush(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm text-slate-200"
-            >
-              <option value="">{t("images.pushToRegistry.selectSourceImage")}</option>
-              {pushableImageTags.map((tag) => (
-                <option key={tag} value={tag}>
-                  {tag}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            <div className="col-span-2">
-              <div className="text-xs text-slate-400 mb-1">{t("images.pushToRegistry.targetImage")}</div>
-              <input
-                className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm"
-                placeholder={t("images.pushToRegistry.targetImagePlaceholder")}
-                value={targetImageToPush}
-                onChange={(e) => setTargetImageToPush(e.target.value)}
-                autoComplete="off"
-              />
-            </div>
-            <div>
-              <div className="text-xs text-slate-400 mb-1">{t("images.pushToRegistry.targetTag")}</div>
-              <input
-                className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm"
-                placeholder="latest"
-                value={targetTagToPush}
-                onChange={(e) => setTargetTagToPush(e.target.value)}
-                autoComplete="off"
-              />
-            </div>
-          </div>
-
-          <button
-            onClick={() => void doPush()}
-            disabled={
-              pushing ||
-              !registryForPush ||
-              !sourceImageToPush ||
-              !targetImageToPush.trim()
-            }
-            className="w-full px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
+        <div className="flex flex-wrap items-center gap-2">
+          <button className="btn btn-secondary" onClick={() => setPanel("push")}>
             <ArrowUp className="w-4 h-4" />
-            {pushing ? t("images.pushToRegistry.pushing") : t("images.pushToRegistry.push")}
+            {t("images.actions.push")}
+          </button>
+          <button className="btn btn-secondary" onClick={() => setPanel("pull")}>
+            <Download className="w-4 h-4" />
+            {t("images.actions.pull")}
+          </button>
+          <button className="btn btn-primary" onClick={() => setPanel("hub")}>
+            <Search className="w-4 h-4" />
+            {t("images.hub.section")}
           </button>
         </div>
       </div>
-
-      <div className="rounded-xl border border-slate-800 overflow-hidden">
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-800 bg-slate-900/40">
-          <div className="relative flex-1 max-w-xs">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
-            <input
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              placeholder={t("common.filter")}
-              className="w-full bg-slate-950 border border-slate-800 rounded pl-7 pr-2 py-1 text-xs"
-            />
-          </div>
-          {filter && (
-            <button
-              onClick={() => setFilter("")}
-              className="text-xs text-slate-400 hover:text-slate-200"
-            >
-              {t("common.clear")}
-            </button>
-          )}
-        </div>
-        <table className="w-full text-sm">
-          <thead className="bg-slate-900/70 text-slate-400">
-            <tr className="text-left">
-              <th className="px-4 py-2">
-                <SortHeader label={t("images.columns.tag")} active={sortKey === "tag"} dir={sortDir} onClick={() => toggleSort("tag")} />
-              </th>
-              <th className="px-4 py-2">{t("images.columns.id")}</th>
-              <th className="px-4 py-2">
-                <SortHeader label={t("images.columns.size")} active={sortKey === "size"} dir={sortDir} onClick={() => toggleSort("size")} />
-              </th>
-              <th className="px-4 py-2">
-                <SortHeader label={t("images.columns.inUse")} active={sortKey === "inUse"} dir={sortDir} onClick={() => toggleSort("inUse")} />
-              </th>
-              <th className="px-4 py-2">
-                <SortHeader label={t("images.columns.created")} active={sortKey === "created"} dir={sortDir} onClick={() => toggleSort("created")} />
-              </th>
-              <th className="px-4 py-2">
-                <SortHeader label={t("images.columns.pulled")} active={sortKey === "pulled"} dir={sortDir} onClick={() => toggleSort("pulled")} />
-              </th>
-              <th className="px-4 py-2 text-right">{t("images.columns.actions")}</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800 bg-slate-950/40">
-            {pagedImages.map((img) => (
-              <tr
-                key={img.id}
-                onClick={() => router.push(`/images/${encodeURIComponent(img.id)}`)}
-                className="hover:bg-slate-900/40 cursor-pointer"
-              >
-                <td className="px-4 py-2 font-mono text-xs">
-                  <span className="text-brand-300 hover:underline">
-                    {img.repoTags.length ? img.repoTags.join(", ") : "<none>"}
-                  </span>
-                </td>
-                <td className="px-4 py-2 font-mono text-xs">
-                  {img.id.replace("sha256:", "").slice(0, 12)}
-                </td>
-                <td className="px-4 py-2">{humanBytes(img.size)}</td>
-                <td className="px-4 py-2">
-                  <InUseBadge usage={usage.get(img.id)} />
-                </td>
-                <td className="px-4 py-2 text-slate-400">
-                  {t("containers.ago", { value: timeAgo(img.createdAt, locale) })}
-                </td>
-                <td className="px-4 py-2 text-slate-400">
-                  {img.pulledAt
-                    ? t("containers.ago", { value: timeAgo(img.pulledAt, locale) })
-                    : "—"}
-                </td>
-                <td className="px-4 py-2 text-right">
-                  <div className="inline-flex items-center gap-1">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        router.push(`/images/${encodeURIComponent(img.id)}`);
-                      }}
-                      title={t("images.scan.start")}
-                      className="p-1.5 rounded hover:bg-slate-800"
-                    >
-                      <ShieldCheck className="w-4 h-4 text-sky-400" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setRunTarget(img);
-                      }}
-                      title={t("images.run")}
-                      className="p-1.5 rounded hover:bg-slate-800"
-                    >
-                      <Play className="w-4 h-4 text-emerald-400" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        remove.mutate(img.id);
-                      }}
-                      className="p-1.5 rounded hover:bg-slate-800"
-                    >
-                      <Trash2 className="w-4 h-4 text-rose-400" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="flex flex-wrap items-center gap-3 px-4 py-2 border-t border-slate-800 bg-slate-900/40 text-xs text-slate-400">
-          <div>
-            {t("common.pagination.range", {
-              from: rangeFrom,
-              to: rangeTo,
-              total: totalRows,
-            })}
-          </div>
-          <div className="flex items-center gap-1">
-            <span>{t("common.pagination.rowsPerPage")}</span>
-            <select
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-              className="bg-slate-900 border border-slate-700 rounded px-1 py-0.5"
-            >
-              {[10, 25, 50, 100].map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
-            </select>
-          </div>
-          <div className="ml-auto flex items-center gap-1">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage <= 1}
-              className="px-2 py-1 rounded border border-slate-700 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {t("common.pagination.prev")}
-            </button>
-            <span className="px-1">
-              {t("common.pagination.pageOf", { page: currentPage, total: pageCount })}
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
-              disabled={currentPage >= pageCount}
-              className="px-2 py-1 rounded border border-slate-700 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {t("common.pagination.next")}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {runTarget && (
-        <RunImageModal
-          image={runTarget}
-          onClose={() => setRunTarget(null)}
-          onCreated={(id) => {
-            setRunTarget(null);
-            qc.invalidateQueries({ queryKey: ["containers"] });
-            router.push(`/containers/${id}`);
-          }}
-        />
-      )}
 
       {showPullTerminal && (
         <PullTerminalBanner
@@ -645,6 +308,404 @@ export default function ImagesPage() {
           }}
         />
       )}
+
+      <Dialog
+        open={panel === "hub"}
+        onClose={closePanel}
+        title={t("images.hub.section")}
+        size="lg"
+      >
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+            <input
+              className="input pl-9"
+              placeholder={t("images.hub.placeholder")}
+              value={hubTerm}
+              onChange={(e) => setHubTerm(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") runHubSearch();
+              }}
+              autoComplete="off"
+            />
+            {hubSearch.isFetching && hubQuery && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-500">
+                {t("images.hub.loading")}
+              </div>
+            )}
+          </div>
+
+          {hubTerm.trim().length === 0 && (
+            <div className="mt-3 text-xs text-slate-500">{t("images.hub.idle")}</div>
+          )}
+          {hubTerm.trim().length > 0 && hubTerm.trim().length < 2 && (
+            <div className="mt-3 text-xs text-slate-500">{t("images.hub.typeMore")}</div>
+          )}
+          {hubQuery !== "" && hubSearch.data && hubSearch.data.length === 0 && !hubSearch.isFetching && (
+            <div className="mt-3 text-xs text-slate-500">{t("images.hub.empty")}</div>
+          )}
+          {hubQuery !== "" && hubSearch.error && (
+            <div className="mt-3 text-xs text-rose-300">{(hubSearch.error as Error).message}</div>
+          )}
+          {hubSearch.data && hubSearch.data.length > 0 && (
+            <ul className="mt-3 divide-y divide-slate-800 border border-slate-800 rounded-lg overflow-hidden max-h-[46vh] overflow-y-auto">
+              {hubSearch.data.map((r) => (
+                <HubItem
+                  key={r.name}
+                  item={r}
+                  onPull={(image, tag) => {
+                    setPanel(null);
+                    void doPull(image, tag);
+                  }}
+                  pulling={pulling}
+                  pulledTags={pulledSet}
+                />
+              ))}
+            </ul>
+          )}
+      </Dialog>
+
+      <Dialog open={panel === "pull"} onClose={closePanel} title={t("images.pullFromRegistry.section")}>
+          <div className="space-y-2">
+            <select
+              value={registryForPull}
+              onChange={(e) => setRegistryForPull(e.target.value)}
+              className="select"
+            >
+              <option value="">{t("images.pullFromRegistry.selectRegistry")}</option>
+              <option value="_docker_hub">{t("images.hub.dockerHub")}</option>
+              {registries?.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
+
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-2">
+                <div className="text-xs text-slate-400 mb-1">{t("images.pullFromRegistry.imageName")}</div>
+                <input
+                  className="input"
+                  placeholder={t("images.pullFromRegistry.imageNamePlaceholder")}
+                  value={imageNameToPull}
+                  onChange={(e) => setImageNameToPull(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && registryForPull && imageNameToPull.trim()) {
+                      doPull(
+                        imageNameToPull.trim(),
+                        imageTagToPull || "latest",
+                        registryForPull === "_docker_hub" ? undefined : registryForPull,
+                      );
+                      setImageNameToPull("");
+                      setImageTagToPull("latest");
+                      setPanel(null);
+                    }
+                  }}
+                  autoComplete="off"
+                />
+              </div>
+              <div>
+                <div className="text-xs text-slate-400 mb-1">{t("images.pullFromRegistry.imageTag")}</div>
+                <input
+                  className="input"
+                  placeholder="latest"
+                  value={imageTagToPull}
+                  onChange={(e) => setImageTagToPull(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && registryForPull && imageNameToPull.trim()) {
+                      doPull(
+                        imageNameToPull.trim(),
+                        imageTagToPull || "latest",
+                        registryForPull === "_docker_hub" ? undefined : registryForPull,
+                      );
+                      setImageNameToPull("");
+                      setImageTagToPull("latest");
+                      setPanel(null);
+                    }
+                  }}
+                  autoComplete="off"
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                if (imageNameToPull.trim()) {
+                  doPull(
+                    imageNameToPull.trim(),
+                    imageTagToPull || "latest",
+                    registryForPull === "_docker_hub" ? undefined : registryForPull,
+                  );
+                  setImageNameToPull("");
+                  setImageTagToPull("latest");
+                  setPanel(null);
+                }
+              }}
+              disabled={pulling || !registryForPull || !imageNameToPull.trim()}
+              className="btn btn-primary w-full"
+            >
+              <Download className="w-4 h-4" />
+              {pulling ? t("images.pullFromRegistry.pulling") : t("images.pullFromRegistry.pull")}
+            </button>
+          </div>
+      </Dialog>
+
+      <Dialog open={panel === "push"} onClose={closePanel} title={t("images.pushToRegistry.section")}>
+          <div className="space-y-2">
+            <select
+              value={registryForPush}
+              onChange={(e) => setRegistryForPush(e.target.value)}
+              className="select"
+            >
+              <option value="">{t("images.pushToRegistry.selectRegistry")}</option>
+              {registries?.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
+
+            <div>
+              <div className="text-xs text-slate-400 mb-1">{t("images.pushToRegistry.sourceImage")}</div>
+              <select
+                value={sourceImageToPush}
+                onChange={(e) => setSourceImageToPush(e.target.value)}
+                className="select"
+              >
+                <option value="">{t("images.pushToRegistry.selectSourceImage")}</option>
+                {pushableImageTags.map((tag) => (
+                  <option key={tag} value={tag}>
+                    {tag}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-2">
+                <div className="text-xs text-slate-400 mb-1">{t("images.pushToRegistry.targetImage")}</div>
+                <input
+                  className="input"
+                  placeholder={t("images.pushToRegistry.targetImagePlaceholder")}
+                  value={targetImageToPush}
+                  onChange={(e) => setTargetImageToPush(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+              <div>
+                <div className="text-xs text-slate-400 mb-1">{t("images.pushToRegistry.targetTag")}</div>
+                <input
+                  className="input"
+                  placeholder="latest"
+                  value={targetTagToPush}
+                  onChange={(e) => setTargetTagToPush(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setPanel(null);
+                void doPush();
+              }}
+              disabled={
+                pushing ||
+                !registryForPush ||
+                !sourceImageToPush ||
+                !targetImageToPush.trim()
+              }
+              className="btn btn-primary w-full"
+            >
+              <ArrowUp className="w-4 h-4" />
+              {pushing ? t("images.pushToRegistry.pushing") : t("images.pushToRegistry.push")}
+            </button>
+          </div>
+      </Dialog>
+
+      {isLoading ? (
+        <TableSkeleton rows={6} cols={6} />
+      ) : data && data.length === 0 ? (
+        <EmptyState
+          icon={Layers}
+          title={t("images.empty.title")}
+          description={t("images.empty.description")}
+          action={
+            <button className="btn btn-primary" onClick={() => setPanel("hub")}>
+              <Search className="w-4 h-4" />
+              {t("images.hub.section")}
+            </button>
+          }
+        />
+      ) : data ? (
+        <div className="card overflow-hidden">
+          <div className="flex items-center gap-2 px-3 py-2.5 border-b border-slate-800">
+            <div className="relative flex-1 max-w-xs">
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
+              <input
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                placeholder={t("common.filter")}
+                className="input input-sm pl-7"
+              />
+            </div>
+            {filter && (
+              <button
+                onClick={() => setFilter("")}
+                className="text-xs text-slate-400 hover:text-slate-200"
+              >
+                {t("common.clear")}
+              </button>
+            )}
+          </div>
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="text-slate-500">
+              <tr className="text-left">
+                <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">
+                  <SortHeader label={t("images.columns.tag")} active={sortKey === "tag"} dir={sortDir} onClick={() => toggleSort("tag")} />
+                </th>
+                <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("images.columns.id")}</th>
+                <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">
+                  <SortHeader label={t("images.columns.size")} active={sortKey === "size"} dir={sortDir} onClick={() => toggleSort("size")} />
+                </th>
+                <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">
+                  <SortHeader label={t("images.columns.inUse")} active={sortKey === "inUse"} dir={sortDir} onClick={() => toggleSort("inUse")} />
+                </th>
+                <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">
+                  <SortHeader label={t("images.columns.created")} active={sortKey === "created"} dir={sortDir} onClick={() => toggleSort("created")} />
+                </th>
+                <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">
+                  <SortHeader label={t("images.columns.pulled")} active={sortKey === "pulled"} dir={sortDir} onClick={() => toggleSort("pulled")} />
+                </th>
+                <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-right">{t("images.columns.actions")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800">
+              {pagedImages.map((img) => (
+                <tr
+                  key={img.id}
+                  onClick={() => router.push(`/images/${encodeURIComponent(img.id)}`)}
+                  className="hover:bg-slate-800/40 cursor-pointer transition-colors"
+                >
+                  <td className="px-4 py-3 font-mono text-xs">
+                    <span
+                          className="block max-w-[18rem] truncate text-brand-300 hover:underline"
+                          title={img.repoTags.length ? img.repoTags.join(", ") : "<none>"}
+                        >
+                      {img.repoTags.length ? img.repoTags.join(", ") : "<none>"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 font-mono text-xs">
+                    {img.id.replace("sha256:", "").slice(0, 12)}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">{humanBytes(img.size)}</td>
+                  <td className="px-4 py-3">
+                    <InUseBadge usage={usage.get(img.id)} />
+                  </td>
+                  <td className="px-4 py-3 text-slate-400 whitespace-nowrap">
+                    {t("containers.ago", { value: timeAgo(img.createdAt, locale) })}
+                  </td>
+                  <td className="px-4 py-3 text-slate-400 whitespace-nowrap">
+                    {img.pulledAt
+                      ? t("containers.ago", { value: timeAgo(img.pulledAt, locale) })
+                      : "—"}
+                  </td>
+                  <td className="px-4 py-3 text-right whitespace-nowrap">
+                    <div className="inline-flex items-center gap-0.5">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/images/${encodeURIComponent(img.id)}`);
+                        }}
+                        title={t("images.scan.start")}
+                        aria-label={t("images.scan.start")}
+                        className="btn btn-ghost btn-icon btn-sm"
+                      >
+                        <ShieldCheck className="w-4 h-4 text-brand-400" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setRunTarget(img);
+                        }}
+                        title={t("images.run")}
+                        aria-label={t("images.run")}
+                        className="btn btn-ghost btn-icon btn-sm"
+                      >
+                        <Play className="w-4 h-4 text-emerald-400" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          remove.mutate(img.id);
+                        }}
+                        title={t("common.remove")}
+                        aria-label={t("common.remove")}
+                        className="btn btn-ghost btn-icon btn-sm"
+                      >
+                        <Trash2 className="w-4 h-4 text-rose-400" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 border-t border-slate-800 text-xs text-slate-400">
+            <div>
+              {t("common.pagination.range", {
+                from: rangeFrom,
+                to: rangeTo,
+                total: totalRows,
+              })}
+            </div>
+            <div className="flex items-center gap-1">
+              <span>{t("common.pagination.rowsPerPage")}</span>
+              <select
+                value={pageSize}
+                onChange={(e) => setPageSize(Number(e.target.value))}
+                className="select select-sm w-auto"
+              >
+                {[10, 25, 50, 100].map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </div>
+            <div className="ml-auto flex items-center gap-1">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage <= 1}
+                className="btn btn-secondary btn-sm"
+              >
+                {t("common.pagination.prev")}
+              </button>
+              <span className="px-1">
+                {t("common.pagination.pageOf", { page: currentPage, total: pageCount })}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+                disabled={currentPage >= pageCount}
+                className="btn btn-secondary btn-sm"
+              >
+                {t("common.pagination.next")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {runTarget && (
+        <RunImageModal
+          image={runTarget}
+          onClose={() => setRunTarget(null)}
+          onCreated={(id) => {
+            setRunTarget(null);
+            qc.invalidateQueries({ queryKey: ["containers"] });
+            router.push(`/containers/${id}`);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -671,7 +732,7 @@ function HubItem({
     : `https://hub.docker.com/_/${item.name}`;
 
   return (
-    <li className="px-3 py-2 hover:bg-slate-900/40">
+    <li className="px-3 py-2.5 hover:bg-slate-800/40">
       <div className="flex items-start gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -684,7 +745,7 @@ function HubItem({
               {item.name}
             </a>
             {item.isOfficial && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] bg-sky-500/20 text-sky-300">
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] bg-brand-500/15 text-brand-300">
                 <BadgeCheck className="w-3 h-3" /> {t("images.hub.official")}
               </span>
             )}
@@ -714,7 +775,7 @@ function HubItem({
             disabled={pulling || alreadyPulled}
             onClick={() => onPull(item.name, effectiveTag)}
             title={alreadyPulled ? t("images.hub.alreadyPulled") : undefined}
-            className="px-2.5 py-1 rounded-md bg-brand-600 hover:bg-brand-500 text-xs flex items-center gap-1 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="btn btn-primary btn-sm"
           >
             <Download className="w-3.5 h-3.5" />{" "}
             {alreadyPulled ? t("images.hub.pulled") : t("images.hub.pull")}
@@ -985,7 +1046,7 @@ function RunImageModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t("images.runModal.namePlaceholder")}
-              className="mt-1 w-full bg-slate-950 border border-slate-700 rounded px-2 py-1"
+              className="mt-1 input"
             />
           </label>
           <label className="block">
@@ -995,7 +1056,7 @@ function RunImageModal({
               onChange={(e) => setPorts(e.target.value)}
               rows={2}
               placeholder={t("images.runModal.portsPlaceholder")}
-              className="mt-1 w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 font-mono text-xs"
+              className="mt-1 textarea font-mono text-xs"
             />
           </label>
           <label className="block">
@@ -1005,7 +1066,7 @@ function RunImageModal({
               onChange={(e) => setEnv(e.target.value)}
               rows={3}
               placeholder={t("images.runModal.envPlaceholder")}
-              className="mt-1 w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 font-mono text-xs"
+              className="mt-1 textarea font-mono text-xs"
             />
           </label>
           <label className="block">
@@ -1014,7 +1075,7 @@ function RunImageModal({
               value={command}
               onChange={(e) => setCommand(e.target.value)}
               placeholder={t("images.runModal.commandPlaceholder")}
-              className="mt-1 w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 font-mono text-xs"
+              className="mt-1 input font-mono text-xs"
             />
           </label>
           <label className="inline-flex items-center gap-2 text-xs text-slate-300">
@@ -1034,7 +1095,7 @@ function RunImageModal({
         <div className="flex justify-end gap-2 px-4 py-3 border-t border-slate-800">
           <button
             onClick={onClose}
-            className="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-sm"
+            className="btn btn-secondary"
           >
             {t("common.cancel")}
           </button>
@@ -1072,7 +1133,7 @@ function PullTerminalBanner({
   }, [logs]);
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 space-y-2">
+    <div className="card p-4 space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium text-slate-200">{title}</div>

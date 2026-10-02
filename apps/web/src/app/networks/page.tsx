@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import type { NetworkSummary } from "@rihtim/shared";
 import { QueryErrorBanner } from "@/components/QueryErrorBanner";
-import { Trash2, Plus, Search, Sparkles } from "lucide-react";
+import { Trash2, Plus, Search, Sparkles, Network } from "lucide-react";
+import { EmptyRow, SkeletonRows } from "@/components/ui";
 import { useT } from "@/i18n/provider";
 
 const BUILTIN_NETWORKS = new Set(["bridge", "host", "none"]);
@@ -14,7 +15,7 @@ export default function NetworksPage() {
   const qc = useQueryClient();
   const router = useRouter();
   const { t } = useT();
-  const { data, error, isFetching, refetch } = useQuery({
+  const { data, error, isFetching, isLoading, refetch } = useQuery({
     queryKey: ["networks"],
     queryFn: () => api<NetworkSummary[]>("/networks"),
   });
@@ -60,24 +61,24 @@ export default function NetworksPage() {
     <div className="space-y-4">
       <QueryErrorBanner error={error} isFetching={isFetching} onRetry={() => refetch()} />
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <h1 className="text-xl font-semibold">{t("networks.title")}</h1>
+        <h1 className="text-[22px] font-bold tracking-tight">{t("networks.title")}</h1>
         <div className="flex gap-2 items-center flex-wrap">
           <input
-            className="bg-slate-950 border border-slate-800 rounded-md px-3 py-1.5 text-sm"
+            className="input w-auto"
             placeholder={t("networks.newPlaceholder")}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <button
             onClick={() => name && create.mutate()}
-            className="px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500 text-sm flex items-center gap-1"
+            className="btn btn-primary"
           >
             <Plus className="w-4 h-4" /> {t("common.create")}
           </button>
           <button
             onClick={onPrune}
             disabled={prune.isPending}
-            className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center gap-1"
+            className="btn btn-secondary"
             title={t("networks.pruneHint")}
           >
             <Sparkles className="w-4 h-4" /> {t("networks.prune")}
@@ -85,15 +86,15 @@ export default function NetworksPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-800 overflow-hidden">
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-800 bg-slate-900/40">
+      <div className="card overflow-hidden">
+        <div className="flex items-center gap-2 px-3 py-2.5 border-b border-slate-800">
           <div className="relative flex-1 max-w-xs">
             <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
             <input
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               placeholder={t("common.filter")}
-              className="w-full bg-slate-950 border border-slate-800 rounded pl-7 pr-2 py-1 text-xs"
+              className="input input-sm pl-7"
             />
           </div>
           <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer select-none">
@@ -118,25 +119,26 @@ export default function NetworksPage() {
           )}
         </div>
         <table className="w-full text-sm">
-          <thead className="bg-slate-900/70 text-slate-400">
+          <thead className="text-slate-500">
             <tr className="text-left">
-              <th className="px-4 py-2">{t("networks.columns.name")}</th>
-              <th className="px-4 py-2">{t("networks.columns.driver")}</th>
-              <th className="px-4 py-2">{t("networks.columns.scope")}</th>
-              <th className="px-4 py-2">{t("networks.columns.subnet")}</th>
-              <th className="px-4 py-2 text-right">{t("networks.columns.actions")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("networks.columns.name")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("networks.columns.driver")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("networks.columns.scope")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider">{t("networks.columns.subnet")}</th>
+              <th className="px-4 pt-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-right">{t("networks.columns.actions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800 bg-slate-950/40">
+          <tbody className="divide-y divide-slate-800">
+            {isLoading && <SkeletonRows cols={5} />}
             {rows.map((n) => {
               const builtin = BUILTIN_NETWORKS.has(n.name);
               return (
                 <tr
                   key={n.id}
                   onClick={() => router.push(`/networks/${encodeURIComponent(n.id)}`)}
-                  className="cursor-pointer hover:bg-slate-900/40"
+                  className="cursor-pointer hover:bg-slate-800/40 transition-colors"
                 >
-                  <td className="px-4 py-2 font-medium">
+                  <td className="px-4 py-3 font-medium">
                     <div className="flex items-center gap-2">
                       <span>{n.name}</span>
                       {builtin && (
@@ -146,12 +148,12 @@ export default function NetworksPage() {
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-2">{n.driver}</td>
-                  <td className="px-4 py-2">{n.scope}</td>
-                  <td className="px-4 py-2 font-mono text-xs">
+                  <td className="px-4 py-3">{n.driver}</td>
+                  <td className="px-4 py-3">{n.scope}</td>
+                  <td className="px-4 py-3 font-mono text-xs">
                     {n.ipam?.config?.map((c) => c.subnet).filter(Boolean).join(", ") || "—"}
                   </td>
-                  <td className="px-4 py-2 text-right">
+                  <td className="px-4 py-3 text-right">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -159,7 +161,7 @@ export default function NetworksPage() {
                       }}
                       disabled={builtin}
                       title={builtin ? t("networks.builtinHint") : undefined}
-                      className="p-1.5 rounded hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="btn btn-ghost btn-icon btn-sm"
                     >
                       <Trash2 className="w-4 h-4 text-rose-400" />
                     </button>
@@ -167,12 +169,13 @@ export default function NetworksPage() {
                 </tr>
               );
             })}
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-500 text-sm">
-                  {t("networks.empty")}
-                </td>
-              </tr>
+            {!isLoading && rows.length === 0 && (
+              <EmptyRow
+                colSpan={5}
+                icon={Network}
+                title={filter || onlyCustom ? t("common.noMatches") : t("networks.empty")}
+                description={filter || onlyCustom ? t("common.noMatchesHint") : t("networks.emptyHint")}
+              />
             )}
           </tbody>
         </table>

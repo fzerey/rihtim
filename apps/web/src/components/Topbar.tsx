@@ -2,7 +2,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import type { DockerContext } from "@rihtim/shared";
-import { Check, ChevronDown, Moon, Sun, Monitor } from "lucide-react";
+import { Check, ChevronDown, Moon, Sun, Monitor, Search } from "lucide-react";
+import { OPEN_PALETTE_EVENT } from "./CommandPalette";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useT } from "@/i18n/provider";
@@ -34,6 +35,11 @@ export function Topbar() {
   const current = contexts?.find((c) => c.current);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const [modKey, setModKey] = useState("Ctrl");
+
+  useEffect(() => {
+    if (/Mac|iPhone|iPad/.test(navigator.platform)) setModKey("⌘");
+  }, []);
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -88,8 +94,16 @@ export function Topbar() {
           </div>
         )}
       </div>
+      <button
+        onClick={() => window.dispatchEvent(new Event(OPEN_PALETTE_EVENT))}
+        className="hidden sm:flex items-center gap-2 h-9 w-64 px-3 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 text-sm text-slate-500 transition-colors"
+      >
+        <Search className="w-4 h-4" />
+        <span className="flex-1 text-left">{t("topbar.search")}</span>
+        <span className="kbd">{modKey} K</span>
+      </button>
       <div className="ml-auto flex items-center gap-2">
-        <div className="hidden md:flex text-xs text-slate-500 items-center gap-3 mr-2">
+        <div className="hidden lg:flex text-xs text-slate-500 items-center gap-3 mr-2">
           {info?.serverVersion && (
             <span>
               {t("topbar.docker")}{" "}

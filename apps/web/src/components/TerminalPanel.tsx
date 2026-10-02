@@ -125,7 +125,7 @@ export function TerminalPanel({
 
   if (!running) {
     return (
-      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 text-sm text-slate-400">
+      <div className="card p-6 text-sm text-slate-400">
         {t("containers.detail.exec.notRunning")}
       </div>
     );
@@ -138,7 +138,7 @@ export function TerminalPanel({
         <select
           value={shell}
           onChange={(e) => setShell(e.target.value)}
-          className="bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5"
+          className="select select-sm w-auto"
         >
           <option value="">{t("containers.detail.exec.autoShell")}</option>
           <option value="/bin/bash">bash</option>
