@@ -11,4 +11,6 @@ contextBridge.exposeInMainWorld("rihtim", {
   },
   selectComposeFile: async (): Promise<string | null> =>
     ipcRenderer.invoke("rihtim:select-compose-file"),
+  setTitleBarTheme: (theme: "dark" | "light"): void =>
+    ipcRenderer.send("rihtim:title-bar-theme", theme),
 });

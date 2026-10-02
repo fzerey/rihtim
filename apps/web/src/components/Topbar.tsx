@@ -44,7 +44,7 @@ export function Topbar() {
   }, []);
 
   return (
-    <header className="h-16 shrink-0 border-b border-slate-800 bg-slate-950 flex items-center px-6 gap-3">
+    <header className="app-drag titlebar-pad-right h-16 shrink-0 border-b border-slate-800 bg-slate-950 flex items-center pl-6 gap-3">
       <div className="relative" ref={ref}>
         <button
           onClick={() => setOpen((v) => !v)}

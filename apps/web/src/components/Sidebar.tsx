@@ -46,7 +46,7 @@ export function Sidebar() {
   const { t } = useT();
   return (
     <aside className="w-60 shrink-0 border-r border-slate-800 bg-slate-900 flex flex-col">
-      <div className="h-16 flex items-center gap-2.5 px-5">
+      <div className="app-drag h-16 flex items-center gap-2.5 px-5">
         <RihtimLogo className="w-7 h-7 rounded-md shadow-sm" />
         <div className="leading-tight">
           <div className="text-[15px] font-bold tracking-tight">Rihtim</div>
