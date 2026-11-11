@@ -161,6 +161,7 @@ export default function NetworksPage() {
                       }}
                       disabled={builtin}
                       title={builtin ? t("networks.builtinHint") : undefined}
+                      aria-label={t("common.remove")}
                       className="btn btn-ghost btn-icon btn-sm"
                     >
                       <Trash2 className="w-4 h-4 text-rose-400" />

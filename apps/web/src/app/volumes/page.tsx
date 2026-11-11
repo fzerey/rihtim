@@ -189,6 +189,7 @@ export default function VolumesPage() {
                       }}
                       disabled={inUse}
                       title={inUse ? t("volumes.inUseHint") : undefined}
+                      aria-label={t("common.remove")}
                       className="btn btn-ghost btn-icon btn-sm"
                     >
                       <Trash2 className="w-4 h-4 text-rose-400" />
