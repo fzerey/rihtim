@@ -18,6 +18,7 @@ import {
 import { contextStore } from "../contexts/store.js";
 import { config } from "../config.js";
 import { checkRate } from "../util/rate-limit.js";
+import { isPlainFileName, PathNotAllowedError, resolveAllowedPath } from "../util/safe-path.js";
 import type {
   ContainerSummary,
   DockerContext,
@@ -95,47 +96,18 @@ type ComposeProjectInfo = {
   containers: ComposeContainerInfo[];
 };
 
+// Only files inside the allowed roots (see util/safe-path) can be used, so user-provided
+// paths cannot expose arbitrary files on the host.
 async function resolveComposeFile(rawPath: string): Promise<string> {
-  if (typeof rawPath !== "string" || rawPath.length === 0) throw new Error("invalid path");
-  if (rawPath.includes("\0") || rawPath.includes("://")) throw new Error("invalid path");
-  const file = path.resolve(rawPath);
-  // Ensure the resolved path exists and is within an allowed root to avoid
-  // exposing arbitrary files on the host via user-provided paths.
-  await fs.access(file);
-  const realFile = await fs.realpath(file);
-  const allowedRoots = [config.dataDir, process.cwd()];
-  const ok = await Promise.all(
-    allowedRoots.map(async (r) => {
-      try {
-        const realRoot = await fs.realpath(r);
-        const rel = path.relative(realRoot, realFile);
-        return !rel.startsWith("..") && !path.isAbsolute(rel);
-      } catch {
-        return false;
-      }
-    }),
-  );
-  if (!ok.some(Boolean)) throw new Error("compose file path not allowed");
-  return realFile;
-}
-
-async function isAllowedChildPath(targetPath: string): Promise<boolean> {
+  let file: string;
   try {
-    const realTarget = await fs.realpath(path.resolve(targetPath));
-    const allowedRoots = [config.dataDir, process.cwd()];
-    for (const r of allowedRoots) {
-      try {
-        const realRoot = await fs.realpath(r);
-        const rel = path.relative(realRoot, realTarget);
-        if (!rel.startsWith("..") && !path.isAbsolute(rel)) return true;
-      } catch {
-        // ignore
-      }
-    }
-  } catch {
-    return false;
+    file = await resolveAllowedPath(rawPath);
+  } catch (err) {
+    if (err instanceof PathNotAllowedError) throw new Error("compose file path not allowed");
+    throw err;
   }
-  return false;
+  if (!(await fs.stat(file)).isFile()) throw new Error("compose file path is not a file");
+  return file;
 }
 
 function sanitizeComposeFileName(name?: string): string {
@@ -1772,31 +1744,31 @@ export const buildRoutes: FastifyPluginAsync = async (app) => {
     if (!contextPath || !tag) {
       return reply.code(400).send({ error: "contextPath and tag are required" });
     }
-    // Validate the provided context path is an allowed child path.
-    if (!(await isAllowedChildPath(contextPath))) {
-      return reply.code(400).send({ error: "context_path_not_allowed" });
-    }
-    let stat;
+    // From here on only the validated real path is used, never the raw input.
+    let context: string;
     try {
-      stat = await fs.stat(contextPath);
+      context = await resolveAllowedPath(contextPath);
     } catch (err: any) {
+      if (err instanceof PathNotAllowedError) {
+        return reply.code(400).send({ error: "context_path_not_allowed" });
+      }
       return reply.code(400).send({ error: "context_not_found", message: err.message });
     }
-    if (!stat.isDirectory()) {
+    if (!(await fs.stat(context)).isDirectory()) {
       return reply.code(400).send({ error: "context_not_directory" });
     }
     const dfName = dockerfile && dockerfile.length > 0 ? dockerfile : "Dockerfile";
-    // dockerfile must be a simple filename (no directories) to avoid path traversal.
-    if (dfName.includes("/") || dfName.includes("\\")) {
+    // dockerfile must be a plain file name inside the context to avoid path traversal.
+    if (!isPlainFileName(dfName)) {
       return reply.code(400).send({ error: "invalid_dockerfile" });
     }
     try {
-      await fs.access(path.join(contextPath, dfName));
+      await fs.access(path.join(context, dfName));
     } catch {
       return reply.code(400).send({ error: "dockerfile_not_found", message: dfName });
     }
 
-    const files = await collectContextFiles(contextPath);
+    const files = await collectContextFiles(context);
     if (!files.includes(dfName)) files.push(dfName);
 
     const docker = await currentDocker();
@@ -1808,7 +1780,7 @@ export const buildRoutes: FastifyPluginAsync = async (app) => {
       buildargs: buildArgs && Object.keys(buildArgs).length > 0 ? buildArgs : undefined,
     };
     const stream = await docker.buildImage(
-      { context: contextPath, src: files },
+      { context, src: files },
       options,
     );
     reply.raw.setHeader("Content-Type", "application/x-ndjson");
