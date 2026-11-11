@@ -20,5 +20,10 @@
   "devDependencies": {
     "typescript": "^7.0.2",
     "tsx": "^4.23.15"
+  },
+  "pnpm": {
+    "overrides": {
+      "minimatch@>=7.0.0 <11.0.1": "^11.0.1"
+    }
   }
 }
