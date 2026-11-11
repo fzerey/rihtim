@@ -1,26 +1,22 @@
 version: 2
 updates:
+  # One entry at the repo root covers every pnpm workspace package (apps/*, packages/*, e2e)
+  # and keeps the single root pnpm-lock.yaml in sync. Per-app entries create PRs without a
+  # lockfile update, which breaks `pnpm install --frozen-lockfile`.
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
-      - "automated"
+    # Every update rewrites pnpm-lock.yaml, so separate PRs conflict with each other.
+    # Group minor and patch updates into one PR; majors still come one by one.
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
 
-  - package-ecosystem: "npm"
-    directory: "/apps/api"
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-
-  - package-ecosystem: "npm"
-    directory: "/apps/desktop"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
+      interval: "monthly"
