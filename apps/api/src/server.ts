@@ -1,4 +1,4 @@
-import Fastify from "fastify";
+import Fastify, { type FastifyError } from "fastify";
 import cors from "@fastify/cors";
 import websocket from "@fastify/websocket";
 import rateLimit from "@fastify/rate-limit";
@@ -31,7 +31,7 @@ if (config.rateLimit) {
   await app.register(rateLimit, { global: true, max: 1000, timeWindow: "1 minute" });
 }
 
-app.setErrorHandler((err, _req, reply) => {
+app.setErrorHandler<FastifyError>((err, _req, reply) => {
   const code = typeof (err as NodeJS.ErrnoException).code === "string"
     ? (err as NodeJS.ErrnoException).code
     : undefined;
