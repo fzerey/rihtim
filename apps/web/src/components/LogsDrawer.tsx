@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { ContainerSummary } from "@rihtim/shared";
-import { wsUrl } from "@/lib/api";
+import { useLogStream } from "@/lib/useLogStream";
 import { useT } from "@/i18n/provider";
 import { X } from "lucide-react";
 
@@ -13,25 +13,14 @@ export function LogsDrawer({
   onClose: () => void;
 }) {
   const { t } = useT();
-  const [lines, setLines] = useState<string[]>([]);
+  const { text } = useLogStream(container.id, 2000);
   const boxRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const ws = new WebSocket(wsUrl(`/ws/containers/${container.id}/logs`));
-    ws.onmessage = (ev) => {
-      setLines((prev) => {
-        const next = [...prev, String(ev.data)];
-        return next.length > 2000 ? next.slice(next.length - 2000) : next;
-      });
-    };
-    return () => ws.close();
-  }, [container.id]);
 
   useEffect(() => {
     if (boxRef.current) {
       boxRef.current.scrollTop = boxRef.current.scrollHeight;
     }
-  }, [lines]);
+  }, [text]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -69,7 +58,7 @@ export function LogsDrawer({
           ref={boxRef}
           className="flex-1 overflow-auto p-3 font-mono text-xs whitespace-pre-wrap bg-black/40"
         >
-          {lines.join("")}
+          {text}
         </div>
       </div>
     </div>
