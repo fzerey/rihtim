@@ -16,6 +16,7 @@
     "typecheck": "pnpm -r run typecheck",
     "desktop:dev": "pnpm --filter @rihtim/desktop electron:dev",
     "desktop:package": "node scripts/build-desktop.mjs",
+    "test:unit": "pnpm -r --if-present run test:unit",
     "test:e2e": "pnpm --filter @rihtim/e2e test",
     "test:e2e:web": "pnpm --filter @rihtim/e2e test:web",
     "test:e2e:desktop": "pnpm --filter @rihtim/e2e test:desktop"
