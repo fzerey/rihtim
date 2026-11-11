@@ -33,22 +33,35 @@ export function LogsDrawer({
     }
   }, [lines]);
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const name = container.names.map((n) => n.replace(/^\//, "")).join(", ");
+
   return (
     <div className="fixed inset-0 z-30 flex justify-end">
-      <button
-        aria-label={t("common.close")}
-        className="absolute inset-0 bg-black/50"
-        onClick={onClose}
-      />
-      <div className="relative w-full max-w-3xl h-full bg-slate-950 border-l border-slate-800 flex flex-col">
+      <div aria-hidden className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${t("containers.actions.logs")}: ${name}`}
+        className="relative w-full max-w-3xl h-full bg-slate-950 border-l border-slate-800 flex flex-col"
+      >
         <div className="h-12 border-b border-slate-800 flex items-center justify-between px-4">
           <div>
-            <div className="text-sm font-medium">
-              {container.names.map((n) => n.replace(/^\//, "")).join(", ")}
-            </div>
+            <div className="text-sm font-medium">{name}</div>
             <div className="text-xs text-slate-500 font-mono">{container.id.slice(0, 12)}</div>
           </div>
-          <button className="p-1.5 hover:bg-slate-800 rounded" onClick={onClose}>
+          <button
+            aria-label={t("common.close")}
+            className="p-1.5 hover:bg-slate-800 rounded"
+            onClick={onClose}
+          >
             <X className="w-4 h-4" />
           </button>
         </div>

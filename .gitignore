@@ -16,3 +16,9 @@ apps/desktop/release/
 *.log
 .DS_Store
 Thumbs.db
+
+# E2E
+e2e/.data/
+e2e/.electron-user-data/
+e2e/test-results/
+e2e/playwright-report/

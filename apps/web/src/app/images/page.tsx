@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, humanBytes, timeAgo } from "@/lib/api";
+import { splitCommand } from "@/lib/splitCommand";
 import type { ImageSummary, ContainerSummary, Registry } from "@rihtim/shared";
 import { QueryErrorBanner } from "@/components/QueryErrorBanner";
 import { Dialog, EmptyState, TableSkeleton } from "@/components/ui";
@@ -997,7 +998,7 @@ function RunImageModal({
         .map((l) => l.trim())
         .filter((l) => l && l.includes("="));
 
-      const cmdParts = command.trim() ? command.trim().split(/\s+/) : undefined;
+      const cmdParts = command.trim() ? splitCommand(command.trim()) : undefined;
 
       const body: Record<string, any> = {
         Image: displayTag,
