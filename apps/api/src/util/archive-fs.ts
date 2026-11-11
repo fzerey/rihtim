@@ -200,7 +200,8 @@ export async function readArchiveFile(
       const chunks: Buffer[] = [];
       let received = 0;
       let truncated = false;
-      stream.on("data", (chunk: Buffer) => {
+      stream.on("data", (data: unknown) => {
+        const chunk = data as Buffer;
         if (received >= maxBytes) {
           truncated = true;
           return;
@@ -261,7 +262,8 @@ export async function writeArchiveFile(
   pack.entry({ name: basename(target), mode, size: content.length }, content);
   pack.finalize();
   try {
-    await putArchive(pack, dirname(target));
+    // tar-stream's Pack is a streamx Readable; it pipes like a Node stream, which is all Docker needs.
+    await putArchive(pack as unknown as NodeJS.ReadableStream, dirname(target));
   } catch (err) {
     const e = err as { statusCode?: number; message?: string };
     throw new ArchiveError(e.statusCode ?? 500, "write_failed", e.message ?? String(err));
