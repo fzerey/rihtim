@@ -1,6 +1,6 @@
 {
   "name": "rihtim",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Rihtim - Open-source Docker Desktop alternative (web UI) with WSL support",
   "packageManager": "pnpm@9.0.0",

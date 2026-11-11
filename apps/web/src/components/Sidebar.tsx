@@ -84,7 +84,7 @@ export function Sidebar() {
         ))}
       </nav>
       <div className="px-5 py-3 text-[11px] text-slate-500 font-mono border-t border-slate-800">
-        v0.1.0
+        v{process.env.NEXT_PUBLIC_APP_VERSION}
       </div>
     </aside>
   );

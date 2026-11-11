@@ -1,11 +1,15 @@
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const { version } = JSON.parse(readFileSync(path.join(__dirname, "package.json"), "utf8"));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Shown in the sidebar; comes from this package's version so releases only bump package.json.
+  env: { NEXT_PUBLIC_APP_VERSION: version },
   transpilePackages: ["@rihtim/shared"],
   // Self-contained server bundle for packaging inside the desktop (Electron) app.
   output: "standalone",
