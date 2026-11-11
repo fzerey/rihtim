@@ -8,6 +8,8 @@ export const config = {
   dataDir:
     process.env.RIHTIM_DATA_DIR ??
     path.join(os.homedir(), ".rihtim"),
+  // E2E runs drive many requests from a single IP; they turn the limiter off explicitly.
+  rateLimit: process.env.RIHTIM_RATE_LIMIT !== "off",
 } as const;
 
 export const CONTEXTS_FILE = "contexts.json";

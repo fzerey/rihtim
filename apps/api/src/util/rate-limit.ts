@@ -1,4 +1,5 @@
 import type { FastifyRequest } from "fastify";
+import { config } from "../config.js";
 
 class RateLimiter {
   private map = new Map<string, { count: number; reset: number }>();
@@ -27,6 +28,7 @@ class RateLimiter {
 export const rateLimiter = new RateLimiter();
 
 export function checkRate(req: FastifyRequest, limit = 10, windowMs = 60000): boolean {
+  if (!config.rateLimit) return true;
   const key = rateLimiter.keyForRequest(req);
   return rateLimiter.allow(key, limit, windowMs);
 }

@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import websocket from "@fastify/websocket";
+import rateLimit from "@fastify/rate-limit";
 import { config } from "./config.js";
 import { contextRoutes } from "./routes/contexts.js";
 import { registryRoutes } from "./routes/registries.js";
@@ -24,6 +25,11 @@ const app = Fastify({
 
 await app.register(cors, { origin: config.corsOrigin, credentials: true });
 await app.register(websocket);
+// Baseline per-IP limit for every route. The UI polls several endpoints, so it is generous;
+// heavier route groups add their own stricter limits (util/rate-limit.ts).
+if (config.rateLimit) {
+  await app.register(rateLimit, { global: true, max: 1000, timeWindow: "1 minute" });
+}
 
 app.setErrorHandler((err, _req, reply) => {
   const code = typeof (err as NodeJS.ErrnoException).code === "string"
