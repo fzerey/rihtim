@@ -52,7 +52,7 @@ jobs:
 
       - name: Upload installers
         if: github.event_name == 'workflow_dispatch'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rihtim-${{ matrix.artifact }}
           if-no-files-found: error
