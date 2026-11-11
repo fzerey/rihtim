@@ -6,8 +6,8 @@ Security fixes go into the latest release. Please update to it before reporting.
 
 | Version | Supported |
 | ------- | --------- |
-| 0.1.x (latest) | ✅ |
-| older   | ❌ |
+| [Latest release](https://github.com/fzerey/rihtim/releases/latest) | ✅ |
+| Older releases | ❌ |
 
 ## Reporting a vulnerability
 

@@ -1,6 +1,6 @@
 {
   "name": "@rihtim/desktop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Rihtim desktop shell (Electron) — bundles the web UI and API for Windows, macOS and Linux",
   "homepage": "https://github.com/fzerey/rihtim",
