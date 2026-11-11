@@ -19,6 +19,7 @@
  * combine them, e.g. `--win --linux`.
  */
 import { execFileSync } from "node:child_process";
+import { createRequire } from "node:module";
 import { existsSync, rmSync, mkdirSync, cpSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -113,6 +114,15 @@ const githubTag =
 
 if (!hasVersionOverride && githubTag?.startsWith("v") && githubTag.length > 1) {
   forwarded.push(`--config.extraMetadata.version=${githubTag.slice(1)}`);
+}
+
+// electron-builder cannot find electron under the hoisted node_modules layout, so tell it
+// which version to package: the one installed for apps/desktop.
+if (!forwarded.some((arg) => arg.startsWith("--config.electronVersion="))) {
+  const requireFromDesktop = createRequire(path.join(desktopDir, "package.json"));
+  const electronVersion = requireFromDesktop("electron/package.json").version;
+  console.log(`Packaging with Electron ${electronVersion}`);
+  forwarded.push(`--config.electronVersion=${electronVersion}`);
 }
 
 run(pnpm, [
